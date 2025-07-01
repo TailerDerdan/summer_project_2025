@@ -1,2 +1,10 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+/.env.local
+/.env
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+.env
+/.env
