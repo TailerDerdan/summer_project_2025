@@ -1,3 +1,3 @@
-import { Player, engine } from './player.js'
+import {engine} from './player/movement.js'
 
 engine();
