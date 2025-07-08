@@ -31,11 +31,7 @@ const updateMovementPlayer = () => {
         (Player.dir > 90 && Player.dir < 110) ||
         (Player.dir > 250 && Player.dir < 270) ||
         (Player.dir > 270 && Player.dir < 290))
-    {
-        
-        console.log(distX);
-        console.log(distY, "y");
-        
+    {        
         if (distX >= 0 && distX <= 0.5)
         {
             distX = Math.ceil(distX) * 0.6;
@@ -59,7 +55,6 @@ const updateMovementPlayer = () => {
     {
         Player.y -= distY;
         Player.x += distX;
-        // console.log(distX)
     }
     if (keyDict.KeyS)
     {
