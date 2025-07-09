@@ -1,5 +1,5 @@
-import { Player, drawPlayer } from './player.js';
-import { changeDir } from './changeDir.js';
+import { player } from './player.js';
+import { ctx } from './../canvas.js';
 
 const SQRT_2 = 0.707;
 const MAX_DIST = 1;
@@ -15,7 +15,9 @@ const updateKeyDict = (event) => {
     }
 };
 
-const updateMovementPlayer = () => {
+export const updateMovementPlayer = () => {
+
+    let playerDir = player.getDir();
 
     let distX = keyDict.KeyW && (keyDict.KeyA || keyDict.KeyD) ||
             keyDict.KeyS && (keyDict.KeyA || keyDict.KeyD) ? SQRT_2 : MAX_DIST;
@@ -24,13 +26,13 @@ const updateMovementPlayer = () => {
             keyDict.KeyS && (keyDict.KeyA || keyDict.KeyD) ? SQRT_2 : MAX_DIST;
 
     
-    distY *= Math.cos(Player.dir * Math.PI / 180) * Math.cos(Player.dir * Math.PI / 180);
-    distX *= Math.cos(Player.dir * Math.PI / 180) * Math.sin(Player.dir * Math.PI / 180);
+    distY *= Math.cos(playerDir * Math.PI / 180) * Math.cos(playerDir * Math.PI / 180);
+    distX *= Math.cos(playerDir * Math.PI / 180) * Math.sin(playerDir * Math.PI / 180);
 
-    if ((Player.dir > 70 && Player.dir < 90) ||
-        (Player.dir > 90 && Player.dir < 110) ||
-        (Player.dir > 250 && Player.dir < 270) ||
-        (Player.dir > 270 && Player.dir < 290))
+    if ((playerDir > 70 && playerDir < 90) ||
+        (playerDir > 90 && playerDir < 110) ||
+        (playerDir > 250 && playerDir < 270) ||
+        (playerDir > 270 && playerDir < 290))
     {        
         if (distX >= 0 && distX <= 0.5)
         {
@@ -42,45 +44,41 @@ const updateMovementPlayer = () => {
         }
     }
 
-    if (Player.dir > 90 && Player.dir < 270)
+    if (playerDir > 90 && playerDir < 270)
     {
         distX *= -1;
         distY *= -1;
     }
 
-    distX *= Player.speed;
-    distY *= Player.speed;
+    let speedPlayer = player.getSpeed();
+
+    distX *= speedPlayer;
+    distY *= speedPlayer;
 
     if (keyDict.KeyW) 
     {
-        Player.y -= distY;
-        Player.x += distX;
+        player.setY(player.getY() - distY);
+        player.setX(player.getX() + distX);
     }
     if (keyDict.KeyS)
     {
-        Player.y += distY;
-        Player.x -= distX;
+        player.setY(player.getY() + distY);
+        player.setX(player.getX() - distX);
     }
 
     if (keyDict.KeyD) 
     {
-        Player.y += distX;
-        Player.x += distY;
+        player.setY(player.getY() + distY);
+        player.setX(player.getX() + distX);
     }
     if (keyDict.KeyA)
     {
-        Player.y -= distX;
-        Player.x -= distY;
+        player.setY(player.getY() - distY);
+        player.setX(player.getX() - distX);
     }
 
-    drawPlayer();
+    player.drawPlayer(ctx);
 }
 
 document.addEventListener('keydown', updateKeyDict);
 document.addEventListener('keyup', updateKeyDict);
-
-export function engine() {
-    updateMovementPlayer();
-    changeDir();
-    window.requestAnimationFrame(engine);
-};

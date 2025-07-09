@@ -1,4 +1,4 @@
-import { Player } from './player.js';
+import { player } from './player.js';
 
 export function changeDir()
 {
@@ -7,7 +7,7 @@ export function changeDir()
         const xMouse = event.clientX;
         const yMouse = event.clientY;
 
-        let dir = Math.atan2((yMouse - Player.centerY), (xMouse - Player.centerX));
+        let dir = Math.atan2((yMouse - player.getCenterY()), (xMouse - player.getCenterX()));
         dir = dir * 180 / Math.PI;
         
         dir += 90;
@@ -16,6 +16,6 @@ export function changeDir()
         {
             dir += 360;
         }
-        Player.dir = dir;
+        player.setDir(dir);
     });
 }
