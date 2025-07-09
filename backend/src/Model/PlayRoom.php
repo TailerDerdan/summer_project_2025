@@ -66,8 +66,8 @@ class PlayRoom
                 $playRoom->getName(),
                 $playRoom->getDescription(),
                 $playRoom->getUsers(),
-                $playRoom->false,
-                $playRoom->true
+                false,
+                true
             );
             return $result;
         }
