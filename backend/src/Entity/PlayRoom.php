@@ -4,29 +4,37 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Entity\User;
-
 //isOpen: t/f
 //isRunning: t/f
 
 class PlayRoom
 {
     private const MaxSize = 6;
+
     private ?int $id;
     private string $name;
-    private string $description;
-    private array $users;
+    private string $gamemode;
     private bool $isOpen;
     private bool $isRunning;
+    private string $timeCreate;
+    private int $hostId;
 
-    public function __construct(?int $id, string $name, string $description, array $users, bool $isOpen, bool $isRunning)
+    public function __construct(
+        ?int $id,
+        string $name,
+        string $gamemode,
+        bool $isOpen,
+        bool $isRunning,
+        string $timeCreate,
+        int $hostId)
     {
         $this->id = $id;
         $this->name = $name;
-        $this->description = $description;
-        $this->users = $users;
+        $this->gamemode = $gamemode;
         $this->isOpen = $isOpen;
         $this->isRunning = $isRunning;
+        $this->timeCreate = $timeCreate;
+        $this->hostId = $hostId;
     }
 
     public function getId(): ?int
@@ -37,13 +45,9 @@ class PlayRoom
     {
         return $this->name;
     }
-    public function getDescription(): string
+    public function getGamemode(): string
     {
-        return $this->description;
-    }
-    public function getUsers(): array
-    {
-        return $this->users;
+        return $this->gamemode;
     }
     public function isOpen(): bool
     {
@@ -53,71 +57,12 @@ class PlayRoom
     {
         return $this->isRunning;
     }
-
-    public function getRunningRoom(PlayRoom $playRoom): PlayRoom
+    public function getTimeCreate(): string
     {
-        if ($this->isRunning)
-        {
-            return $playRoom;
-        }
-        else
-        {
-            $result = new PlayRoom(
-                $playRoom->getId(),
-                $playRoom->getName(),
-                $playRoom->getDescription(),
-                $playRoom->getUsers(),
-                false,
-                true
-            );
-            return $result;
-        }
+        return $this->timeCreate;
     }
-
-    public function getRoomWithUser(User $user): PlayRoom
+    public function getHostId(): int
     {
-        $users = $this->getUsers();
-        if ((count($users) <= self::MaxSize - 1) && ($this->isOpen() == true))
-        {
-            $users[] = $user;
-        }
-        else
-        {
-            throw new \RuntimeException("Невозможно присоединиться к комнате");
-        }
-        $result = new PlayRoom(
-            $this->getId(),
-            $this->getName(),
-            $this->getDescription(),
-            $users,
-            $this->isOpen(),
-            $this->isRunning()
-        );
-        return $result;
-    }
-
-    public function getRoomWithoutUser(User $requiredUser): PlayRoom
-    {
-        $users = $this->getUsers();
-        /**
-         * @var $updatedUsers = array [User]
-         */
-        $updatedUsers = [];
-        foreach ($users as $user)
-        {
-            if ($user->getUserId() !== $requiredUser->getUserId())
-            {
-                $updatedUsers[] = $user;
-            }
-        }
-        $result = new PlayRoom(
-            $this->getId(),
-            $this->getName(),
-            $this->getDescription(),
-            $updatedUsers,
-            $this->isOpen(),
-            $this->isRunning()
-        );
-        return $result;
+        return $this->hostId;
     }
 }
