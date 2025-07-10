@@ -2,15 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Model;
+namespace App\Entity;
 
-use App\Model\User;
+use App\Entity\User;
 
 //isOpen: t/f
 //isRunning: t/f
 
 class PlayRoom
 {
+    private const MaxSize = 6;
     private ?int $id;
     private string $name;
     private string $description;
@@ -73,30 +74,31 @@ class PlayRoom
         }
     }
 
-    public function getRoomWithUser(PlayRoom $playRoom, User $user): PlayRoom
+    public function getRoomWithUser(User $user): PlayRoom
     {
-        $users = $playRoom->getUsers();
-        if ((count($users) <= 6) && ($playRoom->isOpen() == true))
+        $users = $this->getUsers();
+        if ((count($users) <= self::MaxSize - 1) && ($this->isOpen() == true))
         {
             $users[] = $user;
         }
-//        else
-//        {
-//            //
-//        }
+        else
+        {
+            throw new \RuntimeException("Невозможно присоединиться к комнате");
+        }
         $result = new PlayRoom(
-            $playRoom->getId(),
-            $playRoom->getName(),
-            $playRoom->getDescription(),
-            $playRoom->$users,
-            $playRoom->isOpen(),
-            $playRoom->isRunning()
+            $this->getId(),
+            $this->getName(),
+            $this->getDescription(),
+            $users,
+            $this->isOpen(),
+            $this->isRunning()
         );
         return $result;
     }
-    public function getRoomWithoutUser(PlayRoom $playRoom, User $requiredUser): PlayRoom
+
+    public function getRoomWithoutUser(User $requiredUser): PlayRoom
     {
-        $users = $playRoom->getUsers();
+        $users = $this->getUsers();
         /**
          * @var $updatedUsers = array [User]
          */
@@ -109,12 +111,12 @@ class PlayRoom
             }
         }
         $result = new PlayRoom(
-            $playRoom->getId(),
-            $playRoom->getName(),
-            $playRoom->getDescription(),
-            $playRoom->$updatedUsers,
-            $playRoom->isOpen(),
-            $playRoom->isRunning()
+            $this->getId(),
+            $this->getName(),
+            $this->getDescription(),
+            $updatedUsers,
+            $this->isOpen(),
+            $this->isRunning()
         );
         return $result;
     }

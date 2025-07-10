@@ -7,12 +7,12 @@ use App\Entity\WeaponInterface;
 
 class Player extends PlayerAbstract {
     private const BaseSpeed = 100;
-    private int $id;
-    private string $name;
-    private int $health;
-    private WeaponInterface $currentWeapon;
-    private array $weapons = [];
-    private int $currentSpeed;
+    protected int $id;
+    protected string $name;
+    protected int $health;
+    protected WeaponInterface $currentWeapon;
+    protected array $weapons = [];
+    protected int $currentSpeed;
 
     public function __construct(int $id, string $name, int $health) {
         parent::__construct($id, $name, $health, self::BaseSpeed);
