@@ -1,9 +1,9 @@
 <?php
 declare (strict_types= 1);
 
-namespace App\Entity\User;
+namespace App\Infrastructure\Player;
 
-use App\Entity\Weapons\Weapon;
+use App\Entity\Weapon\Weapon;
 
 interface PlayerInterface {
     public function getId(): int;

@@ -1,19 +1,16 @@
 <?php
-
-declare(strict_types=1);
+declare (strict_types=1);
 
 namespace App\Entity\User;
 
-class User
-{
-    public function __construct(
+class User {
+    public function __construct (
         private ?int $userId,
         private ?int $roomId,
         private string $nickName,
         private string $password,
-        private string $avatarPath)
-    {
-    }
+        private ?string $avatarPath
+    ) {}
 
     public function getUserId(): ?int
     {
@@ -31,7 +28,7 @@ class User
     {
         return $this->password;
     }
-    public function getAvatarPath(): string
+    public function getAvatarPath(): ?string
     {
         return $this->avatarPath;
     }

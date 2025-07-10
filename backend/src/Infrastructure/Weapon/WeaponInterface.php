@@ -1,7 +1,7 @@
 <?php
 declare (strict_types= 1);
 
-namespace App\Entity\Weapons;
+namespace App\Infrastructure\Weapon;
 
 interface WeaponInterface {
     public function getType(): string;

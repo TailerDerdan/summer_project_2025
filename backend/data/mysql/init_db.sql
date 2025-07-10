@@ -1,6 +1,3 @@
-CREATE DATABASE game_2025;
-USE game_2025;
-
 CREATE TABLE play_room
 (
     `room_id`          INT             NOT NULL AUTO_INCREMENT,
@@ -18,9 +15,9 @@ CREATE TABLE user
 (
     `user_id`          INT             NOT NULL AUTO_INCREMENT,
     `room_id`          INT             DEFAULT NULL,
-    `user_name`        VARCHAR(255)    NOT NULL,
-    `user_password`    VARCHAR(255)    NOT NULL,
+    `nick_name`        VARCHAR(255)    NOT NULL,
+    `password`    VARCHAR(255)    NOT NULL,
     `avatar_path`      VARCHAR(255)    DEFAULT NULL,
     PRIMARY KEY (`user_id`),
-    UNIQUE INDEX `user_name_idx` (`user_name`)
+    UNIQUE INDEX `user_name_idx` (`nick_name`)
 );

@@ -1,15 +1,16 @@
 <?php
 declare (strict_types= 1);
 
-namespace App\Entity\Weapons;
+namespace App\Entity\Weapon;
 
-use App\Entity\Weapons\WeaponInterface;
+use App\Infrastructure\Weapon\WeaponInterface;
 
 class Weapon implements WeaponInterface {
     private bool $isReload = false;
     private float $startReload = 0;
     private float $lastFireTime = 0;
 
+    //TODO сделать поле type - перечислимым типом
     public function __construct(
         private string $type,
         private int $damage,

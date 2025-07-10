@@ -1,9 +1,10 @@
 <?php
 declare (strict_types= 1);
 
-namespace App\Entity\User;
+namespace App\Entity\Player;
 
-use App\Entity\Weapons\Weapon;
+use App\Entity\Weapon\Weapon;
+use App\Infrastructure\Player\PlayerInterface;
 
 class Enemy implements PlayerInterface {
     private const BASE_SPEED = 100;

@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Main Page{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="styles/login.css">
+{% endblock %}
+
+{% block body %}
+<div>
+    <h1>#Название игры</h1>
+    <a href="{{ path('profile', {id: user.userId}) }}">
+        <img src="" alt="Профиль">
+    </a>
+</div>
+{% endblock %}

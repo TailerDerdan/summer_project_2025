@@ -1,12 +1,15 @@
 <?php
 declare (strict_types= 1);
 
-namespace App\Entity\User;
+namespace App\Entity\Player;
 
-use App\Entity\Weapons\Weapon;
+use App\Entity\Weapon\Weapon;
+use App\Infrastructure\Player\PlayerInterface;
 
 class Player implements PlayerInterface {
     private const BASE_SPEED = 100;
+
+    //TODO добавить скорость игроку 
     public function __construct(
         private int $id, 
         private int $roomId,

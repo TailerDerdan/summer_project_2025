@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Вход{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="styles/login.css">
+{% endblock %}
+
+{% block body %}
+<div>
+    <h1>#Название игры</h1>
+    <form method="POST" action="{{ path('login') }}" enctype="multipart/form-data">
+        <input type="text" name="nickName" required placeholder="NickName">
+        <input type="password" name="password" required placeholder="Password">
+        <button type="submit">Играть</button>
+        <a href="{{ path('registry_page') }}">Зарегаться</a>
+    </form>
+</div>
+{% endblock %}

@@ -4,7 +4,7 @@ declare(strict_types= 1);
 
 namespace App\Repository;
 
-use App\Entity\PlayRoom;
+use App\Entity\Room\PlayRoom;
 
 class PlayRoomTable
 {

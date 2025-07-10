@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profile Page{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="styles/login.css">
+{% endblock %}
+
+{% block body %}
+<div>
+    <h2>Профиль</h2>
+    <p>NickName: {{ user.nickName }}</p>
+    <a href="{{ path('main_page', {userId: user.userId}) }}">На главный экран</a>
+    <a href="/">Редактировать</a>
+</div>
+{% endblock %}
