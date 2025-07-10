@@ -6,19 +6,13 @@ namespace App\Entity;
 
 class User
 {
-    private ?int $userId;
-    private ?int $roomId;
-    private string $nickName;
-    private string $password;
-    private string $avatarPath;
-
-    public function __construct(?int $userId, ?int $roomId, string $nickName, string $password, string $avatarPath)
+    public function __construct(
+        private ?int $userId,
+        private ?int $roomId,
+        private string $nickName,
+        private string $password,
+        private string $avatarPath)
     {
-        $this->userId = $userId;
-        $this->roomId = $roomId;
-        $this->nickName = $nickName;
-        $this->password = $password;
-        $this->avatarPath = $avatarPath;
     }
 
     public function getUserId(): ?int

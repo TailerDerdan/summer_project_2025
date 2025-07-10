@@ -11,30 +11,15 @@ class PlayRoom
 {
     private const MaxSize = 6;
 
-    private ?int $id;
-    private string $name;
-    private string $gamemode;
-    private bool $isOpen;
-    private bool $isRunning;
-    private string $timeCreate;
-    private int $hostId;
-
     public function __construct(
-        ?int $id,
-        string $name,
-        string $gamemode,
-        bool $isOpen,
-        bool $isRunning,
-        string $timeCreate,
-        int $hostId)
+        private ?int $id,
+        private string $name,
+        private string $gamemode,
+        private bool $isOpen,
+        private bool $isRunning,
+        private string $timeCreate,
+        private int $hostId)
     {
-        $this->id = $id;
-        $this->name = $name;
-        $this->gamemode = $gamemode;
-        $this->isOpen = $isOpen;
-        $this->isRunning = $isRunning;
-        $this->timeCreate = $timeCreate;
-        $this->hostId = $hostId;
     }
 
     public function getId(): ?int
