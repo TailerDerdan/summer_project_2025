@@ -53,6 +53,54 @@ class PlayRoomRepository
         }
     }
 
+    public function editPlayRoom(PlayRoom $playRoom, int $playRoomId): void
+    {
+        $req = "
+        UPDATE `play_room`
+        SET
+            `room_name` = :room_name,
+            `room_gamemode` = :room_gamemode,
+            `room_open` = :room_open,
+            `room_running` = :room_running,
+            `time_create` = :time_create,
+            `host_id` = :host_id
+        WHERE `room_id` = :room_id,
+        ";
+
+        $stmt = ($this->getConn())->prepare($req);
+
+        $stmt->bindParam(':room_id', $playRoomId);
+        $stmt->bindParam(':room_name', $playRoom->getName());
+        $stmt->bindParam(':room_gamemode', $playRoom->getGamemode());
+        $stmt->bindParam(':room_open', $playRoom->isOpen());
+        $stmt->bindParam(':room_running', $playRoom->isRunning());
+        $stmt->bindParam(':time_create', $playRoom->getTimeCreate());
+        $stmt->bindParam(':host_id', $playRoom->getHostId());
+        $stmt->execute();
+
+        if ($stmt == false)
+        {
+            throw new \PDOException("Error editing play room");
+        }
+    }
+
+    public function deletePlayRoom(int $playRoomId): void
+    {
+        $req = "
+        DELETE FROM `play_room`
+        WHERE `room_id` = :room_id;
+        ";
+
+        $stmt = ($this->getConn())->prepare($req);
+        $stmt->bindParam(':room_id', $roomId);
+        $stmt->execute();
+
+        if ($stmt == false)
+        {
+            throw new \PDOException("Error deleting play room");
+        }
+    }
+
     public function getPlayRoomById(int $roomId): PlayRoom
     {
         $req = "
