@@ -3,9 +3,9 @@ declare (strict_types= 1);
 
 namespace App\Services;
 
-use App\Infrastructure\Player;
+use App\Entity\User\Player;
 
-class PlayHandler {
+class PlayerService implements PlayerServiceInterface {
     public function startAttack(Player $attacker, $defender): void {
         $weapon = $attacker->getCurrentWeapons();
         if (!$weapon->canFire()) {

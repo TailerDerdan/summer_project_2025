@@ -1,7 +1,7 @@
 <?php
 declare (strict_types= 1);
 
-namespace App\Entity;
+namespace App\Entity\Weapons;
 
 interface WeaponInterface {
     public function getType(): string;
@@ -12,10 +12,9 @@ interface WeaponInterface {
     public function getTimeBetweenBullet(): float;
     public function getTimeReload(): float;
     public function getAmmoCapacity(): int;
-
+    public function getCurrentAmmo(): int;
+    public function getTotalAmmo(): int;
     public function fire(): void;
     public function reload(): void;
     public function canFire(): bool;
-    public function getCurrentAmmo(): int;
-    public function getTotalAmmo(): int;
 }
