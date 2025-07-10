@@ -29,19 +29,20 @@ export const updateMovementPlayer = () => {
     distY *= Math.cos(playerDir * Math.PI / 180) * Math.cos(playerDir * Math.PI / 180);
     distX *= Math.cos(playerDir * Math.PI / 180) * Math.sin(playerDir * Math.PI / 180);
 
-    if ((playerDir > 70 && playerDir < 90) ||
-        (playerDir > 90 && playerDir < 110) ||
-        (playerDir > 250 && playerDir < 270) ||
-        (playerDir > 270 && playerDir < 290))
+    if ((playerDir > 65 && playerDir < 90) ||
+        (playerDir > 90 && playerDir < 115) ||
+        (playerDir > 245 && playerDir < 270) ||
+        (playerDir > 270 && playerDir < 305))
     {        
         if (distX >= 0 && distX <= 0.5)
         {
-            distX = Math.ceil(distX) * 0.6;
+            distX = Math.ceil(distX) * 0.8;
         }
         if (distX >= -0.5 && distX <= 0)
         {
-            distX = Math.floor(distX) * 0.6;
+            distX = Math.floor(distX) * 0.8;
         }
+        distY *= 2;
     }
 
     if (playerDir > 90 && playerDir < 270)
@@ -54,6 +55,9 @@ export const updateMovementPlayer = () => {
 
     distX *= speedPlayer;
     distY *= speedPlayer;
+
+    distX /= player.getWeapon().weight * 2;
+    distY /= player.getWeapon().weight * 2;
 
     if (keyDict.KeyW) 
     {

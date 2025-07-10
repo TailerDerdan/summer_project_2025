@@ -1,3 +1,4 @@
+import { Container } from '../collisions/collisions.js';
 import { InitAssaultRifle, TYPE_WEAPON, Weapon } from './../weapon/typeWeapons.js';
 
 export class Player
@@ -11,10 +12,11 @@ export class Player
         this.width = width;
         this.height = height;
         this.weapon = weapon;
+        this.container = new Container(width, height, x, y, dir);
     }
 
     getCenterX() { return this.x + this.width / 2; }
-    getCenterY() { return this.y + this.width / 2; }
+    getCenterY() { return this.y + this.height / 2; }
     getDir() { return this.dir; }
     getWidth() { return this.width; }
     getHeight() { return this.height; }
@@ -35,12 +37,18 @@ export class Player
         ctx.rotate(this.getDir() * Math.PI / 180);
 
         ctx.fillStyle = 'black';
-        ctx.fillRect(-this.getWidth() / 2, -this.getHeight() / 2, this.getWidth(), this.getWidth());
+        ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
 
         ctx.restore();
+
+        this.container.updateDir(this.dir);
+        this.container.updateX(this.x);
+        this.container.updateY(this.y);
+
+        this.container.drawContainer(ctx);
     }
 }
 
 const weapon1 = new Weapon(InitAssaultRifle, TYPE_WEAPON.ASSAULT_RIFLE);
 
-export const player = new Player(400, 400, 2, 0, 30, 40, weapon1);
+export const player = new Player(400, 400, 8, 0, 30, 40, weapon1);

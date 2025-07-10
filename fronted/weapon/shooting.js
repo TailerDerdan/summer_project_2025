@@ -1,6 +1,7 @@
 import { player } from './../player/player.js';
 import { TYPE_WEAPON, InitAssaultRifle, InitShotgun, InitSniperRifle, Weapon, Bullet } from './typeWeapons.js';
 import { ctx } from  './../canvas.js';
+import { enemy1 } from '../enemy/enemy.js';
 
 const bullets = [];
 
@@ -50,11 +51,11 @@ const updateBullets = (event) => {
     distX *= speedBullet;
     distY *= speedBullet;
 
-    const bullet = new Bullet(player.getX(), player.getY(), speedBullet, dir, distX, distY);
+    const bullet = new Bullet(player.getX(), player.getY(), speedBullet, dir, distX, distY, player.getWeapon().fireRange);
     bullets.push(bullet);
 }
 
-function throttle(func, delay)
+export function throttle(func, delay)
 {
     let isThrottled = false;
     let waitingArgs;
@@ -95,7 +96,23 @@ function throttleUpdateBullets(event)
 
 export function updateMovementBullets()
 {
-    bullets.forEach((elem) => {
+    bullets.forEach((elem, index) => {
+
+        let remainingDist = elem.getRemainingDist(elem.getFireRange());
+
+        if (remainingDist >= -4 && remainingDist <= 4)
+        {
+            let obj = elem;
+            bullets.splice(index, 1);
+            obj = null;
+        }
+
+        if (enemy1.container.isTwoContainerConcerns(elem.container))
+        {
+            let obj = elem;
+            bullets.splice(index, 1);
+            obj = null;
+        }
 
         elem.setY(elem.getY() - elem.getDistY());
         elem.setX(elem.getX() + elem.getDistX());
