@@ -8,9 +8,42 @@
 
 {% block body %}
 <div>
-    <h1>#Название игры</h1>
-    <a href="{{ path('profile', {id: user.userId}) }}">
-        <img src="" alt="Профиль">
-    </a>
+    <header>
+        <h1>#Название игры</h1>
+        <div>
+            <a href="{{ path('profile', {id: user.userId}) }}">
+                <img src="{{ user.avatarPath }}" alt="Профиль" class="avatar">
+                <span>{{ user.nickName }}</span>
+            </a>
+            <a href="{{ path('logout') }}">Выйти</a>
+        </div>
+    </header>
+
+    <div>
+        <h2>Доступные комнаты:</h2>
+        
+        {% if rooms is empty %}
+            <p class="no-rooms">Нет доступных комнат</p>
+        {% else %}
+            <div>
+                {% for room in rooms %}
+                    <div>
+                        <h3>{{ room.name }}</h3>
+                        <p>Режим: {{ room.gameMode|trans }}</p>
+                        <p>Игроков: {{ room.playersCount }}/{{ room.maxPlayers }}</p>
+                        <div>
+                            {% if room.isOpen %}
+                                <a href="{{ path('room_join', {id: room.id}) }}">Присоединиться</a>
+                            {% else %}
+                                <span >Приватная</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <a href="{{ path('room_create_page') }}">Создать комнату</a>
+    </div>
 </div>
 {% endblock %}

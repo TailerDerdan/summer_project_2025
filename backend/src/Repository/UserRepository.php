@@ -8,31 +8,31 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use App\Infrastructure\User\UserRepositoryInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 class UserRepository extends ServiceEntityRepository implements UserRepositoryInterface {
-    private EntityRepository $userRepository;
-    public function __construct(private EntityManagerInterface $entityManager) {
-        $this->userRepository = $entityManager->getRepository(User::class);
+    public function __construct(ManagerRegistry $managerRegistry) {
+        parent::__construct($managerRegistry, User::class);
     }
 
     public function save(array $userData): int {
+        $passwordHash = password_hash($userData['password'] , PASSWORD_DEFAULT);
         $user = new User(
             $userData['userId'] ?? null,
             $userData['roomId'] ?? null,
             $userData['nickName'],
-            $userData['password'],
-            $userData['avatarPath'] ?? null
+            $passwordHash,
+            $userData['avatarPath'] ?? null,
         );
-        $this->entityManager->contains($user);
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $this->getEntityManager()->persist($user);
+        $this->getEntityManager()->flush();
         return $user->getUserId();
     }
     public function getById(int $userId): ?User {
-        return $this->userRepository->find($userId);
+        return $this->find($userId);
     }
     public function get(string $nickName): ?User {
-        return $this->userRepository->findOneBy(['nickName' => $nickName]);
+        return $this->findOneBy(['nickName' => $nickName]);
     }
     public function saveAvatarPath(int $userId, string $avatarPath): bool {
         return true;

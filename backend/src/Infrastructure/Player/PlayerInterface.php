@@ -11,6 +11,7 @@ interface PlayerInterface {
     public function getName(): string;
     public function getHealth(): int;
     public function getCurrentSpeed(): int;
+    public function getSpeed(): int;
     public function getCurrentWeapon(): Weapon;
     public function takeDamage(): void;
     public function switchWeapon(string $weaponType): void;

@@ -1,29 +1,8 @@
-login_page:
-    path: /login
-    methods: GET
-    controller: App\Controller\AppController::loginPage
-
-registry_page:
-    path: /registry
-    methods: GET
-    controller: App\Controller\AppController::registryPage
-
-login:
-    path: /login
-    methods: POST
-    controller: App\Controller\AppController::login
-
-registry:
-    path: /registry
-    methods: POST
-    controller: App\Controller\AppController::registry
-
-main_page:
-    path: /main_page/{userId}
-    methods: GET
-    controller: App\Controller\AppController::mainPage
-
-profile:
-    path: /main_page/profile/{id}
-    methods: GET
-    controller: App\Controller\UserController::showProfile
+auth_routes:
+    resource: routes/auth.yaml
+main_routes:
+    resource: routes/main.yaml
+uses_routes:
+    resource: routes/user.yaml
+room_routes:
+    resource: routes/room.yaml

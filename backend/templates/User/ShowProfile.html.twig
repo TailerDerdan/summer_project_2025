@@ -10,6 +10,10 @@
 <div>
     <h2>Профиль</h2>
     <p>NickName: {{ user.nickName }}</p>
+    <p>Games: {{ user.countGames }}</p>
+    <p>Wins: {{ user.countWins }}</p>
+    <p>Kills: {{ user.countKills }}</p>
+    <p>Deaths: {{ user.countDeaths }}</p>
     <a href="{{ path('main_page', {userId: user.userId}) }}">На главный экран</a>
     <a href="/">Редактировать</a>
 </div>

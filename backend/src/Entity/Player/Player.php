@@ -17,7 +17,8 @@ class Player implements PlayerInterface {
         private int $health, 
         private Weapon $currentWeapon,
         private array $weapons = [],
-        private int $currentSpeed
+        private int $currentSpeed,
+        private int $speed,
     ) {}
 
     public function getId(): int { 
@@ -37,6 +38,9 @@ class Player implements PlayerInterface {
     }
     public function getCurrentWeapon(): Weapon { 
         return $this->currentWeapon; 
+    }
+    public function getSpeed(): int { 
+        return $this->speed; 
     }
 
     public function takeDamage(): void {
