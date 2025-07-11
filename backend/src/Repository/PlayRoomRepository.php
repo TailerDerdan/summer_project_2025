@@ -101,7 +101,7 @@ class PlayRoomRepository
         }
     }
 
-    public function getPlayRoomById(int $roomId): PlayRoom
+    public function getPlayRoomById(int $roomId): ?PlayRoom
     {
         $req = "
         SELECT *
@@ -134,9 +134,9 @@ class PlayRoomRepository
     }
 
     /**
-     * @return array [PlayRoom]
+     * @return ?array [PlayRoom]
      */
-    public function getAllPlayRooms(): array
+    public function getAllPlayRooms(): ?array
     {
         $req = "
         SELECT *
@@ -146,26 +146,24 @@ class PlayRoomRepository
         $stmt = ($this->getConn())->prepare($req);
         $stmt->execute();
 
-        $result = $stmt->fetch(\PDO::FETCH_ASSOC); //array of assoc array
-        if ($result !== false)
-        {
+        if ($stmt !== false) {
+            $roomRows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
             $rooms = [];
-            foreach ($result as $row) {
+            foreach ($roomRows as $roomRow) {
                 $room = new PlayRoom(
-                    $row['room_id'],
-                    $row['room_name'],
-                    $row['room_gamemode'],
-                    $row['room_open'],
-                    $row['room_running'],
-                    $row['time_create'],
-                    $row['host_id']
+                    $roomRow['room_id'],
+                    $roomRow['room_name'],
+                    $roomRow['room_gamemode'],
+                    $roomRow['room_open'],
+                    $roomRow['room_running'],
+                    $roomRow['time_create'],
+                    $roomRow['host_id']
                 );
                 $rooms[] = $room;
             }
             return $rooms;
-        }
-        else
-        {
+        } else {
             return throw new \PDOException("Error getting play rooms");
         }
     }

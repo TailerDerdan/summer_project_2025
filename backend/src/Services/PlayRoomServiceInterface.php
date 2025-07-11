@@ -8,5 +8,10 @@ use App\Entity\Room\PlayRoom;
 use App\Entity\User\User;
 
 interface PlayRoomServiceInterface {
+    public function createPlayRoom($roomParams): int;
+    public function updatePlayRoom($roomParams, $roomId): int;
+    public function deletePlayRoom($roomId): void;
+    public function getRoomById($roomId): ?PlayRoom;
+    public function getAllRooms(): ?array;
 
 }

@@ -50,4 +50,29 @@ class PlayRoom
     {
         return $this->hostId;
     }
+
+
+    public function setName(string $newName): void
+    {
+        $this->name = $newName;
+    }
+
+    public function setGamemode(string $newGamemode): void
+    {
+        $this->gamemode = $newGamemode;
+    }
+
+    public function setOpen(bool $newOpenState): void
+    {
+        $this->isOpen = $newOpenState;
+    }
+
+    public function setRunning(bool $newRunningState): void
+    {
+        $this->isRunning = $newRunningState;
+    }
+    public function setHostId(int $newHostId): void
+    {
+        $this->hostId = $newHostId;
+    }
 }
