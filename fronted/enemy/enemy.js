@@ -2,8 +2,9 @@ import { Container } from "../collisions/collisions.js";
 
 class Enemy
 {
-    constructor(x, y, width, height, dir)
+    constructor(id, x, y, width, height, dir)
     {
+        this.id = id;
         this.x = x;
         this.y = y;
         this.width = width;
@@ -35,4 +36,13 @@ class Enemy
     }
 }
 
-export const enemy1 = new Enemy(600, 600, 40, 80, 1);
+export const enemies = [];
+
+export function createEnemies(enemiesFrowWS)
+{
+    enemiesFrowWS.forEach((elem, index) => {
+        
+        const enemy = new Enemy(elem.id, elem.x, elem.y, 30, 40, elem.dir);
+        enemies.push(enemy);
+    });
+}

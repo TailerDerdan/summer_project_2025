@@ -1,7 +1,6 @@
 import { player } from './../player/player.js';
 import { TYPE_WEAPON, InitAssaultRifle, InitShotgun, InitSniperRifle, Weapon } from './typeWeapons.js';
 import { ctx } from  './../canvas.js';
-import { enemy1 } from '../enemy/enemy.js';
 import { Bullet } from './bullet.js';
 import { camera } from '../camera/camera.js';
 import { getDir, inverseDir } from '../player/changeDir.js';
@@ -83,12 +82,12 @@ export function updateMovementBullets()
             obj = null;
         }
 
-        if (enemy1.container.isTwoContainerConcerns(elem.container))
-        {
-            let obj = elem;
-            bullets.splice(index, 1);
-            obj = null;
-        }
+        // if (enemy1.container.isTwoContainerConcerns(elem.container))
+        // {
+        //     let obj = elem;
+        //     bullets.splice(index, 1);
+        //     obj = null;
+        // }
 
         elem.setY(elem.getY() - elem.getDistY());
         elem.setX(elem.getX() + elem.getDistX());
