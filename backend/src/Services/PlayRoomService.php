@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Entity\Room\PlayRoom;
+use App\Entity\User\Player;
 use App\Entity\User\User;
 use http\Exception\BadMessageException;
 use App\Repository\PlayRoomRepository;
@@ -107,6 +108,24 @@ class PlayRoomService implements PlayRoomServiceInterface
             return $playRooms;
         } catch (\Exception $e) {
             throw new BadMessageException($e->getMessage("Не удалось найти комнаты"));
+        }
+    }
+
+    public function addUserInRoom(int $userId, int $roomId): void
+    {
+        try {
+            $this->roomHandlerRepository->saveUserInRoomById($userId, $roomId);
+        } catch (\Exception $e) {
+            throw new BadMessageException($e->getMessage("Не удалось зайти в комнату"));
+        }
+    }
+
+    public function removeUserFromRoom(int $userId): void
+    {
+        try {
+            $this->roomHandlerRepository->deleteUserFromRoom($userId);
+        } catch (\Exception $e) {
+            throw new BadMessageException($e->getMessage("Не удалось выйти/удалить игрока из комнаты"));
         }
     }
 }
