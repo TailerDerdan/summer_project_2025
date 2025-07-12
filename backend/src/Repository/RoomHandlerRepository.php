@@ -107,6 +107,26 @@ class RoomHandlerRepository implements RoomHandlerRepositoryInterface
         }
     }
 
+    public function getHostIdByRoomId(int $playRoomId): int
+    {
+        $req = "
+        SELECT *
+        FROM `play_room`
+        WHERE `room_id` = :room_id;
+        ";
+
+        $stmt = ($this->getConn())->prepare($req);
+        $stmt->bindParam(':room_id', $playRoomId);
+        $stmt->execute();
+
+        if ($stmt !== false) {
+            $hostId = $stmt->fetchAll(\PDO::FETCH_ASSOC)[0]["host_id"];
+            return $hostId;
+        } else {
+            return throw new \PDOException("Error getting host information");
+        }
+    }
+
     public function deleteUserFromRoom(int $userId): void
     {
         $req = "

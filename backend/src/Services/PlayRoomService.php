@@ -43,8 +43,8 @@ class PlayRoomService implements PlayRoomServiceInterface
             try {
                 $roomId = $this->playRoomRepository->savePlayRoom($playRoom);
                 return $roomId;
-            } catch (\Exception $e) {
-                throw new BadMessageException($e->getMessage("Невозможно создать комнату"));
+            } catch (\Exception) {
+                return throw new BadMessageException("Невозможно создать комнату");
             }
         }
         else {
@@ -72,8 +72,8 @@ class PlayRoomService implements PlayRoomServiceInterface
                 $this->playRoomRepository->editPlayRoom($playRoom, $roomId);
 
                 return $playRoom->getId();
-            } catch (\Exception $e) {
-                throw new BadMessageException($e->getMessage("Не удалось отредактировать комнату: комната не найдена"));
+            } catch (\Exception) {
+                return throw new BadMessageException("Не удалось отредактировать комнату: комната не найдена");
             }
         }
         else {
@@ -84,8 +84,8 @@ class PlayRoomService implements PlayRoomServiceInterface
     {
         try {
             $this->playRoomRepository->deletePlayRoom($roomId);
-        } catch (\Exception $e) {
-            throw new BadMessageException($e->getMessage("Не удалось удалить комнату: комната не найдена"));
+        } catch (\Exception) {
+            throw new BadMessageException("Не удалось удалить комнату: комната не найдена");
         }
     }
     public function getRoomById($roomId): ?PlayRoom
@@ -93,8 +93,8 @@ class PlayRoomService implements PlayRoomServiceInterface
         try {
             $playRoom = $this->playRoomRepository->getPlayRoomById($roomId);
             return $playRoom;
-        } catch (\Exception $e) {
-            throw new BadMessageException($e->getMessage("Не удалось найти комнату: комната не найдена"));
+        } catch (\Exception) {
+            return throw new BadMessageException("Не удалось найти комнату: комната не найдена");
         }
     }
 
@@ -106,8 +106,8 @@ class PlayRoomService implements PlayRoomServiceInterface
         try {
             $playRooms = $this->playRoomRepository->getAllPlayRooms();
             return $playRooms;
-        } catch (\Exception $e) {
-            throw new BadMessageException($e->getMessage("Не удалось найти комнаты"));
+        } catch (\Exception) {
+            return throw new BadMessageException("Не удалось найти комнаты");
         }
     }
 
@@ -115,8 +115,8 @@ class PlayRoomService implements PlayRoomServiceInterface
     {
         try {
             $this->roomHandlerRepository->saveUserInRoomById($userId, $roomId);
-        } catch (\Exception $e) {
-            throw new BadMessageException($e->getMessage("Не удалось зайти в комнату"));
+        } catch (\Exception) {
+            throw new BadMessageException("Не удалось зайти в комнату");
         }
     }
 
@@ -124,8 +124,8 @@ class PlayRoomService implements PlayRoomServiceInterface
     {
         try {
             $this->roomHandlerRepository->deleteUserFromRoom($userId);
-        } catch (\Exception $e) {
-            throw new BadMessageException($e->getMessage("Не удалось выйти/удалить игрока из комнаты"));
+        } catch (\Exception) {
+            throw new BadMessageException("Не удалось выйти/удалить игрока из комнаты");
         }
     }
 }
