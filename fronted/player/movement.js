@@ -15,7 +15,7 @@ const updateKeyDict = (event) => {
     }
 };
 
-export const updateMovementPlayer = () => {
+export const updateMovementPlayer = (xView, yView) => {
 
     let playerDir = player.getDir();
 
@@ -25,25 +25,13 @@ export const updateMovementPlayer = () => {
     let distY = keyDict.KeyW && (keyDict.KeyA || keyDict.KeyD) ||
             keyDict.KeyS && (keyDict.KeyA || keyDict.KeyD) ? SQRT_2 : MAX_DIST;
 
-    
     distY *= Math.cos(playerDir * Math.PI / 180) * Math.cos(playerDir * Math.PI / 180);
     distX *= Math.cos(playerDir * Math.PI / 180) * Math.sin(playerDir * Math.PI / 180);
 
-    if ((playerDir > 65 && playerDir < 90) ||
-        (playerDir > 90 && playerDir < 115) ||
-        (playerDir > 245 && playerDir < 270) ||
-        (playerDir > 270 && playerDir < 305))
-    {        
-        if (distX >= 0 && distX <= 0.5)
-        {
-            distX = Math.ceil(distX) * 0.8;
-        }
-        if (distX >= -0.5 && distX <= 0)
-        {
-            distX = Math.floor(distX) * 0.8;
-        }
-        distY *= 2;
-    }
+    let diag = Math.sqrt(distX * distX + distY * distY);
+
+    distX /= diag;
+    distY /= diag;
 
     if (playerDir > 90 && playerDir < 270)
     {
@@ -51,37 +39,16 @@ export const updateMovementPlayer = () => {
         distY *= -1;
     }
 
-    let speedPlayer = player.getSpeed();
-
-    distX *= speedPlayer;
-    distY *= speedPlayer;
-
-    distX /= player.getWeapon().weight * 2;
-    distY /= player.getWeapon().weight * 2;
-
-    if (keyDict.KeyW) 
-    {
-        player.setY(player.getY() - distY);
-        player.setX(player.getX() + distX);
-    }
-    if (keyDict.KeyS)
-    {
-        player.setY(player.getY() + distY);
-        player.setX(player.getX() - distX);
+    const dist = {
+        distX: distX,
+        distY: distY
     }
 
-    if (keyDict.KeyD) 
-    {
-        player.setY(player.getY() + distY);
-        player.setX(player.getX() + distX);
-    }
-    if (keyDict.KeyA)
-    {
-        player.setY(player.getY() - distY);
-        player.setX(player.getX() - distX);
-    }
+    player.changeDistXYByPhysic(dist);
 
-    player.drawPlayer(ctx);
+    player.updatePostion(dist.distX, dist.distY, keyDict);
+
+    player.drawPlayer(ctx, xView, yView);
 }
 
 document.addEventListener('keydown', updateKeyDict);

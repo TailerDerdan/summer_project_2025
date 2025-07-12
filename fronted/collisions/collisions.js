@@ -8,8 +8,8 @@ class Vertex
 
     isPointConcerns(container)
     {
-        const sinAngle = Math.sin(-container.dir * Math.PI / 180);
-        const cosAngle = Math.cos(-container.dir * Math.PI / 180);
+        const sinAngle = Math.sin(container.dir * Math.PI / 180);
+        const cosAngle = Math.cos(container.dir * Math.PI / 180);
 
         const localX = (container.xCoord - this.x) * cosAngle - (container.yCoord - this.y) * sinAngle;
         const localY = (container.xCoord - this.x) * sinAngle + (container.yCoord - this.y) * cosAngle;
@@ -57,31 +57,19 @@ export class Container
 
         const countVertexOnSide = 6;
 
-        for (let iter = 0; iter < 4; iter++)
+        for (let iterSide = 1; iterSide < countVertexOnSide; iterSide++)
         {
-            for (let iterSide = 1; iterSide < countVertexOnSide; iterSide++)
-            {
-                if (iter == 0)
-                {
-                    const vertexTopSide = new Vertex(this.xCoord + this.width / countVertexOnSide * iterSide, this.yCoord);
-                    this.vertices.push(vertexTopSide);
-                }
-                if (iter == 1)
-                {
-                    const vertexRightSide = new Vertex(this.xCoord + this.width, this.yCoord + this.height / countVertexOnSide * iterSide);
-                    this.vertices.push(vertexRightSide);
-                }
-                if (iter == 2)
-                {
-                    const vertexBottomSide = new Vertex(this.xCoord + this.width / countVertexOnSide * iterSide, this.yCoord + this.height);
-                    this.vertices.push(vertexBottomSide);
-                }
-                if (iter == 3)
-                {
-                    const vertexLeftSide = new Vertex(this.xCoord, this.yCoord + this.height / countVertexOnSide * iterSide);
-                    this.vertices.push(vertexLeftSide);
-                }
-            }
+            const vertexTopSide = new Vertex(this.xCoord + this.width / countVertexOnSide * iterSide, this.yCoord);
+            this.vertices.push(vertexTopSide);
+
+            const vertexRightSide = new Vertex(this.xCoord + this.width, this.yCoord + this.height / countVertexOnSide * iterSide);
+            this.vertices.push(vertexRightSide);
+
+            const vertexBottomSide = new Vertex(this.xCoord + this.width / countVertexOnSide * iterSide, this.yCoord + this.height);
+            this.vertices.push(vertexBottomSide);
+
+            const vertexLeftSide = new Vertex(this.xCoord, this.yCoord + this.height / countVertexOnSide * iterSide);
+            this.vertices.push(vertexLeftSide);
         }
     }
     
@@ -106,14 +94,7 @@ export class Container
 
     drawContainer(ctx)
     {
-        ctx.save();
-
-        ctx.translate(this.getCenterX(), this.getCenterY());
-        ctx.rotate(this.dir * Math.PI / 180);
-
         ctx.strokeStyle = 'rgba(9, 255, 0, 1)';
         ctx.strokeRect(-this.width / 2, -this.height / 2, this.width, this.height);
-
-        ctx.restore();
     }
 }

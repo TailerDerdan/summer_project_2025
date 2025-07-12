@@ -29,26 +29,63 @@ export class Player
     setX(x) { this.x = x; }
     setY(y) { this.y = y; }
 
-    drawPlayer(ctx) {
+    drawPlayer(ctx, xView, yView) {
         
         ctx.save();
 
-        ctx.translate(this.getCenterX(), this.getCenterY());
-        ctx.rotate(this.getDir() * Math.PI / 180);
+        let screenX = this.x - xView;
+        let screenY = this.y - yView;
+
+        ctx.translate(screenX + this.width / 2, screenY + this.height / 2);
+        ctx.rotate(this.dir * Math.PI / 180);
 
         ctx.fillStyle = 'black';
-        ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
-
-        ctx.restore();
+        ctx.fillRect((-this.width / 2), (-this.height / 2), this.width, this.height);
 
         this.container.updateDir(this.dir);
         this.container.updateX(this.x);
         this.container.updateY(this.y);
 
         this.container.drawContainer(ctx);
+        
+        ctx.restore();
+    }
+
+    updatePostion(distX, distY, keyDict)
+    {
+        if (keyDict.KeyW) 
+        {
+            this.y -= distY;
+            this.x += distX;
+        }
+        if (keyDict.KeyS)
+        {
+            this.y += distY;
+            this.x -= distX;
+        }
+
+        if (keyDict.KeyD) 
+        {
+            this.y += distX;
+            this.x += distY;
+        }
+        if (keyDict.KeyA)
+        {
+            this.y -= distX;
+            this.x -= distY;
+        }
+    }
+
+    changeDistXYByPhysic(dist)
+    {
+        dist.distX *= this.speed;
+        dist.distY *= this.speed;
+    
+        // dist.distX /= this.weapon.weight * 2;
+        // dist.distY /= this.weapon.weight * 2;
     }
 }
 
 const weapon1 = new Weapon(InitAssaultRifle, TYPE_WEAPON.ASSAULT_RIFLE);
 
-export const player = new Player(400, 400, 8, 0, 30, 40, weapon1);
+export const player = new Player(400, 400, 3, 0, 30, 40, weapon1);

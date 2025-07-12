@@ -1,7 +1,10 @@
 import { player } from './../player/player.js';
-import { TYPE_WEAPON, InitAssaultRifle, InitShotgun, InitSniperRifle, Weapon, Bullet } from './typeWeapons.js';
+import { TYPE_WEAPON, InitAssaultRifle, InitShotgun, InitSniperRifle, Weapon } from './typeWeapons.js';
 import { ctx } from  './../canvas.js';
 import { enemy1 } from '../enemy/enemy.js';
+import { Bullet } from './bullet.js';
+import { camera } from '../camera/camera.js';
+import { getDir, inverseDir } from '../player/changeDir.js';
 
 const bullets = [];
 
@@ -9,49 +12,29 @@ const updateBullets = (event) => {
 
     if (!player.getWeapon()) return;
 
-    const xMouse = event.clientX;
-    const yMouse = event.clientY;
-
-    let dir = Math.atan2((yMouse - player.getCenterY()), (xMouse - player.getCenterX()));
-    dir = dir * 180 / Math.PI;
-    
-    dir += 90;
-
-    if (dir < 0)
-    {
-        dir += 360;
+    const objForMovement = {
+        dir: 0,
+        distX: 0,
+        distY: 0
     }
 
-    let distY = Math.cos(dir * Math.PI / 180) * Math.cos(dir * Math.PI / 180);
-    let distX = Math.cos(dir * Math.PI / 180) * Math.sin(dir * Math.PI / 180);
+    objForMovement.dir = player.dir;
 
-    if (dir > 90 && dir < 270)
-    {
-        distX *= -1;
-        distY *= -1;
-    }
+    objForMovement.distY = Math.cos(objForMovement.dir * Math.PI / 180) * Math.cos(objForMovement.dir * Math.PI / 180);
+    objForMovement.distX = Math.cos(objForMovement.dir * Math.PI / 180) * Math.sin(objForMovement.dir * Math.PI / 180);
 
-    if ((dir > 60 && dir < 90) ||
-        (dir > 90 && dir < 120) ||
-        (dir > 240 && dir < 270) ||
-        (dir > 270 && dir < 300))
-    {        
-        if (distX >= 0 && distX <= 0.5)
-        {
-            distX = Math.ceil(distX) * 0.8;
-        }
-        if (distX >= -0.5 && distX <= 0)
-        {
-            distX = Math.floor(distX) * 0.8;
-        }
-    }
+    let diag = Math.sqrt(objForMovement.distX * objForMovement.distX + objForMovement.distY * objForMovement.distY);
+    objForMovement.distX /= diag;
+    objForMovement.distY /= diag;
+
+    inverseDir(objForMovement);
 
     let speedBullet = player.getWeapon().speedBullet;
 
-    distX *= speedBullet;
-    distY *= speedBullet;
+    objForMovement.distX *= speedBullet;
+    objForMovement.distY *= speedBullet;
 
-    const bullet = new Bullet(player.getX(), player.getY(), speedBullet, dir, distX, distY, player.getWeapon().fireRange);
+    const bullet = new Bullet(player.getX(), player.getY(), speedBullet, objForMovement.dir, objForMovement.distX, objForMovement.distY, player.getWeapon().fireRange);
     bullets.push(bullet);
 }
 
@@ -87,13 +70,6 @@ export function throttle(func, delay)
     }
 }
 
-let throttleUpd = throttle(updateBullets, player.getWeapon().timeBetweenBul * 1000);
-
-function throttleUpdateBullets(event)
-{
-    throttleUpd(event);
-}
-
 export function updateMovementBullets()
 {
     bullets.forEach((elem, index) => {
@@ -117,8 +93,23 @@ export function updateMovementBullets()
         elem.setY(elem.getY() - elem.getDistY());
         elem.setX(elem.getX() + elem.getDistX());
 
-        elem.drawBullet(ctx);
+        elem.drawBullet(ctx, camera.xView, camera.yView);
     });
 }
 
-document.addEventListener('mousedown', throttleUpdateBullets);
+// let throttleUpd = throttle(updateBullets, player.getWeapon().timeBetweenBul * 1000);
+
+// function throttleUpdateBullets(event)
+// {
+//     throttleUpd(event);
+// }
+
+// document.addEventListener('mousedown', throttleUpdateBullets);
+
+let intervalId = 0;
+document.addEventListener('mousedown', (event) => {
+    intervalId = setInterval(() => {updateBullets(event)}, player.getWeapon().timeBetweenBul * 1000);
+})
+document.addEventListener('mouseup', () => {
+    clearInterval(intervalId);
+})
