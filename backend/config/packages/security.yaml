@@ -1,18 +1,18 @@
 # security:
 #     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
 #     password_hashers:
-#         App\Entity\User\User: 'auto' # <----
-#         App\Security\SecurityUser: 'auto' # <-----
+#         app\Entity\User\User: 'auto' # <----
+#         app\Security\SecurityUser: 'auto' # <-----
 
 #         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 #     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
 #     providers:
 #         #users_in_memory: { memory: null }
 #         security_user_provider:
-#             id: App\Security\UserProvider
+#             id: app\Security\UserProvider
 
 #         app_user_provider:
-#             id: App\Entity\User\User
+#             id: app\Entity\User\User
 
 #     firewalls:
 #         dev:
@@ -21,8 +21,8 @@
 #         main:
 #             lazy: true
 #             #provider: users_in_memory
-#             provider: security_user_provider 
-#             custom_authenticator: App\Security\UserAuthenticator #<-----
+#             provider: security_user_provider
+#             custom_authenticator: app\Security\UserAuthenticator #<-----
 #             logout:
 #                 path: logout
 #                 target: login
@@ -58,13 +58,13 @@
 
 security:
     password_hashers:
-        # App\Entity\User\User: 'auto'
+        # app\Entity\User\User: 'auto'
         App\Security\SecurityUser: 'auto'
 
     providers:
         # app_user_provider:
         #     entity:
-        #         class: App\Entity\User\User
+        #         class: app\Entity\User\User
         #         property: nickName
         security_user_provider:
             id: App\Security\UserProvider

@@ -1,31 +1,31 @@
 login:
     path: /auth/login
     methods: GET
-    # controller: App\Controller\AuthController::loginPage
-    controller: App\Controller\SecurityController::login
+    # controller: app\Controller\AuthController::loginPage
+    controller: app\Controller\SecurityController::login
 
 
 registry:
     path: /auth/registry
     methods: GET
-    #controller: App\Controller\AuthController::registryPage
-    controller: App\Controller\SecurityController::registry
-    
+    #controller: app\Controller\AuthController::registryPage
+    controller: app\Controller\SecurityController::registry
+
 login_Proc:
     path: /auth/login
     methods: POST
-    #controller: App\Controller\AuthController::login
-    controller: App\Controller\SecurityController::loginProc
+    #controller: app\Controller\AuthController::login
+    controller: app\Controller\SecurityController::loginProc
 
 
 registry_Proc:
     path: /auth/registry
     methods: POST
-    #controller: App\Controller\AuthController::registry
-    controller: App\Controller\SecurityController::registryProc
+    #controller: app\Controller\AuthController::registry
+    controller: app\Controller\SecurityController::registryProc
 
 logout:
     path: /auth/logout
     methods: GET
-    #controller: App\Controller\AuthController::logout
-    controller: App\Controller\SecurityController::logout
+    #controller: app\Controller\AuthController::logout
+    controller: app\Controller\SecurityController::logout

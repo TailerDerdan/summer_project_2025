@@ -1,7 +1,37 @@
-
 services:
+  web_local:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./config/nginx/nginx_server.conf:/etc/nginx/conf.d/default.conf
+  app_local:
+    build:
+      dockerfile: ./docker/Dockerfile
+    volumes:
+      - /var/www/html/vendor
+      - ./:/var/www/html
+    env_file: .env
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}" ]
+      retries: 3
+      timeout: 5s
+
+  db_local:
+    image: mysql:8.0
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: summer_project_2025_db
+      MYSQL_USER: vadimpatrushev
+      MYSQL_PASSWORD: qwerty
+
 ###> doctrine/doctrine-bundle ###
-  database:
+  database_local:
     image: postgres:${POSTGRES_VERSION:-16}-alpine
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-app}
@@ -18,8 +48,20 @@ services:
       # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       # - ./docker/db/data:/var/lib/postgresql/data:rw
 ###< doctrine/doctrine-bundle ###
+  ws_local: # Новый сервис для вебсокетов
+    build:
+      context: ../websocket  # Директория с Dockerfile для Go
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"  # Пробрасываем порт вебсокет-сервера
+    environment:
+      - WS_PORT=8080
+    depends_on:
+      - db  # Если нужно дождаться БД
 
 volumes:
 ###> doctrine/doctrine-bundle ###
   database_data:
+
+  mysql_data:
 ###< doctrine/doctrine-bundle ###

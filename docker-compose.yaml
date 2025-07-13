@@ -1,0 +1,94 @@
+services:
+  # PHP Symfony Backend
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    expose:
+      - "9000"
+    volumes:
+      - ./backend:/var/www/backend
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}
+    depends_on:
+      - db
+    networks:
+      - app_net
+
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_net
+
+  # Go WebSocket Server
+  ws:
+    build:
+      context: ./websocket
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - WS_PORT=/ws
+    depends_on:
+      - db
+    networks:
+      - app_net
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+#    ports:
+#      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    depends_on:
+      - api
+      - ws
+    networks:
+      - app_net
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"  # Внешний порт 8081, чтобы не конфликтовать с frontend (80)
+    volumes:
+      - ./backend/public:/var/www/backend/public  # Монтирование PHP-файлов
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./frontend:/usr/share/nginx/html
+    depends_on:
+      - api
+      - ws
+    networks:
+      - app_net
+
+volumes:
+  mysql_data:
+
+networks:
+  app_net:
+    driver: bridge
