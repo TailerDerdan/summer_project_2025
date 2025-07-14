@@ -1,0 +1,4 @@
+main_page:
+    path: /main
+    methods: GET
+    controller: app\Controller\MainController::mainPage

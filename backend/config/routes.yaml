@@ -1,1 +1,8 @@
-
+auth_routes:
+    resource: routes/auth.yaml
+main_routes:
+    resource: routes/main.yaml
+uses_routes:
+    resource: routes/user.yaml
+room_routes:
+    resource: routes/room.yaml

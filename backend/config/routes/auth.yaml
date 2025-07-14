@@ -1,0 +1,26 @@
+login:
+    path: /auth/login
+    methods: GET
+    controller: App\Controller\SecurityController::login
+
+
+registry:
+    path: /auth/registry
+    methods: GET
+    controller: App\Controller\SecurityController::registry
+
+login_Proc:
+    path: /auth/login
+    methods: POST
+    controller: App\Controller\SecurityController::loginProc
+
+
+registry_Proc:
+    path: /auth/registry
+    methods: POST
+    controller: App\Controller\SecurityController::registryProc
+
+logout:
+    path: /auth/logout
+    methods: GET
+    controller: App\Controller\SecurityController::logout

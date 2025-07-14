@@ -4,7 +4,7 @@ declare(strict_types= 1);
 
 namespace App\Repository;
 
-use App\Entity\PlayRoom;
+use App\Entity\Room\PlayRoom;
 
 class PlayRoomTable
 {
@@ -27,29 +27,26 @@ class PlayRoomTable
 
     public function savePlayRoom(PlayRoom $playRoom): int
     {
-        $req = "
-        INSERT INTO `play_room` (`room_id`, `room_name`, `room_gamemode`, `room_open`, `room_running`, `time_create`, `host_id`)
-        VALUES (:room_id, :room_name, :room_gamemode, :room_open, :room_running, :time_create, :host_id)
-        ";
+        try {
+            $req = "
+            INSERT INTO `play_room` (`room_id`, `room_name`, `room_gamemode`, `room_open`, `room_running`, `time_create`, `host_id`)
+            VALUES (:room_id, :room_name, :room_gamemode, :room_open, :room_running, :time_create, :host_id)
+            ";
 
-        $stmt = ($this->getConn())->prepare($req);
-
-        $stmt->bindParam(':room_id', $playRoom->getId());
-        $stmt->bindParam(':room_name', $playRoom->getName());
-        $stmt->bindParam(':room_gamemode', $playRoom->getGamemode());
-        $stmt->bindParam(':room_open', $playRoom->isOpen());
-        $stmt->bindParam(':room_running', $playRoom->isRunning());
-        $stmt->bindParam(':time_create', $playRoom->getTimeCreate());
-        $stmt->bindParam(':host_id', $playRoom->getHostId());
-        $stmt->execute();
-
-        if ($stmt !== false)
-        {
-            return $this->getLastId();
-        }
-        else
-        {
-            return throw new \PDOException("Error saving play room");
+            $stmt = $this->conn->prepare($req);
+        
+            $stmt->execute([
+                ':room_name' => $playRoom->getName(),
+                ':room_gamemode' => $playRoom->getGamemode(),
+                ':room_open' => $playRoom->isOpen(),
+                ':room_running' => $playRoom->isRunning(),
+                ':time_create' => $playRoom->getTimeCreate(),
+                ':host_id' => $playRoom->getHostId()
+            ]);
+            
+            return (int)$this->conn->lastInsertId();
+        } catch (\PDOException $e) {
+            throw new \PDOException("Error saving play room");
         }
     }
 
@@ -78,10 +75,8 @@ class PlayRoomTable
                 $result['host_id']
             );
             return $room;
-        }
-        else
-        {
-            return throw new \PDOException("Error getting play room");
+        } else {
+            throw new \PDOException("Error getting play room");
         }
     }
 
@@ -115,10 +110,8 @@ class PlayRoomTable
                 $rooms[] = $room;
             }
             return $rooms;
-        }
-        else
-        {
-            return throw new \PDOException("Error getting play rooms");
+        } else {
+            throw new \PDOException("Error getting play rooms");
         }
     }
 }

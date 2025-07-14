@@ -1,0 +1,14 @@
+room_create_page:
+    path: /room/create
+    methods: GET
+    controller: App\Controller\RoomController::createPage
+
+room_create:
+    path: /room/create
+    methods: POST
+    controller: App\Controller\RoomController::create
+
+room_join:
+    path: /room/join/{id}
+    methods: POST
+    controller: App\Controller\RoomController::join

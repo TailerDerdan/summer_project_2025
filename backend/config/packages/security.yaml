@@ -1,0 +1,24 @@
+security:
+    password_hashers:
+        App\Security\SecurityUser: 'auto'
+
+    providers:
+        security_user_provider:
+            id: App\Security\UserProvider
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            lazy: true
+            provider: security_user_provider
+            custom_authenticator: App\Security\UserAuthenticator
+            logout:
+                path: /auth/logout
+                target: /auth/login
+
+    access_control:
+        - { path: ^/auth/registry, roles: PUBLIC_ACCESS }
+        - { path: ^/auth/login, roles: PUBLIC_ACCESS }
+        - { path: ^/, roles: ROLE_USER }
