@@ -4,20 +4,15 @@ declare (strict_types=1);
 namespace App\Controller;
 
 use App\Infrastructure\User\UserServiceInterface;
-use App\Services\SessionService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController {
-    private SessionService $session;
     public function __construct(
         private UserServiceInterface $userService,
-        SessionService $session,
-    ) {
-        $this->session = $session;
-    }
+    ) {}
     public function login(AuthenticationUtils $authenticationUtils): Response {
         if ($this->getUser()) {
             return $this->redirectToRoute("main_page");
@@ -40,7 +35,6 @@ class SecurityController extends AbstractController {
             $this->addFlash("error","Неверный пароль(");
             return $this->redirectToRoute("login");
         }
-        $this->addFlash("error","qwerqwerq");
         return $this->redirectToRoute("main_page", ['rooms' => ['name' => 'TEST']]);
     }
 
@@ -59,7 +53,6 @@ class SecurityController extends AbstractController {
             $this->addFlash("error","Не получилось сохранить пользователя(");
             return $this->redirectToRoute("registry_Proc");
         }
-        $this->session->login($userId, $userData['nickName']);
         return $this->redirectToRoute("main_page", ['rooms' => ['name' => 'TEST']]);
     }
 
