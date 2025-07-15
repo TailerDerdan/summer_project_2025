@@ -10,7 +10,11 @@ const bullets = [];
 
 const updateBullets = (event) => {
 
-    if (!player.getWeapon()) return;
+    if (!player.weapon) return;
+
+    if (!player.isPlayerLive) return;
+
+    enemy1.soundShoot.stop();
 
     const objForMovement = {
         dir: 0,
@@ -29,13 +33,14 @@ const updateBullets = (event) => {
 
     inverseDir(objForMovement);
 
-    let speedBullet = player.getWeapon().speedBullet;
+    let speedBullet = player.weapon.speedBullet;
 
     objForMovement.distX *= speedBullet;
     objForMovement.distY *= speedBullet;
 
-    const bullet = new Bullet(player.getX(), player.getY(), speedBullet, objForMovement.dir, objForMovement.distX, objForMovement.distY, player.getWeapon().fireRange);
+    const bullet = new Bullet(player.x, player.y, speedBullet, objForMovement.dir, objForMovement.distX, objForMovement.distY, player.weapon.fireRange);
     bullets.push(bullet);
+    enemy1.soundShoot.play();
 }
 
 export function throttle(func, delay)
@@ -82,12 +87,12 @@ export function updateMovementBullets()
             bullets.splice(index, 1);
             obj = null;
         }
-
-        if (enemy1.container.isTwoContainerConcerns(elem.container))
+        if (enemy1.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) && enemy1.isEnemyLive)
         {
             let obj = elem;
             bullets.splice(index, 1);
             obj = null;
+            enemy1.wasEnemyWounded = true;
         }
 
         elem.setY(elem.getY() - elem.getDistY());
@@ -97,7 +102,7 @@ export function updateMovementBullets()
     });
 }
 
-// let throttleUpd = throttle(updateBullets, player.getWeapon().timeBetweenBul * 1000);
+// let throttleUpd = throttle(updateBullets, player.weapon.timeBetweenBul * 1000);
 
 // function throttleUpdateBullets(event)
 // {
@@ -108,7 +113,7 @@ export function updateMovementBullets()
 
 let intervalId = 0;
 document.addEventListener('mousedown', (event) => {
-    intervalId = setInterval(() => {updateBullets(event)}, player.getWeapon().timeBetweenBul * 1000);
+    intervalId = setInterval(() => {updateBullets(event);}, player.weapon.timeBetweenBul * 1000);
 })
 document.addEventListener('mouseup', () => {
     clearInterval(intervalId);

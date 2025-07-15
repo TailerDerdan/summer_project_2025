@@ -14,12 +14,12 @@ export const InitAssaultRifle = {
     ammoCapacity: 30,
     totalAmmo: Infinity,
     currentAmmo: 30,
-    fireRange: 500,
+    fireRange: 2500,
     timeBetweenBul: 0.1,
     weight: 2,
     timeReload: 4,
     damage: 1,
-    speedBullet: 10,
+    speedBullet: 20,
     typeShooting: TYPE_SHOOTING.AUTOMATIC
 }
 
