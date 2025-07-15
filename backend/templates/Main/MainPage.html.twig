@@ -21,7 +21,7 @@
 
     <div>
         <h2>Доступные комнаты:</h2>
-        
+
         {% if rooms is empty %}
             <p class="no-rooms">Нет доступных комнат</p>
         {% else %}
@@ -29,8 +29,8 @@
                 {% for room in rooms %}
                     <div>
                         <h3>{{ room.name }}</h3>
-                        <p>Режим: {{ room.gameMode|trans }}</p>
-                        <p>Игроков: {{ room.playersCount }}/{{ room.maxPlayers }}</p>
+                        <p>Режим: {{ room.gamemode }}</p>
+{#                        <p>Игроков: {{ room.playersCount }}/{{ room.maxPlayers }}</p>#}
                         <div>
                             {% if room.isOpen %}
                                 <a href="{{ path('room_join', {id: room.id}) }}">Присоединиться</a>
@@ -42,7 +42,7 @@
                 {% endfor %}
             </div>
         {% endif %}
-        
+
         <a href="{{ path('room_create_page') }}">Создать комнату</a>
     </div>
 </div>

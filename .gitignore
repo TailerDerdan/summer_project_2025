@@ -10,7 +10,6 @@
 /var/
 
 /backend/vendor/
-/backend/bin/
 ###< symfony/framework-bundle ###
 
 ###> symfony/phpunit-bridge ###

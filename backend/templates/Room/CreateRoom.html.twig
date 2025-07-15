@@ -13,35 +13,35 @@
             <label for="name">Название комнаты</label>
             <input type="text" id="name" name="name" required placeholder="Введите название">
         </div>
-        
+
         <div>
             <label>Режим боя:</label>
             <div>
                 <label>
-                    <input type="radio" name="game_mode" value="deathmatch" checked>
+                    <input type="radio" name="gamemode" value="deathmatch" checked>
                     Помеситься
                 </label>
                 <label>
-                    <input type="radio" name="game_mode" value="team">
+                    <input type="radio" name="gamemode" value="team">
                     Гонка вооружений
                 </label>
                 <label>
-                    <input type="radio" name="game_mode" value="capture">
+                    <input type="radio" name="gamemode" value="capture">
                     Захват флага
                 </label>
             </div>
         </div>
-        
+
         <div>
             <label>
-                <input type="checkbox" name="is_private">
+                <input type="checkbox" name="isOpen">
                 Приватная комната
             </label>
         </div>
-        
+
         <button type="submit">Создать комнату</button>
     </form>
-    
+
     <a href="{{ path('main_page') }}">Назад</a>
 </div>
 {% endblock %}

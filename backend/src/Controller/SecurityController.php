@@ -11,7 +11,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController {
     public function __construct(
-        private UserServiceInterface $userService,
+        private UserServiceInterface $userService
     ) {}
     public function login(AuthenticationUtils $authenticationUtils): Response {
         if ($this->getUser()) {
@@ -53,7 +53,7 @@ class SecurityController extends AbstractController {
             $this->addFlash("error","Не получилось сохранить пользователя(");
             return $this->redirectToRoute("registry_Proc");
         }
-        return $this->redirectToRoute("main_page", ['rooms' => ['name' => 'TEST']]);
+        return $this->redirectToRoute("main_page");
     }
 
     public function logout(AuthenticationUtils $authenticationUtils): void {

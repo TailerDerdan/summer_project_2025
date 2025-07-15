@@ -7,6 +7,7 @@ use App\Entity\User\User;
 use App\Infrastructure\User\UserRepositoryInterface;
 use App\Repository\UserRepository;
 use App\Infrastructure\User\UserServiceInterface;
+use App\Security\UserProvider;
 
 class UserService implements UserServiceInterface {
     public function __construct(
@@ -23,5 +24,8 @@ class UserService implements UserServiceInterface {
     public function save(array $user): int {
         $userId = $this->userRepository->save($user);
         return $userId;
+    }
+    public function updateRoomId(int $userId, int $roomId): void {
+        $this->userRepository->updateRoomId($userId, $roomId);
     }
 }

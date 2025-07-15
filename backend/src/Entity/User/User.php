@@ -7,28 +7,6 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class User implements UserInterface, PasswordAuthenticatedUserInterface {
-    // private ?int $userId = null;
-    // private ?int $roomId = null;
-    // private string $nickName;
-    // private string $password;
-    // private ?string $avatarPath = null;
-    // private int $countGames = 0;
-    // private int $countWins = 0;
-    // private int $countKills = 0;
-    // private int $countDeaths = 0;
-
-    // public function __construct(
-    //     string $nickName,
-    //     string $password,
-    //     ?string $avatarPath = null,
-    //     ?int $roomId = null
-    // ) {
-    //     $this->nickName = $nickName;
-    //     $this->password = $password;
-    //     $this->avatarPath = $avatarPath;
-    //     $this->roomId = $roomId;
-    // }
-
     public function __construct(
         private ?int $userId,
         private ?int $roomId,

@@ -3,37 +3,27 @@ declare (strict_types= 1);
 
 namespace App\Repository;
 
-use App\Entity\Room\PlayRoom;
-use App\Entity\User\User;
+use App\Entity\Room\Room;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use App\Infrastructure\Room\RoomRepositoryInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 class RoomRepository extends ServiceEntityRepository implements RoomRepositoryInterface {
-    private EntityRepository $userRepository;
-    public function __construct(private EntityManagerInterface $entityManager) {
-        $this->userRepository = $entityManager->getRepository(User::class);
+    public function __construct(ManagerRegistry $managerRegistry) {
+        parent::__construct($managerRegistry, Room::class);
     }
 
-    public function create(array $playRoom): int {
-        return 1;
+    public function create(Room $room): int {
+        $this->getEntityManager()->persist($room);
+        $this->getEntityManager()->flush();
+        return $room->getId();
     }
-    //     $room = new PlayRoom(
-    //         $playRoom['userId'] ?? null,
-    //         $playRoom['roomId'] ?? null,
-    //         $playRoom['nickName'],
-    //         $playRoom,
-    //         $playRoom['avatarPath'] ?? null,
-    //         0, 0, 0, 0,
-    //     );
-    //     $this->entityManager->contains($user);
-    //     $this->entityManager->persist($user);
-    //     $this->entityManager->flush();
-    //     return 1;
-    // }
-    public function join(string $nickName): void {
+    public function get(int $roomId): ?Room {
+        return $this->find($roomId);
     }
-    //     $this->entityManager->persist($nickName);
-    // }
+    public function getAll(): ?array {
+        return $this->findAll();
+    }
 }

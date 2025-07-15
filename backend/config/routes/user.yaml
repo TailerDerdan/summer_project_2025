@@ -1,4 +1,4 @@
 profile:
     path: /main/profile/{id}
     methods: GET
-    controller: app\Controller\UserController::showProfile
+    controller: App\Controller\UserController::showProfile

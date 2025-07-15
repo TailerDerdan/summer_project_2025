@@ -1,26 +1,21 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Entity\Room;
 
-//isOpen: t/f
-//isRunning: t/f
-
-class PlayRoom
+class Room
 {
     private const MaxSize = 6;
 
     public function __construct(
         private ?int $id,
+        private int $hostId,
         private string $name,
         private string $gamemode,
         private bool $isOpen,
-        private bool $isRunning,
-        private string $timeCreate,
-        private int $hostId)
-    {
-    }
+        private bool $isRun,
+        private \DateTime $timeCreate,
+    ) {}
 
     public function getId(): ?int
     {
@@ -40,9 +35,9 @@ class PlayRoom
     }
     public function isRunning(): bool
     {
-        return $this->isRunning;
+        return $this->isRun;
     }
-    public function getTimeCreate(): string
+    public function getTimeCreate(): \DateTime
     {
         return $this->timeCreate;
     }
@@ -69,7 +64,7 @@ class PlayRoom
 
     public function setRunning(bool $newRunningState): void
     {
-        $this->isRunning = $newRunningState;
+        $this->isRun = $newRunningState;
     }
     public function setHostId(int $newHostId): void
     {

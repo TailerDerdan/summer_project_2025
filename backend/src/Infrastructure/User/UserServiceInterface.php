@@ -9,4 +9,5 @@ interface UserServiceInterface {
     public function getById(int $userId): ?User;
     public function get(string $nickName): ?User;
     public function save(array $user): int;
+    public function updateRoomId(int $userId, int $roomId): void;
 }
