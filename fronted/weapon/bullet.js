@@ -15,7 +15,7 @@ export class Bullet
         this.width = 10;
         this.height = 10;
         this.fireRange = fireRange;
-        this.container = new Container(this.width, this.height, x - this.radius, y - this.radius, dir);
+        this.container = new Container(this.width, this.height, x - this.width, y - this.height, dir);
     }
 
     getX() { return this.x; }
