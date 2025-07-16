@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Меню{% endblock %}</title>
+        {% block stylesheets %}
+            <link href="styles/room_menu.css" rel="stylesheet">
+        {% endblock %}
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        {% block body %}
+            <audio id="music_for_menu" autoplay loop>
+                <source src="music/Baron.mp3" type="audio/mpeg">
+            </audio>
+            <div class="menu-bar">
+                <div class="menu-bar__buttons">
+                    <form action="{{ path() }}">
+                        <input type="hidden" name="user_id" value="{{ currentUser.id }}">
+                        <button class="menu-bar__buttons-item" name="go_to_profile" type="submit">
+                            <img class="menu-bar__buttons-item-photo" src="images/profile.png" alt="Перейти в профиль">
+                        </button>
+                    </form>
+                    <button class="menu-bar__buttons-item" name="go_to_parameters">
+                        <img class="menu-bar__buttons-item-photo" src="images/parameters.png" alt="Перейти к настройкам">
+                    </button>
+                    <div class="parameters" id="parameters">
+                        <div class="parameters-content">
+                            <div class="parameters-list">
+                                <div class="parameters-list-item">
+                                    <label class="parameters-volume-title" for="volume">Громкость</label>
+                                    <input class="parameters-volume-slider" type="range" id="volume" name="volume" min="0" max="1" value="0.6" step="0.1">
+                                </div>
+                            </div>
+                            <button class="parameters-close" id="close_parameters">Закрыть настройки</button>
+                        </div>
+                    </div>
+                    <script src="scripts/parameters_handler.js"></script>
+                    <script src="scripts/volume_controller.js"></script>
+                    <button class="menu-bar__buttons-item" name="leave_game">
+                        <img class="menu-bar__buttons-item-photo" src="images/leave.png" alt="Выйти из игры">
+                    </button>
+                </div>
+            </div>
+            <div class="room-menu">
+                <div class="room-menu__header">
+                    <p class="room-menu__header-text">Игровые комнаты</p>
+                    <button class="room-menu__create-room" name="create_room">
+                        Создать комнату
+                    </button>
+                </div>
+                <div class="room-menu__room-list">
+                    {% for room in rooms %}
+                        <div class="room-menu__room-list-item">
+                            <div class="room-list-item__main">
+                                <div class="room-list-item__header">
+                                    <p class="room-list-item__name">{{ room_name }}</p>
+                                    {% if not room.isOpen %}
+                                        <img class="room-list-item__status-indicator" src="images/lock.png" alt="">
+                                    {% endif %}
+                                </div>
+                                <div class="room-list-item__avatar-list">
+                                    {% for player in players %}
+                                        <img class="room-list-item__avatar-list-item" src="{{ player.avatar_path }}" alt="Аватар">
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="room-list-item__extra">
+                                {% if not {{ players|length }} == 6 %}
+                                    <p class="room-list-item__fill-indicator">{{ players|length }}/6</p>
+                                {% else %}
+                                    <p class="room-list-item__fill-indicator-full">6/6</p>
+                                {% endif %}
+                                <p class="room-list-item__gamemode">{{ room.gamemode }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endblock %}
+    </body>
+</html>

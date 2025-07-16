@@ -1,0 +1,287 @@
+* {
+    font-family: Ubuntu Mono, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    box-sizing: border-box;
+}
+
+* body {
+    background-image: url("images/background_menu_room.png");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.menu-bar {
+    display: flex;
+    flex-wrap: wrap;
+    width: 202px;
+    height: 1080px;
+    background-color: #4F4C34;
+    /*position: relative;*/
+    position: fixed;
+    top: 0;
+    left: 0;
+    justify-content: center;
+    z-index: 1;
+}
+
+.menu-bar__buttons {
+    display: flex;
+    width: 128px;
+    height: 514px;
+    background-color: #A78058;
+    position: relative;
+    top: 75px;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+    padding: 28px 0 0 0;
+    border-radius: 16px;
+}
+
+.menu-bar__buttons-item {
+    display: flex;
+    width: 70px;
+    height: 70px;
+    background-color: #A78058;
+    border: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    margin: 20px 0 20px 0;
+}
+
+.parameters {
+    display: none;
+    z-index: 10;
+    width: 1920px;
+    height: 1080px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgb(79 76 52 / 90%);
+}
+
+.parameters-content {
+    width: 1822px;
+    height: 1020px;
+    position: relative;
+    top: 60px;
+    left: 98px;
+}
+
+.parameters-list {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.parameters-list-item {
+    width: 100%;
+    height: 144px;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    margin: 0 0 0 0;
+}
+
+.parameters-volume-title {
+    width: 254px;
+    height: 54px;
+    position: relative;
+    left: 88px;
+    font-size: 48px;
+    color: #FC9930;
+}
+
+.parameters-volume-slider {
+    width: 1298px;
+    height: 72px;
+    position: relative;
+    left: 138px;
+}
+
+.parameters-close {
+    width: 520px;
+    height: 84px;
+    background-color: #A78058;
+    border-radius: 25px;
+    border: none;
+    font-size: 48px;
+    color: #240502;
+    position: relative;
+    top: 64px;
+    left: 146px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.room-menu {
+    width: 1718px;
+    height: 1080px;
+    position: relative;
+    left: 202px;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+}
+
+.room-menu__header {
+    width: 1341px;
+    height: 117px;
+    position: relative;
+    top: 23px;
+    left: 277px;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.room-menu__header-text {
+    width: 700px;
+    height: 80px;
+    font-size: 80px;
+    color: #FFFFFF;
+    position: relative;
+    left: 67px;
+    margin: 0 0 0 0;
+}
+
+.room-menu__create-room {
+    width: 436px;
+    height: 84px;
+    font-size: 48px;
+    color: #240502;
+    border-radius: 25px;
+    background-color: #A78058;
+    border: none;
+    position: relative;
+    left: 174px;
+    justify-content: center;
+    align-items: center;
+}
+
+.room-menu__room-list {
+    width: 1296px;
+    position: relative;
+    top: 17px;
+    left: 322px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.room-menu__room-list-item {
+    width: 100%;
+    height: 200px;
+    background-color: rgb(79 76 52 / 90%);
+    border-radius: 25px;
+    display: flex;
+    flex-wrap: nowrap;
+    margin: 36px 0 36px 0;
+    padding: 0 0 0 0;
+}
+
+.room-list-item__main {
+    width: 542px;
+    height: 154px;
+    position: relative;
+    top: 12px;
+    left: 40px;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: start;
+}
+
+.room-list-item__header {
+    width: 306px;
+    height: 54px;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.room-list-item__name {
+    width: 244px;
+    font-size: 48px;
+    color: #FC9930;
+    margin: 0 0 0 0;
+}
+
+.room-list-item__status-indicator {
+    width: 42px;
+    height: 42px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.room-list-item__avatar-list {
+    width: 100%;
+    height: 88px;
+    background-color: #A78058;
+    border-radius: 20px;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: left;
+    align-items: center;
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+.room-list-item__avatar-list-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 9px 0 9px;
+}
+
+.room-list-item__extra {
+    width: 270px;
+    height: 162px;
+    position: relative;
+    top: 20px;
+    left: 370px;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: end;
+}
+
+.room-list-item__fill-indicator {
+    width: 96px;
+    height: 56px;
+    display: flex;
+    justify-content: right;
+    align-items: flex-start;
+    font-size: 48px;
+    margin: 0 0 0 11px;
+}
+
+.room-list-item__fill-indicator-full {
+    width: 96px;
+    height: 56px;
+    display: flex;
+    justify-content: right;
+    align-items: flex-start;
+    font-size: 48px;
+    color: #FC5D30;
+    margin: 0 0 0 11px;
+}
+
+.room-list-item__gamemode {
+    width: 100%;
+    height: 56px;
+    display: flex;
+    justify-content: right;
+    align-items: flex-start;
+    font-size: 48px;
+    color: #FC9930;
+    margin: 0 0 0 0;
+}
