@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"github.com/TailerDerdan/summer_project_2025/websocket/internal/repository"
 	"github.com/gorilla/websocket"
 	"log"
@@ -13,6 +12,22 @@ type GameService struct {
 
 func NewGameService(repository *repository.SymfonyRepository) *GameService {
 	return &GameService{repository: repository}
+}
+
+func (s *GameService) CreateRoom(roomData map[string]string) (string, error) {
+	roomId, err := s.repository.CreateRoom(roomData)
+	if err != nil {
+		return "", err
+	}
+	return roomId, nil
+}
+
+func (s *GameService) GetRoom(roomId string) (map[string]string, error) {
+	room, err := s.repository.GetRoom(roomId)
+	if err != nil {
+		return nil, err
+	}
+	return room, nil
 }
 
 func (s *GameService) HandlePlayer(conn *websocket.Conn, roomId, playerId string) {
@@ -32,11 +47,7 @@ func (s *GameService) HandlePlayer(conn *websocket.Conn, roomId, playerId string
 
 func (s *GameService) HandlePlayerReady(roomId, playerId string, ready bool) {
 	if err := s.repository.SetPlayerReady(roomId, playerId); err != nil {
-		fmt.Printf("Error setting player ready: %v", err)
-		return
-	}
-	if err := s.repository.SetPlayerReady(roomId, playerId); err != nil {
-		log.Printf("Error checking player ready: %v", err)
+		log.Printf("Error setting player ready: %v", err)
 		return
 	}
 	isReady, err := s.repository.IsRoomReady(roomId)
@@ -47,11 +58,11 @@ func (s *GameService) HandlePlayerReady(roomId, playerId string, ready bool) {
 	if !isReady {
 		log.Printf("Player %s is not ready", playerId)
 	}
-	s.StartButtle(roomId)
+	s.StartBattle(roomId)
 }
 
-func (s *GameService) StartButtle(roomId string) {
-	if err := s.repository.StartButtle(roomId); err != nil {
+func (s *GameService) StartBattle(roomId string) {
+	if err := s.repository.StartBattle(roomId); err != nil {
 		log.Printf("Error starting buttle: %v", err)
 	}
 

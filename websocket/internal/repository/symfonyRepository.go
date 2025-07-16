@@ -18,6 +18,49 @@ func NewSymfonyRepository(baseUrl string) *SymfonyRepository {
 	return &SymfonyRepository{baseUrl, &http.Client{}}
 }
 
+func (r *SymfonyRepository) CreateRoom(room map[string]string) (string, error) {
+	req, err := json.Marshal(room)
+	if err != nil {
+		return "", err
+	}
+	resp, err := r.httpClient.Post(fmt.Sprintf(
+		"%s/room/createRoom", r.BaseUrl),
+		"application/json",
+		bytes.NewBuffer(req))
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusCreated {
+		return "", errors.New(fmt.Sprintf("Failed to create room: %v", resp.Status))
+	}
+	var respBody struct {
+		RoomId string `json:"roomId"`
+	}
+	err = json.NewDecoder(resp.Body).Decode(respBody)
+	if err != nil {
+		return "", err
+	}
+	return respBody.RoomId, nil
+}
+
+func (r *SymfonyRepository) GetRoom(roomId string) (map[string]string, error) {
+	resp, err := r.httpClient.Get(fmt.Sprintf("%s/room/%s", r.BaseUrl, roomId))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Failed to get room: %v", resp.Status))
+	}
+	var room map[string]string
+	err = json.NewDecoder(resp.Body).Decode(&room)
+	if err != nil {
+		return nil, err
+	}
+	return room, nil
+}
+
 func (r *SymfonyRepository) IsPlayerAllowed(roomId, playerId string) (bool, error) {
 	resp, err := r.httpClient.Get(fmt.Sprintf("%s/room/access?player=%s&roomId=%s", r.BaseUrl, playerId, roomId))
 	if err != nil {
@@ -98,7 +141,7 @@ func (r *SymfonyRepository) IsRoomReady(roomId string) (bool, error) {
 	return true, nil
 }
 
-func (r *SymfonyRepository) StartButtle(roomId string) error {
+func (r *SymfonyRepository) StartBattle(roomId string) error {
 	req, err := http.NewRequest(
 		http.MethodPost,
 		fmt.Sprintf("%s/battle/start", r.BaseUrl),

@@ -4,6 +4,7 @@ declare (strict_types=1);
 namespace App\Controller;
 
 use App\Infrastructure\User\UserServiceInterface;
+use App\Services\WebSocketClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,12 +12,13 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController {
     public function __construct(
-        private UserServiceInterface $userService
+        private UserServiceInterface $userService,
+        private WebSocketClient $webSocketClient
     ) {}
     public function login(AuthenticationUtils $authenticationUtils): Response {
-        if ($this->getUser()) {
-            return $this->redirectToRoute("main_page");
-        }
+//        if ($this->getUser()) {
+//
+//        }
         return $this->render("Auth/Login.html.twig", [
             "last_name"=> $authenticationUtils->getLastUsername(),
             "error"=> $authenticationUtils->getLastAuthenticationError(),
@@ -35,7 +37,13 @@ class SecurityController extends AbstractController {
             $this->addFlash("error","Неверный пароль(");
             return $this->redirectToRoute("login");
         }
-        return $this->redirectToRoute("main_page", ['rooms' => ['name' => 'TEST']]);
+        $userData = [
+            "userId" => $this->getUser()->getUserId(),
+            "ws_conn_id" => "abc123abc",
+        ];
+//        $this->webSocketClient->ConnectUserToWS($userData);
+        return $this->redirectToRoute("main_page");
+//        return $this->redirectToRoute("main_page", ['rooms' => ['name' => 'TEST']]);
     }
 
     public function registry(): Response {

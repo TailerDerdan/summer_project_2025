@@ -7,9 +7,9 @@
 {% endblock %}
 
 {% block body %}
-    <div>
-        <p>{{ room.name }}</p>
-        <p>{{ room.gamemode }}</p>
+    <div class="room">
+        <span>${room.name}</span>
+        <button onclick="joinRoom('${room.id}')">Join</button>
         <p>{% if room.isOpen "Открытая" else "Закрытая" endif %}</p>
     </div>
 {% endblock %}

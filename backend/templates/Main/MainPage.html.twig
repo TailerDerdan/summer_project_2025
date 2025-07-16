@@ -3,7 +3,11 @@
 {% block title %}Main Page{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" href="styles/login.css">
+<link rel="stylesheet" href="/styles/login.css">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="/scripts/script.js"></script>
 {% endblock %}
 
 {% block body %}
@@ -25,19 +29,20 @@
         {% if rooms is empty %}
             <p class="no-rooms">Нет доступных комнат</p>
         {% else %}
-            <div>
+            <div class="room-list">
                 {% for room in rooms %}
-                    <div>
-                        <h3>{{ room.name }}</h3>
+                    <div class="room">
+                        <span>{{ room.name }}</span>
                         <p>Режим: {{ room.gamemode }}</p>
+                        <button onclick="joinRoom('{{ room.id }}')">Join</button>
 {#                        <p>Игроков: {{ room.playersCount }}/{{ room.maxPlayers }}</p>#}
-                        <div>
-                            {% if room.isOpen %}
-                                <a href="{{ path('room_join', {id: room.id}) }}">Присоединиться</a>
-                            {% else %}
-                                <span >Приватная</span>
-                            {% endif %}
-                        </div>
+{#                        <div>#}
+{#                            {% if room.isOpen %}#}
+{#                                <a href="{{ path('room_join', {id: room.id}) }}">Присоединиться</a>#}
+{#                            {% else %}#}
+{#                                <span >Приватная</span>#}
+{#                            {% endif %}#}
+{#                        </div>#}
                     </div>
                 {% endfor %}
             </div>

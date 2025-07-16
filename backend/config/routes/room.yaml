@@ -15,5 +15,10 @@ show_room:
 
 room_join:
     path: /room/join
-    methods: GET
-    controller: App\Controller\RoomController::join
+#    methods: GET
+#    controller: App\Controller\RoomController::join
+
+room_create_ws:
+    path: /room/createRoom
+    methods: POST
+    controller: App\Controller\RoomController::createRoom

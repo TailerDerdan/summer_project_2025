@@ -1,9 +1,3 @@
 body {
     background: #ffffff;/*url("/summer_project_2025/backend/public/images/"); */
 }
-
-div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
