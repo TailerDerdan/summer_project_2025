@@ -1,5 +1,4 @@
-import { canvas } from "../canvas.js";
-import { HEIGHT_MAP, WIDTH_MAP } from "../map/map.js";
+import { canvas, HEIGHT_MAP, WIDTH_MAP } from "../canvas.js";
 import { player } from "../player/player.js";
 
 class WrapperRect

@@ -1,7 +1,8 @@
-import { ctx } from "../canvas.js";
+import { COUNT_TILE_X, COUNT_TILE_Y, ctx, HEIGHT_MAP, TILE_HEIGHT, TILE_WIDTH, WIDTH_MAP } from "../canvas.js";
+import { camera } from "../camera/camera.js";
 
-export const WIDTH_MAP = 5000;
-export const HEIGHT_MAP = 3000;
+export const COLOR_FLOOR = 'rgba(179, 211, 0, 1)';
+export const COLOR_WALL = 'rgba(3, 194, 105, 1)';
 
 class Map
 {
@@ -9,31 +10,50 @@ class Map
     {
         this.width = width;
         this.height = height;
+        this.tileMap = new Array(COUNT_TILE_X * COUNT_TILE_Y).fill(0);
         this.image = null;
+    }
+
+    generateRectWall(x, y, width, height)
+    {
+        for (let iterX = x; iterX < x + width; iterX++)
+        {
+            for (let iterY = y; iterY < y + height; iterY++)
+            {
+                this.tileMap[iterY * COUNT_TILE_Y + iterX] = 1;
+            }
+        }
     }
 
     generate(ctx)
     {
+        this.generateRectWall(20, 20, 10, 8);
+
         ctx.canvas.width = this.width;
         ctx.canvas.height = this.height;
-        let rows = ~~(this.width / 45) + 1;
-        let columns = ~~(this.height / 45) + 1;
 
-        let color = 'rgba(179, 211, 0, 1)';
+        let color = COLOR_FLOOR;
         ctx.save();
         ctx.fillStyle = color;
 
-        for (let x = 0, iter = 0; iter < rows; x+=45, iter++)
+        for (let iterY = 0; iterY < COUNT_TILE_Y; iterY++)
         {
-            ctx.beginPath();
-            for (let y = 0, iter2 = 0; iter2 < columns; y+=45, iter2++)
+            for (let iterX = 0; iterX < COUNT_TILE_X; iterX++)
             {
-                ctx.rect(x, y, 40, 40);
+                if (this.tileMap[iterY * COUNT_TILE_Y + iterX] == 0)
+                {
+                    color = COLOR_FLOOR;
+                }
+                else
+                {
+                    color = COLOR_WALL;
+                }
+                ctx.beginPath();
+                ctx.rect(iterX * TILE_WIDTH, iterY * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+                ctx.fillStyle = color;
+                ctx.fill();
+                ctx.closePath();
             }
-            color = (color == 'rgba(179, 211, 0, 1)' ? 'rgba(3, 194, 105, 1)' : 'rgba(179, 211, 0, 1)');
-            ctx.fillStyle = color;
-            ctx.fill();
-            ctx.closePath();
         }
 
         ctx.restore();

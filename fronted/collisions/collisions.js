@@ -98,9 +98,9 @@ export class Container
         }
     }
 
-    drawContainer(ctx)
+    drawContainer(ctx, x = -this.width / 2, y = -this.height / 2)
     {
         ctx.strokeStyle = 'rgba(9, 255, 0, 1)';
-        ctx.strokeRect(-this.width / 2, -this.height / 2, this.width, this.height);
+        ctx.strokeRect(x, y, this.width, this.height);
     }
 }
