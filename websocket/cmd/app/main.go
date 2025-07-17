@@ -10,13 +10,13 @@ import (
 func main() {
 	wsHandler := pkg.NewWebsocketHandler()
 	http.HandleFunc("/ws/room/create", wsHandler.HandleCreateRoom)
-	http.HandleFunc("/ws/room_", func(w http.ResponseWriter, r *http.Request) {
-		roomID := strings.TrimPrefix(r.URL.Path, "/ws/room_")
+	http.HandleFunc("/ws/room/", func(w http.ResponseWriter, r *http.Request) {
+		roomID := strings.TrimPrefix(r.URL.Path, "/ws/room/")
 		if roomID == "" {
 			http.Error(w, "Room ID is required", http.StatusBadRequest)
 			return
 		}
-		wsHandler.HandleWebSocket(w, r)
+		wsHandler.HandleConnection(w, r, roomID)
 	})
 	http.HandleFunc("/ws/global-updates", wsHandler.HandleGlobalUpdates)
 	log.Println("Websocket server listening on :8080")
