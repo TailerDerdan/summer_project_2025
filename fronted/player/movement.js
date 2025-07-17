@@ -1,5 +1,5 @@
 import { player } from './player.js';
-import { ctx } from './../canvas.js';
+import { canvas, ctx } from './../canvas.js';
 
 const SQRT_2 = 0.707;
 const MAX_DIST = 1;
@@ -15,9 +15,9 @@ const updateKeyDict = (event) => {
     }
 };
 
-export const updateMovementPlayer = (xView, yView) => {
+export const updateMovementPlayer = (xView, yView, deltaTime) => {
 
-    let playerDir = player.getDir();
+    let playerDir = player.dir;
 
     let distX = keyDict.KeyW && (keyDict.KeyA || keyDict.KeyD) ||
             keyDict.KeyS && (keyDict.KeyA || keyDict.KeyD) ? SQRT_2 : MAX_DIST;
@@ -46,7 +46,12 @@ export const updateMovementPlayer = (xView, yView) => {
 
     player.changeDistXYByPhysic(dist);
 
-    player.updatePostion(dist.distX, dist.distY, keyDict);
+    let isWasMovement = player.updatePostion(dist.distX, dist.distY, keyDict);
+
+    if (isWasMovement)
+    {
+        player.sprite.updateFrames(deltaTime);
+    }
 
     player.drawPlayer(ctx, xView, yView);
 }
