@@ -14,24 +14,35 @@
     <body>
         {% block body %}
             <audio id="music_for_menu" autoplay loop>
-                <source src="music/Baron.mp3" type="audio/mpeg">
+                <source src="../../public/music/Baron.mp3" type="audio/mpeg">
             </audio>
             <div class="menu-bar">
                 <div class="menu-bar__buttons">
                     <form action="{{ path() }}" method="POST">
                         <input type="hidden" name="user_id" value="{{ currentUser.id }}">
                         <button class="menu-bar__buttons-item" name="go_to_profile" type="submit">
-                            <img class="menu-bar__buttons-item-photo" src="images/profile.png" alt="Перейти в профиль">
+                            <img class="menu-bar__buttons-item-photo" src="../../public/images/profile.png" alt="Перейти в профиль">
                         </button>
                     </form>
                     <button class="menu-bar__buttons-item" name="go_to_parameters">
-                        <img class="menu-bar__buttons-item-photo" src="images/parameters.png" alt="Перейти к настройкам">
+                        <img class="menu-bar__buttons-item-photo" src="../../public/images/parameters.png" alt="Перейти к настройкам">
                     </button>
                     <form action="{{ path() }}">
                         <button class="menu-bar__buttons-item" name="leave_game" type="submit">
-                            <img class="menu-bar__buttons-item-photo" src="images/leave.png" alt="Выйти из игры">
+                            <img class="menu-bar__buttons-item-photo" src="../../public/images/leave.png" alt="Выйти из игры">
                         </button>
                     </form>
+                </div>
+            </div>
+            <div class="parameters" id="parameters">
+                <div class="parameters-content">
+                    <div class="parameters-list">
+                        <div class="parameters-list-item">
+                            <label class="parameters-volume-title" for="volume">Громкость</label>
+                            <input class="parameters-volume-slider" type="range" id="volume" name="volume" min="0" max="1" value="0.6" step="0.1">
+                        </div>
+                    </div>
+                    <button class="parameters-close" id="close_parameters">Закрыть настройки</button>
                 </div>
             </div>
             <div class="room-menu">
@@ -48,7 +59,7 @@
                                 <div class="room-list-item__header">
                                     <p class="room-list-item__name">{{ room.name }}</p>
                                     {% if not room.isOpen %}
-                                        <img class="room-list-item__status-indicator" src="images/lock.png" alt="">
+                                        <img class="room-list-item__status-indicator" src="../../public/images/lock.png" alt="">
                                     {% endif %}
                                 </div>
                                 <div class="room-list-item__avatar-list">
@@ -73,7 +84,7 @@
                 <p class="create-room__header">Создание комнаты</p>
                 <div class="create-room__main">
                     <div class="create-room__parameters-room-list">
-                        <form class="create-room__parameters-room-list-content" id="room_parameters" action="" method="POST">
+                        <form class="create-room__parameters-room-list-content" id="room_parameters" action="{{ path() }}" method="POST">
                             <div class="create-room__parameters-room-list-item">
                                 <label class="parameters-room-list-item__header" for="room_name">Введите ваше название</label><br>
                                 <input class="parameters-room-list-item__input" type="text" id="room_name" name="room_name"><br><br>
@@ -103,7 +114,7 @@
                         </form>
                     </div>
                     <div class="create-room__main-decorations">
-                        <img src="images/cool_man.png" alt="Здесь должна быть картинка с крутым чуваком">
+                        <img src="../../public/images/cool_man.png" alt="Здесь должна быть картинка с крутым чуваком">
                     </div>
                 </div>
                 <div class="create-room__buttons">
@@ -112,9 +123,9 @@
                 </div>
             </div>
             {% block javascripts %}
-                <script src="scripts/create_room_window_handler.js"></script>
-                <script src="scripts/parameters_handler.js"></script>
-                <script src="scripts/volume_controller.js"></script>
+                <script src="../../public/scripts/create_room_window_handler.js"></script>
+                <script src="../../public/scripts/parameters_handler.js"></script>
+                <script src="../../public/scripts/volume_controller.js"></script>
             {% endblock %}
         {% endblock %}
     </body>
