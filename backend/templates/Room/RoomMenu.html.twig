@@ -18,7 +18,7 @@
             </audio>
             <div class="menu-bar">
                 <div class="menu-bar__buttons">
-                    <form action="{{ path() }}">
+                    <form action="{{ path() }}" method="POST">
                         <input type="hidden" name="user_id" value="{{ currentUser.id }}">
                         <button class="menu-bar__buttons-item" name="go_to_profile" type="submit">
                             <img class="menu-bar__buttons-item-photo" src="images/profile.png" alt="Перейти в профиль">
@@ -46,19 +46,19 @@
                         <div class="room-menu__room-list-item">
                             <div class="room-list-item__main">
                                 <div class="room-list-item__header">
-                                    <p class="room-list-item__name">{{ room_name }}</p>
+                                    <p class="room-list-item__name">{{ room.name }}</p>
                                     {% if not room.isOpen %}
                                         <img class="room-list-item__status-indicator" src="images/lock.png" alt="">
                                     {% endif %}
                                 </div>
                                 <div class="room-list-item__avatar-list">
-                                    {% for player in players %}
+                                    {% for player in room.players %}
                                         <img class="room-list-item__avatar-list-item" src="{{ player.avatar_path }}" alt="Аватар">
                                     {% endfor %}
                                 </div>
                             </div>
                             <div class="room-list-item__extra">
-                                {% if not {{ players|length }} == 6 %}
+                                {% if players|length < 6 %}
                                     <p class="room-list-item__fill-indicator">{{ players|length }}/6</p>
                                 {% else %}
                                     <p class="room-list-item__fill-indicator-full">6/6</p>
@@ -111,9 +111,11 @@
                     <button class="create-room__button" form="room_parameters" type="submit">Создать комнату</button>
                 </div>
             </div>
-            <script src="scripts/create_room_window_handler.js"></script>
-            <script src="scripts/parameters_handler.js"></script>
-            <script src="scripts/volume_controller.js"></script>
+            {% block javascripts %}
+                <script src="scripts/create_room_window_handler.js"></script>
+                <script src="scripts/parameters_handler.js"></script>
+                <script src="scripts/volume_controller.js"></script>
+            {% endblock %}
         {% endblock %}
     </body>
 </html>
