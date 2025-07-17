@@ -1,6 +1,8 @@
-import { canvas, gl, state } from "../canvas.js";
+import { camera } from "../camera/camera.js";
+import { canvas, canvasWebgl, gl, state } from "../canvas.js";
+import { map } from "../map/map.js";
 import { lightPosition } from "../player/movement.js";
-import { calculateGeometry } from "./geometry.js";
+import { calculateGeometry, Vec2 } from "./geometry.js";
 
 export const texture2D = gl.createTexture();
 
@@ -137,14 +139,50 @@ export function render(state)
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    const inputs = {
-        light: lightPosition,
-        a: {x: -0.5, y: 0},
-        b: {x: 0.5, y: 0},
-        lightRadius: 3,
-    }
+    const canvasToGlCoords = (canvasCoord) => ({
+        x: ((canvasCoord.x) / canvasWebgl.width) * 2 - 1,
+        y: -((canvasCoord.y / canvasWebgl.height) * 2 - 1),
+    });
 
-    const vertices = calculateGeometry(inputs);
+    const vertices = [];
+    for (const wall of map.walls)
+    {
+        vertices.push(...calculateGeometry(
+            {
+                light: lightPosition,
+                a: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView)}),
+                b: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView)}),
+                lightRadius: 3,
+            }
+        ));
+
+        vertices.push(...calculateGeometry(
+            {
+                light: lightPosition,
+                a: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView)}),
+                b: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView) + wall.height}),
+                lightRadius: 3,
+            }
+        ));
+
+        vertices.push(...calculateGeometry(
+            {
+                light: lightPosition,
+                a: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView) + wall.height}),
+                b: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView) + wall.height}),
+                lightRadius: 3,
+            }
+        ));
+
+        vertices.push(...calculateGeometry(
+            {
+                light: lightPosition,
+                a: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView)}),
+                b: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView) + wall.height}),
+                lightRadius: 3,
+            }
+        ));
+    }
 
     twgl.setAttribInfoBufferFromArray(gl, shadowBuffer.attribs.vertex, vertices);
     shadowBuffer.numElements = vertices.length / 2;

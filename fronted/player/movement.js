@@ -58,8 +58,6 @@ export const updateMovementPlayer = (xView, yView, deltaTime) => {
     lightPosition.x = ((player.x - xView) / canvasWebgl.width) * 2 - 1;
     lightPosition.y = -(((player.y - yView) / canvasWebgl.height) * 2 - 1);
 
-    // console.log(lightPosition);
-
     player.drawPlayer(ctx, xView, yView);
 }
 

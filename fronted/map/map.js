@@ -1,8 +1,9 @@
 import { COUNT_TILE_X, COUNT_TILE_Y, ctx, HEIGHT_MAP, TILE_HEIGHT, TILE_WIDTH, WIDTH_MAP } from "../canvas.js";
 import { camera } from "../camera/camera.js";
+import { Container } from "../collisions/collisions.js";
 
 export const COLOR_FLOOR = 'rgba(179, 211, 0, 1)';
-export const COLOR_WALL = 'rgba(3, 194, 105, 1)';
+export const COLOR_WALL = 'rgba(231, 40, 10, 1)';
 
 class Map
 {
@@ -11,6 +12,7 @@ class Map
         this.width = width;
         this.height = height;
         this.tileMap = new Array(COUNT_TILE_X * COUNT_TILE_Y).fill(0);
+        this.walls = [];
         this.image = null;
     }
 
@@ -23,11 +25,15 @@ class Map
                 this.tileMap[iterY * COUNT_TILE_Y + iterX] = 1;
             }
         }
+        const container = new Container(width * TILE_WIDTH, height * TILE_HEIGHT, x * TILE_WIDTH, y * TILE_HEIGHT, 0);
+        this.walls.push(container);
     }
 
     generate(ctx)
     {
         this.generateRectWall(20, 20, 10, 8);
+        // this.generateRectWall(10, 10, 2, 3);
+        // console.log(21)
 
         let color = COLOR_FLOOR;
         ctx.save();
@@ -52,6 +58,10 @@ class Map
                 ctx.closePath();
             }
         }
+
+        this.walls.forEach((elem) => {
+            elem.drawContainer(ctx, elem.x, elem.y);
+        })
 
         ctx.restore();
 
