@@ -6,7 +6,10 @@ export const texture2D = gl.createTexture();
 
 export function updateTexture()
 {
+    if (canvas.width === 0 || canvas.height === 0) return;
+
     gl.bindTexture(gl.TEXTURE_2D, texture2D);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     gl.texImage2D(
         gl.TEXTURE_2D,
         0,
