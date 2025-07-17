@@ -27,22 +27,11 @@
                     <button class="menu-bar__buttons-item" name="go_to_parameters">
                         <img class="menu-bar__buttons-item-photo" src="images/parameters.png" alt="Перейти к настройкам">
                     </button>
-                    <div class="parameters" id="parameters">
-                        <div class="parameters-content">
-                            <div class="parameters-list">
-                                <div class="parameters-list-item">
-                                    <label class="parameters-volume-title" for="volume">Громкость</label>
-                                    <input class="parameters-volume-slider" type="range" id="volume" name="volume" min="0" max="1" value="0.6" step="0.1">
-                                </div>
-                            </div>
-                            <button class="parameters-close" id="close_parameters">Закрыть настройки</button>
-                        </div>
-                    </div>
-                    <script src="scripts/parameters_handler.js"></script>
-                    <script src="scripts/volume_controller.js"></script>
-                    <button class="menu-bar__buttons-item" name="leave_game">
-                        <img class="menu-bar__buttons-item-photo" src="images/leave.png" alt="Выйти из игры">
-                    </button>
+                    <form action="{{ path() }}">
+                        <button class="menu-bar__buttons-item" name="leave_game" type="submit">
+                            <img class="menu-bar__buttons-item-photo" src="images/leave.png" alt="Выйти из игры">
+                        </button>
+                    </form>
                 </div>
             </div>
             <div class="room-menu">
@@ -80,6 +69,51 @@
                     {% endfor %}
                 </div>
             </div>
+            <div class="create-room" id="create_room">
+                <p class="create-room__header">Создание комнаты</p>
+                <div class="create-room__main">
+                    <div class="create-room__parameters-room-list">
+                        <form class="create-room__parameters-room-list-content" id="room_parameters" action="" method="POST">
+                            <div class="create-room__parameters-room-list-item">
+                                <label class="parameters-room-list-item__header" for="room_name">Введите ваше название</label><br>
+                                <input class="parameters-room-list-item__input" type="text" id="room_name" name="room_name"><br><br>
+                            </div>
+                            <div class="create-room__parameters-room-list-item">
+                                <label class="parameters-room-list-item__header-room-playmode" for="room_playmode">Выберите режим игры</label><br>
+                                <select class="room-playmode-list" id="room_playmode" name="room_playmode">
+                                    <option class="room-playmode-list-item" value="standard">Стандарт</option>
+                                    <option class="room-playmode-list-item" value="invisibility">Невидимость</option>
+                                    <option class="room-playmode-list-item" value="fog_of_war">Туман войны</option>
+                                    <option class="room-playmode-list-item" value="arms_race">Гонка вооружений</option>
+                                </select>
+                                <br><br>
+                            </div>
+                            <div class="create-room__parameters-room-list-item">
+                                <label class="parameters-room-list-item__header" for="room_open">Сделать комнату закрытой?</label><br>
+                                <select class="room-open-list" id="room_open" name="room_open">
+                                    <option class="room-open-list-item" value="open">Нет</option>
+                                    <option class="room-open-list-item" value="closed">Да</option>
+                                </select>
+                                <br><br>
+                            </div>
+                            <div class="create-room__parameters-room-list-item">
+                                <label class="parameters-room-list-item__header" for="room_password">Установите пароль</label><br>
+                                <input class="parameters-room-list-item__input" type="password" id="room_password" name="room_password"><br><br>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="create-room__main-decorations">
+                        <img src="images/cool_man.png" alt="Здесь должна быть картинка с крутым чуваком">
+                    </div>
+                </div>
+                <div class="create-room__buttons">
+                    <button class="create-room__button" id="create_room_cancel" name="create_room_cancel_action">Отменить</button>
+                    <button class="create-room__button" form="room_parameters" type="submit">Создать комнату</button>
+                </div>
+            </div>
+            <script src="scripts/create_room_window_handler.js"></script>
+            <script src="scripts/parameters_handler.js"></script>
+            <script src="scripts/volume_controller.js"></script>
         {% endblock %}
     </body>
 </html>
