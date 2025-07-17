@@ -22,12 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json()
-
-        // const socket = new WebSocket(data.ws_url)
-        // socket.onmessage = (e) => {
-        //     const data = JSON.parse(e.data)
-        //     console.log(data)
-        // }
         window.location.href = ('/room/show/' + data.roomId)
     })
 })

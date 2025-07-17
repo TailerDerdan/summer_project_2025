@@ -22,7 +22,8 @@ function updateRoomList(rooms) {
             <div class="room">
                 <span>${room.name}</span>
                 <p>Режим: ${room.gamemode}</p>
-                <button onclick="joinRoom('${room.id}')">Join</button>
+                <button onclick="joinRoom('${ room.id }', '1234')">JOIN
+                </button>
             </div>
         `
         container.appendChild(roomElt)
@@ -39,17 +40,28 @@ function addRoomToList(room) {
         <div class="room">
             <span>${room.name}</span>
             <p>Режим: ${room.gamemode}</p>
-            <button onclick="joinRoom('${room.id}')">Join</button>
+            <button onclick="joinRoom('${ room.id }')">JOIN</button>
         </div>
     `
     container.appendChild(roomElt)
 }
+async function joinRoom(roomId) {
+    const response = await fetch('/room/join', {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const dataJson = await response.json()
 
-function joinRoom(roomId) {
-    const socket = new WebSocket(`ws://localhost:8080/ws/room_${roomId}`);
-    socket.onopen = () => {
-        console.log("Connected to room", roomId);
-    };
+    sessionStorage.setItem('ws_connection_data', JSON.stringify({
+        roomId,
+        dataJson
+    }));
+    window.location.href = ('/room/show/' + roomId)
 }
 
 document.addEventListener('DOMContentLoaded', () => {
