@@ -22,14 +22,13 @@ RUN echo "listen = 9000" > /usr/local/etc/php-fpm.d/zz-docker.conf
 WORKDIR /var/www/backend
 
 COPY composer.json composer.lock symfony.lock ./
+COPY entrypoint.sh /usr/local/bin/
 
+RUN chmod +x /usr/local/bin/entrypoint.sh
 RUN composer install --no-dev --no-scripts --no-interaction --optimize-autoloader
 RUN composer dump-autoload
 
 COPY . .
-#
-#RUN chown -R www-data:www-data var
 
-#RUN apt-get update && apt-get install -y default-mysql-client && rm -rf /var/lib/apt/lists/*
-
+ENTRYPOINT ["entrypoint.sh"]
 CMD ["php-fpm", "-F"]
