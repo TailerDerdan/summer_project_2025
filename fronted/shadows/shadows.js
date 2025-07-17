@@ -1,20 +1,36 @@
-import { canvas } from "../canvas.js";
+import { canvas, gl, state } from "../canvas.js";
+import { lightPosition } from "../player/movement.js";
 import { calculateGeometry } from "./geometry.js";
+
+export const texture2D = gl.createTexture();
+
+export function updateTexture()
+{
+    gl.bindTexture(gl.TEXTURE_2D, texture2D);
+    gl.texImage2D(
+        gl.TEXTURE_2D,
+        0,
+        gl.RGBA,
+        gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        canvas
+    );
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+}
 
 async function setup()
 {
-    const gl = canvas.getContext("webgl");
-    
     if (!gl) 
     {
-        console.log(canvas, gl);
-        // alert("WebGL не поддерживается!");
+        alert("WebGL не поддерживается!");
         return;
     }
     let vertexShaderSrc, fragmentShaderSrc;
     [vertexShaderSrc, fragmentShaderSrc] = await Promise.all([
-            fetch("shaders/shadow.vert").then(res => res.text()),
-            fetch("shaders/shadow.frag").then(res => res.text()),
+            fetch("./fronted/shadows/shaders/shadow.vert").then(res => res.text()),
+            fetch("./fronted/shadows/shaders/shadow.frag").then(res => res.text()),
     ]);
 
     let programInfo = twgl.createProgramInfo(gl, [vertexShaderSrc, fragmentShaderSrc]);
@@ -27,7 +43,6 @@ async function setup()
     }
     
     const shadowBuffer = twgl.createBufferInfoFromArrays(gl, arrays);
-    const lightPosition = {x: 0, y: -1};
 
     const quadArrays = {
         vertex: {
@@ -45,23 +60,25 @@ async function setup()
     }
 
     const lightTexture = twgl.createTexture(gl, {
-        src: "./assets/lightsource.png",
+        src: "./fronted/shadows/assets/lightsource.png",
     });
 
     let vertexShaderSrcLight, fragmentShaderSrcLight;
     [vertexShaderSrcLight, fragmentShaderSrcLight] = await Promise.all([
-            fetch("shaders/light.vert").then(res => res.text()),
-            fetch("shaders/light.frag").then(res => res.text()),
+            fetch("./fronted/shadows/shaders/light.vert").then(res => res.text()),
+            fetch("./fronted/shadows/shaders/light.frag").then(res => res.text()),
     ]);
 
-    const sceneTexture = twgl.createTexture(gl, {
-        src: "./assets/scene.jpg",
-    });
+    // const sceneTexture = twgl.createTexture(gl, {
+    //     src: "./fronted/shadows/assets/scene.jpg",
+    // });
+
+    const sceneTexture = texture2D;
 
     let vertexShaderSrcScene, fragmentShaderSrcScene;
     [vertexShaderSrcScene, fragmentShaderSrcScene] = await Promise.all([
-            fetch("shaders/scene.vert").then(res => res.text()),
-            fetch("shaders/scene.frag").then(res => res.text()),
+            fetch("./fronted/shadows/shaders/scene.vert").then(res => res.text()),
+            fetch("./fronted/shadows/shaders/scene.frag").then(res => res.text()),
     ]);
 
     const lightProgram = twgl.createProgramInfo(gl, [vertexShaderSrcLight, fragmentShaderSrcLight]);
@@ -80,13 +97,6 @@ async function setup()
     const shadowFrameBuffer = twgl.createFramebufferInfo(gl, attachments);
     const sceneFramebuffer = twgl.createFramebufferInfo(gl, attachments);
 
-    canvas.addEventListener("mousemove", (event) => {
-
-        lightPosition.x = (event.offsetX / canvas.width) * 2 - 1;
-        lightPosition.y = -((event.offsetY / canvas.height) * 2 - 1);
-
-    })
-
     return {
         gl,
         programInfo,
@@ -102,7 +112,7 @@ async function setup()
     };
 }
 
-function render(state)
+export function render(state)
 {
     const { 
         gl,
@@ -170,6 +180,8 @@ function render(state)
 
     gl.useProgram(sceneProgram.program);
     twgl.setBuffersAndAttributes(gl, sceneProgram, lightBuffer);
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, sceneTexture);
     twgl.setUniforms(sceneProgram, {
         lightTexture: sceneFramebuffer.attachments[0],
         sceneTexture: sceneTexture,
@@ -177,21 +189,7 @@ function render(state)
     twgl.drawBufferInfo(gl, lightBuffer);
 }
 
-const state = {
-    gl: null,
-    programInfo: null,
-    shadowBuffer: null,
-    lightPosition: null,
-    lightBuffer: null,
-    lightTexture: null,
-    lightProgram: null,
-    shadowFrameBuffer: null,
-    sceneFramebuffer: null,
-    sceneProgram: null,
-    sceneTexture: null,
-}
-
-async function start()
+export async function start()
 {
     await setup().then((data) => {
 
@@ -207,14 +205,6 @@ async function start()
         state.sceneProgram = data.sceneProgram;
         state.sceneTexture = data.sceneTexture;
     });
-    
-    const frame = () => {
-        render(state);
-        requestAnimationFrame(frame);
-    }
-    frame();
 }
-
-console.log(canvas);
 
 start();

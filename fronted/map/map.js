@@ -29,9 +29,6 @@ class Map
     {
         this.generateRectWall(20, 20, 10, 8);
 
-        ctx.canvas.width = this.width;
-        ctx.canvas.height = this.height;
-
         let color = COLOR_FLOOR;
         ctx.save();
         ctx.fillStyle = color;

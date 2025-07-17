@@ -8,5 +8,9 @@ body {
 }
 
 #game {
-    display: block;
+    background-color: transparent;
+}
+
+#webgl-display {
+    background-color: blue;
 }
