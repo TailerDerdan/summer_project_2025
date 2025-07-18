@@ -131,10 +131,6 @@ export function render(state)
         sceneTexture
     } = state;
 
-    const lightPositions = [];
-    lightPositions.push(player.lightPosition);
-    lightPositions.push(enemy1.lightPosition);
-
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     twgl.bindFramebufferInfo(gl, shadowFrameBuffer)
@@ -150,45 +146,42 @@ export function render(state)
     const vertices = [];
     for (const wall of map.walls)
     {
-        for (const lightPosition of lightPositions)
-        {
-            console.log(lightPosition);
-            vertices.push(...calculateGeometry(
-                {
-                    light: lightPosition,
-                    a: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView)}),
-                    b: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView)}),
-                    lightRadius: 3,
-                }
-            ));
+        vertices.push(...calculateGeometry(
+            {
+                light: player.lightPosition,
+                a: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView)}),
+                b: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView)}),
+                lightRadius: 3,
+            }
+        ));
 
-            vertices.push(...calculateGeometry(
-                {
-                    light: lightPosition,
-                    a: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView)}),
-                    b: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView) + wall.height}),
-                    lightRadius: 3,
-                }
-            ));
+        vertices.push(...calculateGeometry(
+            {
+                light: player.lightPosition,
+                a: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView)}),
+                b: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView) + wall.height}),
+                lightRadius: 3,
+            }
+        ));
 
-            vertices.push(...calculateGeometry(
-                {
-                    light: lightPosition,
-                    a: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView) + wall.height}),
-                    b: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView) + wall.height}),
-                    lightRadius: 3,
-                }
-            ));
+        vertices.push(...calculateGeometry(
+            {
+                light: player.lightPosition,
+                a: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView) + wall.height}),
+                b: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView) + wall.height}),
+                lightRadius: 3,
+            }
+        ));
 
-            vertices.push(...calculateGeometry(
-                {
-                    light: lightPosition,
-                    a: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView)}),
-                    b: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView) + wall.height}),
-                    lightRadius: 3,
-                }
-            ));
-        }
+        vertices.push(...calculateGeometry(
+            {
+                light: player.lightPosition,
+                a: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView)}),
+                b: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView) + wall.height}),
+                lightRadius: 3,
+            }
+        ));
+        
     }
 
     twgl.setAttribInfoBufferFromArray(gl, shadowBuffer.attribs.vertex, vertices);
@@ -210,7 +203,7 @@ export function render(state)
     gl.useProgram(lightProgram.program);
     twgl.setBuffersAndAttributes(gl, lightProgram, lightBuffer);
     twgl.setUniforms(lightProgram, {
-        lightPosition: [lightPosition.x, lightPosition.y],
+        lightPosition: [player.lightPosition.x, player.lightPosition.y],
         shadowTexture: shadowFrameBuffer.attachments[0],
         lightTexture: lightTexture,
     })
