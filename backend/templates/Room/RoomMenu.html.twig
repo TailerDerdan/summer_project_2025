@@ -7,9 +7,9 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script src="../../public/scripts/create_room_window_handler.js"></script>
-    <script src="../../public/scripts/parameters_handler.js"></script>
-    <script src="../../public/scripts/volume_controller.js"></script>
+    <script src="scripts/create_room_window_handler.js"></script>
+    <script src="scripts/parameters_handler.js"></script>
+    <script src="scripts/volume_controller.js"></script>
 {% endblock %}
 
 {% block body %}
@@ -120,7 +120,9 @@
         </div>
         <div class="create-room__buttons">
             <button class="create-room__button" id="create_room_cancel" name="create_room_cancel_action">Отменить</button>
-            <button class="create-room__button" form="room_parameters" type="submit">Создать комнату</button>
+            <form action="{{ path() }}" method="POST">
+                <button class="create-room__button" form="room_parameters" type="submit">Создать комнату</button>
+            </form>
         </div>
     </div>
 {% endblock %}
