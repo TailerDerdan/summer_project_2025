@@ -41,9 +41,13 @@ class RoomService implements RoomServiceInterface {
         return $roomId;
     }
 
-    public function delete(int $roomId): ?int {
-        $roomId = $this->roomRepository->deleteById($roomId);
-        return $roomId;
+    public function delete(int $roomId, int $userId): ?int {
+        if ($userId == $this->roomRepository->getHostIdById($roomId)) {
+            return $this->roomRepository->deleteById($roomId);
+        }
+        else {
+            return throw new \Exception("Недостаточно прав");
+        }
     }
 
     public function get(int $roomId): ?Room {

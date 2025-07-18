@@ -87,20 +87,24 @@
         </div>
         <div class="room-window__buttons">
             {% if currentUser.id == room.host_id %}
-                <form action="{{ path() }}">
+                <form action="{{ path('delete_room') }}" method="POST">
+                    <input type="hidden" name="room_id" value="{{ room.id }}">
                     <input type="hidden" name="user_id" value="{{ currentUser.id }}">
                     <button class="room-window__button" name="room_cancel" type="submit">Удалить комнату</button>
                 </form>
-                <form action="{{ path() }}">
+                <form action="{{ path() }}" method="POST">
+                    <input type="hidden" name="room_id" value="{{ room.id }}">
                     <input type="hidden" name="user_id" value="{{ currentUser.id }}">
                     <button class="room-window__button" name="ready_for_game" type="submit">Поехали!</button>
                 </form>
             {% else %}
-                <form action="{{ path() }}">
+                <form action="{{ path() }}" method="POST">
+                    <input type="hidden" name="room_id" value="{{ room.id }}">
                     <input type="hidden" name="user_id" value="{{ currentUser.id }}">
                     <button class="room-window__button" name="room_cancel" type="submit">Выйти</button>
                 </form>
-                <form action="{{ path() }}">
+                <form action="{{ path() }}" method="POST">
+                    <input type="hidden" name="room_id" value="{{ room.id }}">
                     <input type="hidden" name="user_id" value="{{ currentUser.id }}">
                     <button class="room-window__button" name="ready_for_game" type="submit">Готов</button>
                 </form>

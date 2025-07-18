@@ -27,3 +27,8 @@ room_create:
     path: /room/createRoom
     methods: POST
     controller: App\Controller\RoomController::createRoom
+
+delete_room:
+    path: /room/deleteRoom
+    methods: POST
+    controller: App\Controller\RoomController::deleteRoom

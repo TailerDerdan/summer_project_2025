@@ -50,6 +50,17 @@ class RoomRepository extends ServiceEntityRepository implements RoomRepositoryIn
         }
     }
 
+    public function getHostIdById(int $roomId): int
+    {
+        $room = $this->find($roomId);
+        if ($room) {
+            return $room->getHostId();
+        }
+        else {
+            return throw new \Exception('Room not found');
+        }
+    }
+
     public function get(int $roomId): ?Room {
         return $this->find($roomId);
     }

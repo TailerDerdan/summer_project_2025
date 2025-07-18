@@ -41,6 +41,12 @@ class RoomController extends AbstractController {
         ]);
     }
 
+    public function deleteRoom(Request $request): Response
+    {
+        $roomId = $this->roomService->delete((int)($request->request['room_id']), (int)($request->request['user_id']));
+        return $this->roomMenu($request);
+    }
+
 //    public function createPage(): Response
 //    {
 //        return $this->render("Room/CreateRoom.html.twig");
