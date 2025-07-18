@@ -8,16 +8,16 @@
 
 {% block javascripts %}
     <script src="/scripts/joinRoom.js"></script>
+    <script src="/scripts/roomSettings.js"></script>
 {% endblock %}
 
 {% block body %}
     <div>
         <p>{{ room.name }}</p>
-        <p>{{ room.gamemode }}</p>
+        <p class="gameType">{{ room.gamemode }}</p>
         <p>{% if room.isOpen %}Открытая{% else %}Закрытая{% endif %}</p>
         <div class="user-list"></div>
         <a href="{{ path('main_page') }}">Назад</a>
         <button class="leave-room-btn" type="submit">Выйти</button>
-        <button type="submit">Играть</button>
     </div>
 {% endblock %}

@@ -30,14 +30,14 @@ class RoomController extends AbstractController {
         }
         $data = json_decode($request->getContent(), true);
         $roomData = [
-            "hostId" => $user->getUserId() ?? null,
+            "userId" => $user->getUserId() ?? null,
             "name" => $data['name'],
             "gamemode" => $data['gamemode'],
             "isOpen" => $data['isOpen'] ?? true,
         ];
         $roomId = $this->roomService->create($roomData);
-        $this->userService->updateRoomId($roomData["hostId"], $roomId);
-        $roomData["hostId"] = strval($roomId);
+        $this->userService->updateRoomId($roomData["userId"], $roomId);
+        $roomData["userId"] = strval($roomData["userId"]);
         $roomData["roomId"] = strval($roomId);
         $response = $this->httpClient->request(
             'POST',
@@ -52,13 +52,15 @@ class RoomController extends AbstractController {
         $statusCode = $response->getStatusCode();
         if ($statusCode != Response::HTTP_OK) {
             $errorContent = $response->getContent(false);
+            echo $errorContent;
             return new Response("Go service returned $statusCode: $errorContent", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $jsonContent = json_decode($response->getContent(), true);
         return $this->json([
             'roomId' => $jsonContent['roomId'],
-            'ws_url' => $jsonContent['ws_url'],
+            'userId' => $user->getUserId() ?? null,
+            'nickname' => $user->getNickname() ?? null,
         ]);
     }
 

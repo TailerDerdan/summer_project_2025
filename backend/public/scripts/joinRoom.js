@@ -1,33 +1,63 @@
 document.addEventListener("DOMContentLoaded", (e) => {
-    const connectionData = JSON.parse(sessionStorage.getItem('ws_connection_data'));
-
-    const { roomId, dataJson } = connectionData;
-    sessionStorage.removeItem('ws_connection_data');
-    const socket = connectToWSRoom(roomId, dataJson)
+    const dataJson = JSON.parse(sessionStorage.getItem('ws_join_data'));
+    sessionStorage.removeItem('ws_join_data');
+    console.log("dataJson: ", dataJson)
+    const socket = connectToWSRoom(dataJson)
     document.querySelector('.leave-room-btn').addEventListener('click', () => {
         if (socket && socket.readyState === WebSocket.OPEN) {
+            console.log('sending leaving from room')
             socket.send(JSON.stringify({
                 type: "leave_room",
+                data: {
+                    userId: (dataJson.data.userId).toString(),
+                    nickname: dataJson.data.nickname,
+                },
             }));
         }
     });
+    const startBtn = document.querySelector('.start-btn')
+    if (startBtn) {
+        startBtn.addEventListener('click', () => {
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                const gameType = document.querySelector(".gameType").textContent
+                socket.send(JSON.stringify({
+                    type: "start_game",
+                    data: {
+                        userId: (dataJson.userId).toString(),
+                        gameType: gameType,
+                    }
+                }));
+            }
+
+        });
+    }
 })
-function connectToWSRoom(roomId, dataUser)   {
-    const socket = new WebSocket(`ws://localhost:8080/ws/room/${roomId}`);
+function connectToWSRoom(dataUser)   {
+    console.log(typeof dataUser.roomId)
+    const socket = new WebSocket(`ws://localhost:8080/ws/room/${dataUser.roomId}`);
     socket.onopen = () => {
+        console.log('dataUser: ', dataUser)
         socket.send(JSON.stringify({
             type: "auth",
-            dataUser: {
-                userId: (dataUser.userId).toString(),
-                nickname: (dataUser.nickname).toString(),
+            data: {
+                userId: (dataUser.data.userId).toString(),
+                nickname: dataUser.data.nickname,
             }
         }));
+        console.log('====>: ', JSON.stringify({
+            type: "auth",
+            data: {
+                userId: (dataUser.data.userId).toString(),
+                nickname: dataUser.data.nickname,
+            }
+        }))
     };
 
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
+        console.log('data .....', data)
         if (data.type === 'user_joined') {
-            addUserToList(data.userId);
+            addUserToList(data.data.userId);
             showNotification(` присоединился к комнате`);
         } else if (data.type === 'room_info') {
             data.users.forEach(user => {
@@ -35,12 +65,18 @@ function connectToWSRoom(roomId, dataUser)   {
             });
         }
         if (data.type === 'leave_ack' || data.type === 'user_leaved') {
-            removeUserFromList(data.userId)
-            showNotification(`${data.userId}: ${data.nickname} вызодит из комнаты...`);
+            removeUserFromList(data.data.userId)
+            showNotification(`${data.data.userId}: ${data.data.nickname} вызодит из комнаты...`);
 
             if (data.type === 'leave_ack') {
                 window.location.href = '/main';
             }
+        }
+        if (data.type === 'start_game') {
+            handleGameStart(data, data.data.userId)
+        }
+        if (data.type === "not_all_ready") {
+            showNotification(`Не все игроки нажали кнопку "ГОТОВ"`);
         }
     }
     return socket
@@ -73,4 +109,22 @@ function showNotification(message) {
     setTimeout(() => notification.remove(), 3000);
 }
 
+function handleGameStart(data, userId) {
+    sessionStorage.setItem('gameSession', JSON.stringify({
+        userId: userId,
+        gameId: data.data.gameId,
+        gameType: data.data.gameType,
+    }))
+    let countStart = 5
+    const countStartElt = document.createElement("div")
+    document.body.appendChild(countStartElt)
+    const timer = setInterval(() => {
+        countStartElt.textContent = `Переход в игру через ${countStart}`
+        countStart--
+        if (countStart < 0) {
+            clearInterval(timer)
+            window.location.href = `/game/index.html?gameId=${data.data.gameId}`
+        }
+    })
+}
 

@@ -1,9 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.querySelector(".button")
-    if (!btn) {
-        console.error('Кнопка с классом ".button" не найдена');
-        return;
-    }
+    const btn = document.querySelector(".create-btn")
     btn.addEventListener('click', async (e) => {
         e.preventDefault()
         const formData = {
@@ -22,6 +18,17 @@ document.addEventListener('DOMContentLoaded', () => {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json()
+        sessionStorage.setItem('roomSettings', JSON.stringify({
+            userId: data.userId,
+        }))
+        sessionStorage.setItem('ws_join_data', JSON.stringify({
+            roomId: data.roomId,
+            data: {
+                userId: data.userId,
+                nickname: data.nickname,
+            }
+        }));
+        console.log(typeof data.roomId, data.roomId, "+++")
         window.location.href = ('/room/show/' + data.roomId)
     })
 })

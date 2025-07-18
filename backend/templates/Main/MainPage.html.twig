@@ -27,7 +27,7 @@
         <h2>Доступные комнаты:</h2>
 
         {% if rooms is empty %}
-            <p class="no-rooms">Нет доступных комнат</p>
+            <div class="room-list">Нет доступных комнат</div>
         {% else %}
             <div class="room-list">
                 {% for room in rooms %}

@@ -1,15 +1,19 @@
 package pkg
 
 import (
+	"crypto/rand"
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
+	"math/big"
 	"net/http"
 	"sync"
 )
 
 type WebSocketHandler struct {
 	rooms             map[string]*Room
+	activeGames       map[string]*Game
 	globalSubscribers map[*websocket.Conn]bool
 	upgrader          websocket.Upgrader
 	mu                sync.RWMutex
@@ -21,12 +25,12 @@ type Room struct {
 	Gamemode string
 	IsOpen   bool
 	HostID   string
-	Clients  map[*websocket.Conn]ClientInfo
+	Clients  map[*websocket.Conn]UserInfo
 }
 
-type ClientInfo struct {
-	UserID   string
-	Username string
+type PlayerInfo struct {
+	ID       string `json:"id"`
+	Username string `json:"username"`
 }
 
 type UserInfo struct {
@@ -34,9 +38,23 @@ type UserInfo struct {
 	Username string `json:"username"`
 }
 
+type Game struct {
+	ID      string
+	Type    string
+	RoomID  string
+	Players map[*websocket.Conn]PlayerInfo
+	State   GameState
+	mu      sync.RWMutex
+}
+
+type GameState struct {
+	Winner string `json:"winner,omitempty"`
+}
+
 func NewWebsocketHandler() *WebSocketHandler {
 	return &WebSocketHandler{
 		rooms:             make(map[string]*Room),
+		activeGames:       make(map[string]*Game),
 		globalSubscribers: make(map[*websocket.Conn]bool),
 		upgrader: websocket.Upgrader{
 			ReadBufferSize:  1024,
@@ -49,26 +67,28 @@ func NewWebsocketHandler() *WebSocketHandler {
 }
 
 func (h *WebSocketHandler) HandleConnection(w http.ResponseWriter, r *http.Request, roomID string) {
+	fmt.Println("0000")
 	conn, err := h.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("WebSocket upgrade failed: %v", err)
 		return
 	}
-
+	fmt.Println("1111")
 	var authMsg struct {
 		Type string            `json:"type"`
-		Data map[string]string `json:"dataUser"`
+		Data map[string]string `json:"data"`
 	}
-
+	fmt.Println("2222")
 	if err := conn.ReadJSON(&authMsg); err != nil || authMsg.Type != "auth" {
+		fmt.Println(authMsg.Type, "----", authMsg.Data)
 		conn.WriteJSON(map[string]string{"error": "Authentication required"})
 		conn.Close()
 		return
 	}
-
+	fmt.Println("3333")
 	userID := authMsg.Data["userId"]
 	nickname := authMsg.Data["nickname"]
-
+	fmt.Printf(`userID: %s roomID: %s`, userID, roomID)
 	if roomID == "" || userID == "" {
 		http.Error(w, "room_id and user_id are required", http.StatusBadRequest)
 		return
@@ -82,7 +102,8 @@ func (h *WebSocketHandler) HandleConnection(w http.ResponseWriter, r *http.Reque
 
 	for {
 		var msg struct {
-			Type string `json:"type"`
+			Type string            `json:"type"`
+			Data map[string]string `json:"data"`
 		}
 
 		if err := conn.ReadJSON(&msg); err != nil {
@@ -94,15 +115,41 @@ func (h *WebSocketHandler) HandleConnection(w http.ResponseWriter, r *http.Reque
 
 		switch msg.Type {
 		case "leave_room":
-			log.Printf("User %s requested to leave room %s", userID, roomID)
-			conn.WriteJSON(map[string]string{
-				"type":     "leave_ack",
-				"userId":   userID,
-				"nickname": nickname,
+			log.Printf("User %s requested to leave room %s", msg.Data["userId"], roomID)
+			conn.WriteJSON(map[string]interface{}{
+				"type": "leave_ack",
+				"data": map[string]string{
+					"userId":   msg.Data["userId"],
+					"nickname": msg.Data["nickname"],
+				},
 			})
 			return
+		case "start_game":
+			log.Printf("Attempt to start game from user: %s", userID)
+			h.handleStartGame(conn, roomID, userID, msg.Data["gameType"])
+			return
 		}
+
 	}
+}
+
+func (h *WebSocketHandler) checkAuthToStartGame(conn *websocket.Conn, roomID string, userID string) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	room := h.rooms[roomID]
+	if room == nil {
+		conn.WriteJSON(map[string]string{"error": "Room not found"})
+		conn.Close()
+		return
+	}
+
+	if room.HostID != userID {
+		conn.WriteJSON(map[string]string{"error": "Start game can only HOST user"})
+		conn.Close()
+		return
+	}
+	return
+
 }
 
 func (h *WebSocketHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Request) {
@@ -111,7 +158,7 @@ func (h *WebSocketHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	var request struct {
-		HostID   string `json:"hostId"`
+		HostID   string `json:"userId"`
 		Name     string `json:"name"`
 		Gamemode string `json:"gamemode"`
 		IsOpen   bool   `json:"isOpen"`
@@ -131,7 +178,7 @@ func (h *WebSocketHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Reque
 		Gamemode: request.Gamemode,
 		IsOpen:   request.IsOpen,
 		HostID:   request.HostID,
-		Clients:  make(map[*websocket.Conn]ClientInfo),
+		Clients:  make(map[*websocket.Conn]UserInfo),
 	}
 	h.mu.Lock()
 	h.rooms[request.RoomID] = room
@@ -144,7 +191,7 @@ func (h *WebSocketHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Reque
 			"name":     room.Name,
 			"gamemode": room.Gamemode,
 			"isOpen":   room.IsOpen,
-			"hostId":   room.HostID,
+			"userId":   room.HostID,
 		},
 	})
 
@@ -219,7 +266,7 @@ func (h *WebSocketHandler) getRoomList() []map[string]interface{} {
 			"name":     room.Name,
 			"gamemode": room.Gamemode,
 			"isOpen":   room.IsOpen,
-			"hostId":   room.HostID,
+			"userId":   room.HostID,
 		})
 	}
 	return rooms
@@ -233,12 +280,12 @@ func (h *WebSocketHandler) registerConnection(conn *websocket.Conn, roomID, user
 	if _, exists := h.rooms[roomID]; !exists {
 		h.rooms[roomID] = &Room{
 			RoomID:  roomID,
-			Clients: make(map[*websocket.Conn]ClientInfo),
+			Clients: make(map[*websocket.Conn]UserInfo),
 		}
 	}
 
-	h.rooms[roomID].Clients[conn] = ClientInfo{
-		UserID:   userID,
+	h.rooms[roomID].Clients[conn] = UserInfo{
+		ID:       userID,
 		Username: username,
 	}
 
@@ -256,7 +303,8 @@ func (h *WebSocketHandler) unregisterConnection(conn *websocket.Conn, roomID, us
 			go h.notifyUserLeft(roomID, clientInfo)
 		}
 
-		if len(room.Clients) == 0 {
+		if (len(room.Clients) == 0) || (room.HostID == userID) {
+			fmt.Println("Host disconnected or 0 clients")
 			delete(h.rooms, roomID)
 		}
 	}
@@ -269,13 +317,15 @@ func (h *WebSocketHandler) notifyUserJoined(roomID, userID, username string) {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 	msg := map[string]interface{}{
-		"type":     "user_joined",
-		"userId":   userID,
-		"nickname": username,
+		"type": "user_joined",
+		"data": map[string]string{
+			"userId":   userID,
+			"nickname": username,
+		},
 	}
 	if room, exists := h.rooms[roomID]; exists {
 		for clientConn := range room.Clients {
-			if clientConn != nil {
+			if clientConn != nil && room.HostID != userID {
 				clientConn.WriteJSON(msg)
 			}
 		}
@@ -290,7 +340,7 @@ func (h *WebSocketHandler) sendRoomInfo(conn *websocket.Conn, roomID string) {
 		users := make([]UserInfo, 0, len(room.Clients))
 		for _, client := range room.Clients {
 			users = append(users, UserInfo{
-				ID:       client.UserID,
+				ID:       client.ID,
 				Username: client.Username,
 			})
 		}
@@ -302,18 +352,99 @@ func (h *WebSocketHandler) sendRoomInfo(conn *websocket.Conn, roomID string) {
 	}
 }
 
-func (h *WebSocketHandler) notifyUserLeft(roomID string, clientInfo ClientInfo) {
+func (h *WebSocketHandler) notifyUserLeft(roomID string, clientInfo UserInfo) {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 
 	if room, exists := h.rooms[roomID]; exists {
 		msg := map[string]interface{}{
-			"type":     "user_leaved",
-			"userId":   clientInfo.UserID,
-			"nickname": clientInfo.Username,
+			"type": "user_leaved",
+			"data": map[string]interface{}{
+				"userId":   clientInfo.ID,
+				"nickname": clientInfo.Username,
+			},
 		}
 		for conn := range room.Clients {
 			conn.WriteJSON(msg)
 		}
 	}
+}
+
+func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.Request, gameID string) {
+	conn, err := h.upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Printf("Game WS upgrade failed: %v", err)
+		return
+	}
+
+	h.mu.RLock()
+	game, exists := h.activeGames[gameID]
+	h.mu.RUnlock()
+
+	if !exists {
+		conn.WriteJSON(map[string]string{"error": "Game not found"})
+		conn.Close()
+		return
+	}
+
+	var auth struct {
+		Type string            `json:"userId"`
+		Data map[string]string `json:"data"`
+	}
+	if err := conn.ReadJSON(&auth); err != nil {
+		conn.Close()
+		return
+	}
+
+	h.mu.Lock()
+	game.Players[conn] = PlayerInfo{
+		ID:       auth.Data["userId"],
+		Username: auth.Data["username"],
+	}
+	h.mu.Unlock()
+}
+
+func (h *WebSocketHandler) handleStartGame(conn *websocket.Conn, roomID, userID, gameType string) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	h.checkAuthToStartGame(conn, roomID, userID)
+	gameID := generateGameID(gameType)
+
+	startMsg := map[string]interface{}{
+		"type": "start_game",
+		"data": map[string]string{
+			"gameId":   gameID,
+			"gameType": gameType,
+		},
+	}
+
+	room := h.rooms[roomID]
+
+	h.activeGames[gameID] = &Game{
+		RoomID: roomID,
+		Type:   gameType,
+	}
+
+	for conn := range room.Clients {
+		if err := conn.WriteJSON(startMsg); err != nil {
+			log.Printf("Failed to send start command: %v", err)
+		}
+	}
+}
+
+func generateGameID(gameType string) string {
+	const charset = "ABCDEFGHJIKLMNPOQRSTUVWXYZ0123456789"
+	idPart := make([]byte, 9)
+
+	for i := range idPart {
+		if i == 4 {
+			idPart[i] = '-'
+			continue
+		}
+		num, _ := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
+		idPart[i] = charset[num.Int64()]
+	}
+
+	return fmt.Sprintf("%s-%s", gameType, string(idPart))
 }
