@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Меню{% endblock %}</title>
+        {% block stylesheets %}
+            <link href="styles/room_menu.css" rel="stylesheet">
+        {% endblock %}
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        {% block body %}
+            <audio id="music_for_menu" autoplay loop>
+                <source src="../../public/music/Baron.mp3" type="audio/mpeg">
+            </audio>
+            <div class="menu-bar">
+                <div class="menu-bar__buttons">
+                    <form action="{{ path() }}" method="POST">
+                        <input type="hidden" name="user_id" value="{{ currentUser.id }}">
+                        <button class="menu-bar__buttons-item" name="go_to_profile" type="submit">
+                            <img class="menu-bar__buttons-item-photo" src="../../public/images/profile.png" alt="Перейти в профиль">
+                        </button>
+                    </form>
+                    <button class="menu-bar__buttons-item" name="go_to_parameters">
+                        <img class="menu-bar__buttons-item-photo" src="../../public/images/parameters.png" alt="Перейти к настройкам">
+                    </button>
+                    <form action="{{ path() }}">
+                        <button class="menu-bar__buttons-item" name="leave_game" type="submit">
+                            <img class="menu-bar__buttons-item-photo" src="../../public/images/leave.png" alt="Выйти из игры">
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="parameters" id="parameters">
+                <div class="parameters-content">
+                    <div class="parameters-list">
+                        <div class="parameters-list-item">
+                            <label class="parameters-volume-title" for="volume">Громкость</label>
+                            <input class="parameters-volume-slider" type="range" id="volume" name="volume" min="0" max="1" value="0.6" step="0.1">
+                        </div>
+                    </div>
+                    <button class="parameters-close" id="close_parameters">Закрыть настройки</button>
+                </div>
+            </div>
+            <div class="room-menu">
+                <div class="room-menu__header">
+                    <p class="room-menu__header-text">Игровые комнаты</p>
+                    <button class="room-menu__create-room" name="create_room">
+                        Создать комнату
+                    </button>
+                </div>
+                <div class="room-menu__room-list">
+                    {% for room in rooms %}
+                        <div class="room-menu__room-list-item">
+                            <div class="room-list-item__main">
+                                <div class="room-list-item__header">
+                                    <p class="room-list-item__name">{{ room.name }}</p>
+                                    {% if not room.isOpen %}
+                                        <img class="room-list-item__status-indicator" src="../../public/images/lock.png" alt="">
+                                    {% endif %}
+                                </div>
+                                <div class="room-list-item__avatar-list">
+                                    {% for player in room.players %}
+                                        <img class="room-list-item__avatar-list-item" src="{{ player.avatar_path }}" alt="Аватар">
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="room-list-item__extra">
+                                {% if players|length < 6 %}
+                                    <p class="room-list-item__fill-indicator">{{ players|length }}/6</p>
+                                {% else %}
+                                    <p class="room-list-item__fill-indicator-full">6/6</p>
+                                {% endif %}
+                                <p class="room-list-item__gamemode">{{ room.gamemode }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="create-room" id="create_room">
+                <p class="create-room__header">Создание комнаты</p>
+                <div class="create-room__main">
+                    <div class="create-room__parameters-room-list">
+                        <form class="create-room__parameters-room-list-content" id="room_parameters" action="{{ path() }}" method="POST">
+                            <div class="create-room__parameters-room-list-item">
+                                <label class="parameters-room-list-item__header" for="room_name">Введите ваше название</label><br>
+                                <input class="parameters-room-list-item__input" type="text" id="room_name" name="room_name"><br><br>
+                            </div>
+                            <div class="create-room__parameters-room-list-item">
+                                <label class="parameters-room-list-item__header-room-playmode" for="room_playmode">Выберите режим игры</label><br>
+                                <select class="room-playmode-list" id="room_playmode" name="room_playmode">
+                                    <option class="room-playmode-list-item" value="standard">Стандарт</option>
+                                    <option class="room-playmode-list-item" value="invisibility">Невидимость</option>
+                                    <option class="room-playmode-list-item" value="fog_of_war">Туман войны</option>
+                                    <option class="room-playmode-list-item" value="arms_race">Гонка вооружений</option>
+                                </select>
+                                <br><br>
+                            </div>
+                            <div class="create-room__parameters-room-list-item">
+                                <label class="parameters-room-list-item__header" for="room_open">Сделать комнату закрытой?</label><br>
+                                <select class="room-open-list" id="room_open" name="room_open">
+                                    <option class="room-open-list-item" value="open">Нет</option>
+                                    <option class="room-open-list-item" value="closed">Да</option>
+                                </select>
+                                <br><br>
+                            </div>
+                            <div class="create-room__parameters-room-list-item">
+                                <label class="parameters-room-list-item__header" for="room_password">Установите пароль</label><br>
+                                <input class="parameters-room-list-item__input" type="password" id="room_password" name="room_password"><br><br>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="create-room__main-decorations">
+                        <img src="../../public/images/cool_man.png" alt="Здесь должна быть картинка с крутым чуваком">
+                    </div>
+                </div>
+                <div class="create-room__buttons">
+                    <button class="create-room__button" id="create_room_cancel" name="create_room_cancel_action">Отменить</button>
+                    <button class="create-room__button" form="room_parameters" type="submit">Создать комнату</button>
+                </div>
+            </div>
+            {% block javascripts %}
+                <script src="../../public/scripts/create_room_window_handler.js"></script>
+                <script src="../../public/scripts/parameters_handler.js"></script>
+                <script src="../../public/scripts/volume_controller.js"></script>
+            {% endblock %}
+        {% endblock %}
+    </body>
+</html>
