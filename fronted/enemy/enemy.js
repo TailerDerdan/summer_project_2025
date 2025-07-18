@@ -1,3 +1,4 @@
+import { canvasWebgl } from "../canvas.js";
 import { Container } from "../collisions/collisions.js";
 import { randomPosition } from "../random.js";
 import { Sound } from "../soundsScript/sound.js";
@@ -18,6 +19,7 @@ class Enemy
         this.height = height;
         this.dir = dir;
         this.container = new Container(width, height, x, y, dir);
+        this.lightPosition = {x: 0, y: -1};
 
         this.isEnemyLive = true;
 
@@ -104,8 +106,10 @@ class Enemy
         appearance(this);
     }
 
-    updateEnemy()
+    updateEnemy(xView, yView)
     {
+        this.lightPosition.x = ((this.x - xView) / canvasWebgl.width) * 2 - 1;
+        this.lightPosition.y = -(((this.y - yView) / canvasWebgl.height) * 2 - 1);
         if (this.wasEnemyWounded)
         {
             this.spriteBlood.playAnimation()

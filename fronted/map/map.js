@@ -32,8 +32,8 @@ class Map
     generate(ctx)
     {
         this.generateRectWall(20, 20, 10, 8);
-        // this.generateRectWall(10, 10, 2, 3);
-        // console.log(21)
+        this.generateRectWall(10, 10, 2, 3);
+        console.log(21)
 
         let color = COLOR_FLOOR;
         ctx.save();

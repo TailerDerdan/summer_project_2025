@@ -45,7 +45,7 @@ export const InitShotgun = {
     weight: 1.6,
     timeReload: 5,
     damage: 2,
-    speedBullet: 3,
+    speedBullet: 15,
     typeShooting: TYPE_SHOOTING.FIRING_A_BURST
 }
 

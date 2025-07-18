@@ -15,8 +15,6 @@ const updateKeyDict = (event) => {
     }
 };
 
-export const lightPosition = {x: 0, y: -1};
-
 export const updateMovementPlayer = (xView, yView, deltaTime) => {
 
     let playerDir = player.dir;
@@ -55,8 +53,8 @@ export const updateMovementPlayer = (xView, yView, deltaTime) => {
         player.sprite.updateFrames(deltaTime);
     }
 
-    lightPosition.x = ((player.x - xView) / canvasWebgl.width) * 2 - 1;
-    lightPosition.y = -(((player.y - yView) / canvasWebgl.height) * 2 - 1);
+    player.lightPosition.x = ((player.x - xView) / canvasWebgl.width) * 2 - 1;
+    player.lightPosition.y = -(((player.y - yView) / canvasWebgl.height) * 2 - 1);
 
     player.drawPlayer(ctx, xView, yView);
 }

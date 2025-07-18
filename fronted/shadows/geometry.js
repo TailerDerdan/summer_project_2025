@@ -54,25 +54,25 @@ export function calculateGeometry(inputs)
 
     // console.log(ea, eb)
 
-    if (ea.y >= 0 && ea.y <= 0.75 && Math.abs(ea.x) >= 1.8)
-    {
-        ea.y = 0.8;
-    }
+    // if (ea.y >= 0 && ea.y <= 0.75 && Math.abs(ea.x) >= 1.8)
+    // {
+    //     ea.y = 0.8;
+    // }
 
-    if (eb.y >= 0 && eb.y <= 0.75 && Math.abs(eb.x) >= 1.8)
-    {
-        eb.y = 0.8;
-    }
+    // if (eb.y >= 0 && eb.y <= 0.75 && Math.abs(eb.x) >= 1.8)
+    // {
+    //     eb.y = 0.8;
+    // }
 
-    if (ea.y <= 0 && ea.y >= -0.75 && Math.abs(ea.x) >= 1.8)
-    {
-        ea.y = -0.8;
-    }
+    // if (ea.y <= 0 && ea.y >= -0.75 && Math.abs(ea.x) >= 1.8)
+    // {
+    //     ea.y = -0.8;
+    // }
 
-    if (eb.y <= 0 && eb.y >= -0.75 && Math.abs(eb.x) >= 1.8)
-    {
-        eb.y = -0.8;
-    }
+    // if (eb.y <= 0 && eb.y >= -0.75 && Math.abs(eb.x) >= 1.8)
+    // {
+    //     eb.y = -0.8;
+    // }
 
     return new Float32Array([
         inputs.a.x,

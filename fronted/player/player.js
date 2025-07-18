@@ -1,7 +1,7 @@
 import { Container } from '../collisions/collisions.js';
 import { randomPosition } from '../random.js';
 import { Sprite } from '../spriteScript/spriteScript.js';
-import { InitAssaultRifle, TYPE_WEAPON, Weapon } from './../weapon/typeWeapons.js';
+import { InitAssaultRifle, InitShotgun, TYPE_WEAPON, Weapon } from './../weapon/typeWeapons.js';
 
 // const WIDTH_FRAME = 23;
 // const HEIGHT_FRAME = 34;
@@ -30,6 +30,8 @@ export class Player
 
         this.sprite = new Sprite(COUNT_FRAMES, './fronted/sprites/enemySprite.png', 0.1, true);
         this.sprite.makeFrames(WIDTH_FRAME, HEIGHT_FRAME, START_X);
+
+        this.lightPosition = {x: 0, y: -1};
     }
 
     getCenterX() { return this.x + this.width / 2; }
@@ -133,6 +135,6 @@ export class Player
     }
 }
 
-const weapon1 = new Weapon(InitAssaultRifle, TYPE_WEAPON.ASSAULT_RIFLE);
+const weapon1 = new Weapon(InitShotgun, TYPE_WEAPON.SHOTGUN);
 
-export const player = new Player(400, 400, 3, 0, 75, 48, weapon1);
+export const player = new Player(400, 400, 8, 0, 75, 48, weapon1);

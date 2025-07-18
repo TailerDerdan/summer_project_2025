@@ -1,8 +1,9 @@
 import { camera } from "../camera/camera.js";
 import { canvas, canvasWebgl, gl, state } from "../canvas.js";
+import { enemy1 } from "../enemy/enemy.js";
 import { map } from "../map/map.js";
-import { lightPosition } from "../player/movement.js";
-import { calculateGeometry, Vec2 } from "./geometry.js";
+import { player } from "../player/player.js";
+import { calculateGeometry } from "./geometry.js";
 
 export const texture2D = gl.createTexture();
 
@@ -12,6 +13,12 @@ export function updateTexture()
 
     gl.bindTexture(gl.TEXTURE_2D, texture2D);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
     gl.texImage2D(
         gl.TEXTURE_2D,
         0,
@@ -20,9 +27,6 @@ export function updateTexture()
         gl.UNSIGNED_BYTE,
         canvas
     );
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 }
 
 async function setup()
@@ -74,10 +78,6 @@ async function setup()
             fetch("./fronted/shadows/shaders/light.frag").then(res => res.text()),
     ]);
 
-    // const sceneTexture = twgl.createTexture(gl, {
-    //     src: "./fronted/shadows/assets/scene.jpg",
-    // });
-
     const sceneTexture = texture2D;
 
     let vertexShaderSrcScene, fragmentShaderSrcScene;
@@ -106,7 +106,6 @@ async function setup()
         gl,
         programInfo,
         shadowBuffer,
-        lightPosition,
         quadBuffer,
         lightTexture,
         lightProgram,
@@ -123,7 +122,6 @@ export function render(state)
         gl,
         programInfo,
         shadowBuffer,
-        lightPosition,
         lightBuffer,
         lightTexture,
         lightProgram,
@@ -132,6 +130,11 @@ export function render(state)
         sceneProgram,
         sceneTexture
     } = state;
+
+    const lightPositions = [];
+    lightPositions.push(player.lightPosition);
+    lightPositions.push(enemy1.lightPosition);
+
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     twgl.bindFramebufferInfo(gl, shadowFrameBuffer)
@@ -147,52 +150,53 @@ export function render(state)
     const vertices = [];
     for (const wall of map.walls)
     {
-        vertices.push(...calculateGeometry(
-            {
-                light: lightPosition,
-                a: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView)}),
-                b: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView)}),
-                lightRadius: 3,
-            }
-        ));
+        for (const lightPosition of lightPositions)
+        {
+            console.log(lightPosition);
+            vertices.push(...calculateGeometry(
+                {
+                    light: lightPosition,
+                    a: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView)}),
+                    b: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView)}),
+                    lightRadius: 3,
+                }
+            ));
 
-        vertices.push(...calculateGeometry(
-            {
-                light: lightPosition,
-                a: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView)}),
-                b: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView) + wall.height}),
-                lightRadius: 3,
-            }
-        ));
+            vertices.push(...calculateGeometry(
+                {
+                    light: lightPosition,
+                    a: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView)}),
+                    b: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView) + wall.height}),
+                    lightRadius: 3,
+                }
+            ));
 
-        vertices.push(...calculateGeometry(
-            {
-                light: lightPosition,
-                a: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView) + wall.height}),
-                b: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView) + wall.height}),
-                lightRadius: 3,
-            }
-        ));
+            vertices.push(...calculateGeometry(
+                {
+                    light: lightPosition,
+                    a: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView) + wall.height}),
+                    b: canvasToGlCoords({x: (wall.x - camera.xView) + wall.width, y: (wall.y - camera.yView) + wall.height}),
+                    lightRadius: 3,
+                }
+            ));
 
-        vertices.push(...calculateGeometry(
-            {
-                light: lightPosition,
-                a: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView)}),
-                b: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView) + wall.height}),
-                lightRadius: 3,
-            }
-        ));
+            vertices.push(...calculateGeometry(
+                {
+                    light: lightPosition,
+                    a: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView)}),
+                    b: canvasToGlCoords({x: (wall.x - camera.xView), y: (wall.y - camera.yView) + wall.height}),
+                    lightRadius: 3,
+                }
+            ));
+        }
     }
 
     twgl.setAttribInfoBufferFromArray(gl, shadowBuffer.attribs.vertex, vertices);
     shadowBuffer.numElements = vertices.length / 2;
-
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
     gl.useProgram(programInfo.program);
     twgl.setBuffersAndAttributes(gl, programInfo, shadowBuffer);
-    
     twgl.drawBufferInfo(gl, shadowBuffer);
 
     //Draw light
@@ -223,9 +227,11 @@ export function render(state)
     twgl.setBuffersAndAttributes(gl, sceneProgram, lightBuffer);
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, sceneTexture);
+    const aspect = canvas.width / canvas.height;
     twgl.setUniforms(sceneProgram, {
         lightTexture: sceneFramebuffer.attachments[0],
         sceneTexture: sceneTexture,
+        canvasAspect: [aspect, 1.0],
     })
     twgl.drawBufferInfo(gl, lightBuffer);
 }
