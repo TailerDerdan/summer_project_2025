@@ -3,7 +3,11 @@
 {% block title %}Create Room{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" href="styles/login.css">
+<link rel="stylesheet" href="/styles/login.css">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="/scripts/action.js"></script>
 {% endblock %}
 
 {% block body %}
@@ -11,37 +15,37 @@
      <form method="POST" action="{{ path('room_create') }}">
         <div>
             <label for="name">Название комнаты</label>
-            <input type="text" id="name" name="name" required placeholder="Введите название">
+            <input class="room-name" type="text" id="name" name="name" required placeholder="Введите название">
         </div>
-        
+
         <div>
             <label>Режим боя:</label>
             <div>
                 <label>
-                    <input type="radio" name="game_mode" value="deathmatch" checked>
+                    <input class="gamemode" type="radio" name="gamemode" value="deathmatch" checked>
                     Помеситься
                 </label>
                 <label>
-                    <input type="radio" name="game_mode" value="team">
+                    <input class="gamemode" type="radio" name="gamemode" value="team">
                     Гонка вооружений
                 </label>
                 <label>
-                    <input type="radio" name="game_mode" value="capture">
+                    <input class="gamemode" type="radio" name="gamemode" value="capture">
                     Захват флага
                 </label>
             </div>
         </div>
-        
+
         <div>
             <label>
-                <input type="checkbox" name="is_private">
+                <input type="checkbox" name="isOpen" class="is-open">
                 Приватная комната
             </label>
         </div>
-        
-        <button type="submit">Создать комнату</button>
+
+        <button class="button" type="submit">Создать комнату</button>
     </form>
-    
+
     <a href="{{ path('main_page') }}">Назад</a>
 </div>
 {% endblock %}

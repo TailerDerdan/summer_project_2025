@@ -1,14 +1,14 @@
-CREATE TABLE play_room
+CREATE TABLE room
 (
-    `room_id`          INT             NOT NULL AUTO_INCREMENT,
-    `room_name`        VARCHAR(255)    NOT NULL,
-    `room_gamemode`    VARCHAR(255)    NOT NULL,
-    `room_open`        TINYINT(1)      NOT NULL,
-    `room_running`     TINYINT(1)      NOT NULL,
-    `time_create`      TIMESTAMP       NOT NULL,
+    `id`          INT             NOT NULL AUTO_INCREMENT,
     `host_id`          INT             NOT NULL,
-    PRIMARY KEY (`room_id`),
-    UNIQUE INDEX `room_name_idx` (`room_name`)
+    `name`        VARCHAR(255)    NOT NULL,
+    `gamemode`    VARCHAR(255)    NOT NULL,
+    `is_open`    TINYINT(1)      NOT NULL,
+    `is_run`     TINYINT(1)      NOT NULL,
+    `time_create`      TIMESTAMP       NOT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE INDEX `room_name_idx` (`name`)
 );
 
 CREATE TABLE user

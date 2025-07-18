@@ -9,38 +9,37 @@ use App\Infrastructure\Player\PlayerInterface;
 class Player implements PlayerInterface {
     private const BASE_SPEED = 100;
 
-    //TODO добавить скорость игроку 
     public function __construct(
-        private int $id, 
+        private int $id,
         private int $roomId,
-        private string $name, 
-        private int $health, 
+        private string $name,
+        private int $health,
         private Weapon $currentWeapon,
         private array $weapons = [],
         private int $currentSpeed,
         private int $speed,
     ) {}
 
-    public function getId(): int { 
-        return $this->id; 
+    public function getId(): int {
+        return $this->id;
     }
-    public function getRoomId(): int { 
-        return $this->roomId; 
+    public function getRoomId(): int {
+        return $this->roomId;
     }
-    public function getName(): string { 
-        return $this->name; 
+    public function getName(): string {
+        return $this->name;
     }
-    public function getHealth(): int { 
-        return $this->health; 
+    public function getHealth(): int {
+        return $this->health;
     }
-    public function getCurrentSpeed(): int { 
-        return $this->currentSpeed; 
+    public function getCurrentSpeed(): int {
+        return $this->currentSpeed;
     }
-    public function getCurrentWeapon(): Weapon { 
-        return $this->currentWeapon; 
+    public function getCurrentWeapon(): Weapon {
+        return $this->currentWeapon;
     }
-    public function getSpeed(): int { 
-        return $this->speed; 
+    public function getSpeed(): int {
+        return $this->speed;
     }
 
     public function takeDamage(): void {

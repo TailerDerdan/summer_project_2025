@@ -43,7 +43,12 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
     public function delete(int $userId): void {
 
     }
-    public function update(User $user): void {
+    public function update(User $user): void
+    {
 
+    }
+    public function updateRoomId(int $userId, int $roomId): void {
+        $user = $this->find($userId);
+        $user->setRoomId($roomId);
     }
 }
