@@ -2,9 +2,8 @@
 
 declare (strict_types=1);
 
-namespace App\Repository;
+namespace App\Infrastructure\Room;
 
-use App\Entity\User\User;
 use App\Entity\Room\PlayRoom;
 
 interface RoomHandlerRepositoryInterface

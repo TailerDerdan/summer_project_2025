@@ -8,40 +8,46 @@ use App\Infrastructure\Room\RoomServiceInterface;
 use App\Infrastructure\Room\RoomRepositoryInterface;
 
 class RoomService implements RoomServiceInterface {
+    private const DEFAULT_VALUE_FOR_UNREACHABLE_PARAMS = 0;
     public function __construct(private RoomRepositoryInterface $roomRepository) {
     }
     public function create(array $roomData): ?int {
+        $isOpen = ($roomData['room_open'] ?? 'open') === 'open';
         $room = new Room(
             null,
-            $roomData['hostId'],
-            $roomData['name'],
-            $roomData['gamemode'],
-            $roomData['isOpen'] ?? true,
+            $roomData['user_id'],
+            $roomData['room_name'],
+            $roomData['room_playmode'],
+            $isOpen,
             false,
             new \DateTime(),
         );
         $roomId = $this->roomRepository->create($room);
         return $roomId;
     }
+
+    public function update(int $roomId, array $roomData): ?int {
+        $isOpen = ($roomData['room_open'] ?? 'open') === 'open';
+        $room = new Room(
+            null,
+            DEFAULT_VALUE_FOR_UNREACHABLE_PARAMS,
+            $roomData['room_name'],
+            $roomData['room_playmode'],
+            $isOpen,
+            $roomData['room_running'] ?? false,
+            DEFAULT_VALUE_FOR_UNREACHABLE_PARAMS
+        );
+        $roomId = $this->roomRepository->update($roomId, $room);
+        return $roomId;
+    }
+
+    public function delete(int $roomId): ?int {
+        $roomId = $this->roomRepository->deleteById($roomId);
+        return $roomId;
+    }
+
     public function get(int $roomId): ?Room {
         return $this->roomRepository->get($roomId);
-    }
-
-    public function createPlayRoom($roomParams): int
-    {
-        // TODO: Implement createPlayRoom() method.
-        return $this->roomRepository->create($roomParams);
-    }
-
-    public function updatePlayRoom($roomParams, $roomId): int
-    {
-        // TODO: Implement updatePlayRoom() method.
-        return 1;
-    }
-
-    public function deletePlayRoom($roomId): void
-    {
-        // TODO: Implement deletePlayRoom() method.
     }
 
     public function getAll(): ?array

@@ -4,8 +4,9 @@ declare(strict_types= 1);
 
 namespace App\Repository;
 
+use App\Entity\Room\Room;
 use App\Entity\User\User;
-use App\Entity\Room\PlayRoom;
+use App\Infrastructure\Room\RoomHandlerRepositoryInterface;
 
 class RoomHandlerRepository implements RoomHandlerRepositoryInterface
 {

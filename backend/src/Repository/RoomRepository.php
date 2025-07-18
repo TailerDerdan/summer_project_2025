@@ -20,6 +20,36 @@ class RoomRepository extends ServiceEntityRepository implements RoomRepositoryIn
         $this->getEntityManager()->flush();
         return $room->getId();
     }
+
+    public function update(int $roomId, Room $newRoom): int
+    {
+        $room = $this->find($roomId);
+        if (!$room) {
+            return throw new \Exception('Room not found');
+        }
+        else {
+            $room->setName($newRoom->getName());
+            $room->setGamemode($newRoom->getGamemode());
+            $room->setOpen($newRoom->isOpen());
+            $room->setRunning($newRoom->isRunning());
+            $this->getEntityManager->flush();
+            return $room->getId();
+        }
+    }
+
+    public function deleteById(int $roomId): int
+    {
+        $room = $this->find($roomId);
+        if ($room) {
+            $this->getEntityManager()->remove($room);
+            $this->getEntityManager()->flush();
+            return $room->getId();
+        }
+        else {
+            return throw new \Exception('Room not found');
+        }
+    }
+
     public function get(int $roomId): ?Room {
         return $this->find($roomId);
     }
