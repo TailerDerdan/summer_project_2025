@@ -1,4 +1,4 @@
-import { HEIGHT_MAP, WIDTH_MAP } from "./canvas.js";
+import { HEIGHT_MAP, WIDTH_MAP } from "./sizes.js";
 
 
 export function randomPosition()

@@ -1,4 +1,4 @@
-import { canvas, HEIGHT_MAP, WIDTH_MAP } from "../canvas.js";
+import { HEIGHT_MAP, WIDTH_MAP } from "../sizes.js";
 import { player } from "../player/player.js";
 
 class WrapperRect
@@ -44,7 +44,7 @@ class WrapperRect
     }
 }
 
-class Camera
+export class Camera
 {
     constructor(xView, yView, viewportWidth, viewportHeight, worldWidth, worldHeight)
     {

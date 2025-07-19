@@ -10,6 +10,7 @@ import { player } from './player/player.js';
 import { render, texture2D, updateTexture } from './shadows/shadows.js';
 
 const clock = new Clock();
+map.generate(ctx);
 
 function gameLoop()
 {

@@ -3,15 +3,15 @@ import { randomPosition } from '../random.js';
 import { Sprite } from '../spriteScript/spriteScript.js';
 import { InitAssaultRifle, InitShotgun, TYPE_WEAPON, Weapon } from './../weapon/typeWeapons.js';
 
-// const WIDTH_FRAME = 23;
-// const HEIGHT_FRAME = 34;
-// const START_X = 0;
-// const COUNT_SPRITE = 10;
-
-const WIDTH_FRAME = 25;
-const HEIGHT_FRAME = 16;
+const WIDTH_FRAME = 23;
+const HEIGHT_FRAME = 34;
 const START_X = 0;
-const COUNT_FRAMES = 8;
+const COUNT_FRAMES = 10;
+
+// const WIDTH_FRAME = 25;
+// const HEIGHT_FRAME = 16;
+// const START_X = 0;
+// const COUNT_FRAMES = 8;
 
 export class Player
 {
@@ -28,7 +28,7 @@ export class Player
 
         this.isPlayerLive = true;
 
-        this.sprite = new Sprite(COUNT_FRAMES, './fronted/sprites/enemySprite.png', 0.1, true);
+        this.sprite = new Sprite(COUNT_FRAMES, './fronted/sprites/playerSprite.png', 0.1, true);
         this.sprite.makeFrames(WIDTH_FRAME, HEIGHT_FRAME, START_X);
 
         this.lightPosition = {x: 0, y: -1};
@@ -137,4 +137,4 @@ export class Player
 
 const weapon1 = new Weapon(InitShotgun, TYPE_WEAPON.SHOTGUN);
 
-export const player = new Player(400, 400, 8, 0, 75, 48, weapon1);
+export const player = new Player(400, 400, 12, 0, 75, 48, weapon1);

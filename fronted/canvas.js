@@ -1,11 +1,4 @@
-export const TILE_WIDTH = 16;
-export const TILE_HEIGHT = 16;
-
-export const COUNT_TILE_X = 256;
-export const COUNT_TILE_Y = 256;
-
-export const WIDTH_MAP = TILE_WIDTH * COUNT_TILE_X;
-export const HEIGHT_MAP = TILE_HEIGHT * COUNT_TILE_Y;
+import { HEIGHT_MAP, WIDTH_MAP } from "./sizes.js";
 
 export const canvas = document.createElement('canvas');
 canvas.width = WIDTH_MAP;
@@ -13,7 +6,7 @@ canvas.height = HEIGHT_MAP;
 export const ctx = canvas.getContext('2d');
 
 export const canvasWebgl = document.getElementById('webgl-display');
-export const gl = canvasWebgl.getContext('webgl');
+export const gl = canvasWebgl.getContext('webgl2');
 
 export const state = {
     gl: null,

@@ -1,11 +1,19 @@
-import { COUNT_TILE_X, COUNT_TILE_Y, ctx, HEIGHT_MAP, TILE_HEIGHT, TILE_WIDTH, WIDTH_MAP } from "../canvas.js";
-import { camera } from "../camera/camera.js";
 import { Container } from "../collisions/collisions.js";
+import { COUNT_TILE_X, COUNT_TILE_Y, HEIGHT_MAP, TILE_HEIGHT, TILE_WIDTH, WIDTH_MAP } from "../sizes.js";
 
 export const COLOR_FLOOR = 'rgba(179, 211, 0, 1)';
 export const COLOR_WALL = 'rgba(231, 40, 10, 1)';
 
-class Map
+export class Wall
+{
+    constructor(x, y)
+    {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+export class Map2D
 {
     constructor(width, height)
     {
@@ -13,6 +21,7 @@ class Map
         this.height = height;
         this.tileMap = new Array(COUNT_TILE_X * COUNT_TILE_Y).fill(0);
         this.walls = [];
+        this.wallsAddingByEditor = [];
         this.image = null;
     }
 
@@ -30,11 +39,7 @@ class Map
     }
 
     generate(ctx)
-    {
-        this.generateRectWall(20, 20, 10, 8);
-        this.generateRectWall(10, 10, 2, 3);
-        console.log(21)
-
+    {        
         let color = COLOR_FLOOR;
         ctx.save();
         ctx.fillStyle = color;
@@ -69,6 +74,20 @@ class Map
         this.image.src = ctx.canvas.toDataURL("image/png");
     }
 
+    putWall(x, y)
+    {
+        this.wallsAddingByEditor.push(new Wall(x, y));
+    }
+
+    updateWalls(ctx, xView, yView)
+    {
+        this.wallsAddingByEditor.forEach((elem) => {
+            ctx.fillStyle = COLOR_WALL;
+            ctx.rect(elem.x * TILE_WIDTH - xView, elem.y * TILE_HEIGHT - yView, TILE_WIDTH, TILE_HEIGHT);
+            ctx.fill();
+        });
+    }
+
     draw(ctx, xView, yView)
     {
         let sourceX = xView;
@@ -95,5 +114,4 @@ class Map
     }
 }
 
-export const map = new Map(WIDTH_MAP, HEIGHT_MAP);
-map.generate(ctx);
+export const map = new Map2D(WIDTH_MAP, HEIGHT_MAP);
