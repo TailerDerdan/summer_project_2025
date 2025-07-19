@@ -1,117 +1,70 @@
-<!DOCTYPE html>
-<html lang="ru">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}Меню{% endblock %}</title>
-        {% block stylesheets %}
-            <link href="styles/room_lobby.css" rel="stylesheet">
-        {% endblock %}
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&display=swap" rel="stylesheet">
-    </head>
-    <body id="page_body">
-        {% block body %}
-            <audio id="music_for_menu" autoplay loop>
-                <source src="../../public/music/Baron.mp3" type="audio/mpeg">
-            </audio>
-            <div class="menu-bar">
-                <div class="menu-bar__buttons">
-                    <form action="{{ path() }}">
-                        <input type="hidden" name="user_id" value="{{ currentUser.id }}">
-                        <button class="menu-bar__buttons-item" name="go_to_profile" type="submit">
-                            <img class="menu-bar__buttons-item-photo" src="../../public/images/profile.png" alt="Перейти в профиль">
-                        </button>
-                    </form>
-                    <button class="menu-bar__buttons-item" id="open_parameters" name="go_to_parameters">
-                        <img class="menu-bar__buttons-item-photo" src="../../public/images/parameters.png" alt="Перейти к настройкам">
-                    </button>
-                    <form action="{{ path() }}">
-                        <button class="menu-bar__buttons-item" name="leave_game" type="submit">
-                            <img class="menu-bar__buttons-item-photo" src="../../public/images/leave.png" alt="Выйти из игры">
-                        </button>
-                    </form>
-                </div>
-            </div>
-            <div class="parameters" id="parameters">
-                <div class="parameters-content">
-                    <div class="parameters-list">
-                        <div class="parameters-list-item">
-                            <label class="parameters-volume-title" for="volume">Громкость</label>
-                            <input class="parameters-volume-slider" type="range" id="volume" name="volume" min="0" max="1" value="0.6" step="0.1">
-                        </div>
+{% extends 'base_room.html.twig' %}
+
+{% block title %}Create Room{% endblock %}
+
+{% block stylesheets %}
+    <link href="styles/room_lobby.css" rel="stylesheet">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="scripts/room_settings.js"></script>
+    <script src="scripts/room_join.js"></script>
+    <script src="scripts/parameters_handler.js"></script>
+    <script src="scripts/volume_controller.js"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="room-window">
+        <p class="room-window__header">{{ room.name }}</p>
+        <div class="room-window__room-info">
+            <div class="room-info__main">
+                <div class="room-info__main-parameters-list">
+                    <div class="room-info__main-parameters-list-item">
+                        <p class="room-info__main-parameters-list-item-title">Режим игры:</p>
+                        <p class="room-info__main-parameters-list-item-value" id="room-gamemode">{{ room.gamemode }}</p>
                     </div>
-                    <button class="parameters-close" id="close_parameters">Закрыть настройки</button>
-                </div>
-            </div>
-            <div class="room-window">
-                <p class="room-window__header">{{ room.name }}</p>
-                <div class="room-window__room-info">
-                    <div class="room-info__main">
-                        <div class="room-info__main-parameters-list">
-                            <div class="room-info__main-parameters-list-item">
-                                <p class="room-info__main-parameters-list-item-title">Режим игры:</p>
-                                <p class="room-info__main-parameters-list-item-value">{{ room.gamemode }}</p>
-                            </div>
-                            <div class="room-info__main-parameters-list-item">
-                                <p class="room-info__main-parameters-list-item-title">Приватность:</p>
-                                {% if room.isOpen == '0' %}
-                                    <p class="room-info__main-parameters-list-item-value">Закрыто</p>
-                                {% elseif room.isOpen == '1' %}
-                                    <p class="room-info__main-parameters-list-item-value">Открыто</p>
-                                {% endif %}
-                            </div>
-                            {% if room.isOpen == '0' %}
-                                <div class="room-info__main-parameters-list-item">
-                                    <p class="room-info__main-parameters-list-item-title">Пароль:</p>
-                                    <p class="room-info__main-parameters-list-item-value">{{ room.password }}</p>
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="room-info__main-indicator-bar">
-                            {% for player in room.players %}
-                                <div class="room-info__main-indicator-bar-elem">
-                                    <img src="../../public/images/carbon_user-avatar.png" alt="Аватар 1">
-                                    {% if player.isReady == '0' %}
-                                        <img class="room-info__main-indicator-bar-elem-icon" src="../../public/images/red_indicator.png" alt="N">
-                                    {% elseif player.isReady == '1' %}
-                                        <img class="room-info__main-indicator-bar-elem-icon" src="../../public/images/green_indicator.png" alt="Y">
-                                    {% endif %}
-                                </div>
-                            {% endfor %}
-                        </div>
+                    <div class="room-info__main-parameters-list-item">
+                        <p class="room-info__main-parameters-list-item-title">Приватность:</p>
+                        {% if room.isOpen %}
+                            <p class="room-info__main-parameters-list-item-value">Открыто</p>
+                        {% else %}
+                            <p class="room-info__main-parameters-list-item-value">Закрыто</p>
+                        {% endif %}
                     </div>
-                    <div class="room-info__decorations">
-                        <img src="../../public/images/cool_man.png" alt="Здесь должна быть картинка с крутым чуваком">
-                    </div>
-                </div>
-                <div class="room-window__buttons">
-                    {% if currentUser.id == host.id %}
-                        <form action="{{ path() }}">
-                            <input type="hidden" name="user_id" value="{{ currentUser.id }}">
-                            <button class="room-window__button" name="room_cancel" type="submit">Удалить комнату</button>
-                        </form>
-                        <form action="{{ path() }}">
-                            <input type="hidden" name="user_id" value="{{ currentUser.id }}">
-                            <button class="room-window__button" name="ready_for_game" type="submit">Поехали!</button>
-                        </form>
-                    {% else %}
-                        <form action="{{ path() }}">
-                            <input type="hidden" name="user_id" value="{{ currentUser.id }}">
-                            <button class="room-window__button" name="room_cancel" type="submit">Выйти</button>
-                        </form>
-                        <form action="{{ path() }}">
-                            <input type="hidden" name="user_id" value="{{ currentUser.id }}">
-                            <button class="room-window__button" name="ready_for_game" type="submit">Готов</button>
-                        </form>
+                    {% if not room.isOpen %}
+                        <div class="room-info__main-parameters-list-item">
+                            <p class="room-info__main-parameters-list-item-title">Пароль:</p>
+                            <p class="room-info__main-parameters-list-item-value">{{ room.password }}</p>
+                        </div>
                     {% endif %}
                 </div>
+                <div class="room-info__main-indicator-bar">
+                    {% for player in room.players %}
+                        <div class="room-info__main-indicator-bar-elem">
+                            <img src="public/images/carbon_user-avatar.png" alt="Аватар 1">
+                            {% if player.isReady %}
+                                <img class="room-info__main-indicator-bar-elem-icon" src="public/images/green_indicator.png" alt="Y">
+                            {% else %}
+                                <img class="room-info__main-indicator-bar-elem-icon" src="public/images/red_indicator.png" alt="N">
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
-            {% block javascripts %}
-                <script src="../../public/scripts/parameters_handler.js"></script>
-                <script src="../../public/scripts/volume_controller.js"></script>
-            {% endblock %}
-        {% endblock %}
-    </body>
-</html>
+            <div class="room-info__decorations">
+                <img src="public/images/cool_man.png" alt="Здесь должна быть картинка с крутым чуваком">
+            </div>
+        </div>
+        <div class="room-window__buttons">
+            {% if user.userId == room.hostId %}
+                <a class="room-window__button" id="room_leave" href="{{ path('delete_room', {userId: user.userId}) }}, {{roomId: room.id }}">Удалить комнату</a>
+
+                <a class="room-window__button" id="room_start" href="{{ path('', {userId: user.userId}) }}, {{roomId: room.id }}">Поехали!</a>
+            {% else %}
+                <a class="room-window__button" id="room_leave" href="{{ path('', {userId: user.userId}) }}, {{roomId: room.id }}">Выйти</a>
+
+                <a class="room-window__button" id="room_ready" href="{{ path('', {userId: user.userId}) }}, {{roomId: room.id }}">Готов</a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

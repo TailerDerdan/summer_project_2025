@@ -4,7 +4,7 @@
             <generator strategy="AUTO"/>
         </id>
 
-        <field name="hostId" column="hostId" type="integer"/>
+        <field name="hostId" column="host_id" type="integer"/>
         <field name="name" column="name" type="string" length="255"/>
         <field name="gamemode" column="gamemode" type="string" length="255"/>
         <field name="isOpen" column="is_open" type="boolean" options='{"default": true}'/>
