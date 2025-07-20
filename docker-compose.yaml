@@ -93,6 +93,18 @@ services:
     networks:
       - app_net
 
+  mercure:
+    image: dunglas/mercure
+    environment:
+      - MERCURE_PUBLISHER_JWT_KEY=your-secret-key
+      - MERCURE_SUBSCRIBER_JWT_KEY=your-secret-key
+      - MERCURE_EXTRA_DIRECTIVES=cors_origins http://localhost:8000
+    ports:
+      - "3000:80"
+    volumes:
+      - mercure_data:/data
+    restart: unless-stopped
+
 volumes:
   mysql_database:
 
