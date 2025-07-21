@@ -4,15 +4,6 @@ import { COUNT_TILE_X, COUNT_TILE_Y, HEIGHT_MAP, TILE_HEIGHT, TILE_WIDTH, WIDTH_
 export const COLOR_FLOOR = 'rgba(179, 211, 0, 1)';
 export const COLOR_WALL = 'rgba(231, 40, 10, 1)';
 
-export class Wall
-{
-    constructor(x, y)
-    {
-        this.x = x;
-        this.y = y;
-    }
-}
-
 export class Map2D
 {
     constructor(width, height)
@@ -72,20 +63,6 @@ export class Map2D
 
         this.image = new Image();
         this.image.src = ctx.canvas.toDataURL("image/png");
-    }
-
-    putWall(x, y)
-    {
-        this.wallsAddingByEditor.push(new Wall(x, y));
-    }
-
-    updateWalls(ctx, xView, yView)
-    {
-        this.wallsAddingByEditor.forEach((elem) => {
-            ctx.fillStyle = COLOR_WALL;
-            ctx.rect(elem.x * TILE_WIDTH - xView, elem.y * TILE_HEIGHT - yView, TILE_WIDTH, TILE_HEIGHT);
-            ctx.fill();
-        });
     }
 
     draw(ctx, xView, yView)
