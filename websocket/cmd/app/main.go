@@ -16,7 +16,7 @@ func main() {
 			http.Error(w, "Room ID is required", http.StatusBadRequest)
 			return
 		}
-		wsHandler.HandleConnection(w, r, roomID)
+		wsHandler.HandleConnectionInRoom(w, r, roomID)
 	})
 	http.HandleFunc("/ws/global-updates", wsHandler.HandleGlobalUpdates)
 

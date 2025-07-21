@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
             gamemode: document.querySelector(".gamemode").value,
             isOpen: document.querySelector(".is-open").checked
         };
+
         const response = await fetch('/room/create', {
             method: "POST",
             headers: {
@@ -14,12 +15,15 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify(formData)
         })
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
+
         const data = await response.json()
         sessionStorage.setItem('roomSettings', JSON.stringify({
             userId: data.userId,
+            roomId: data.roomId,
         }))
         sessionStorage.setItem('ws_join_data', JSON.stringify({
             roomId: data.roomId,
@@ -28,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 nickname: data.nickname,
             }
         }));
-        console.log(typeof data.roomId, data.roomId, "+++")
         window.location.href = ('/room/show/' + data.roomId)
     })
 })

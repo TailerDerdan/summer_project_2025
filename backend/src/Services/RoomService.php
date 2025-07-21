@@ -27,21 +27,15 @@ class RoomService implements RoomServiceInterface {
         return $this->roomRepository->get($roomId);
     }
 
-    public function createPlayRoom($roomParams): int
-    {
-        // TODO: Implement createPlayRoom() method.
-        return $this->roomRepository->create($roomParams);
-    }
-
-    public function updatePlayRoom($roomParams, $roomId): int
+    public function update($roomParams, $roomId): int
     {
         // TODO: Implement updatePlayRoom() method.
         return 1;
     }
 
-    public function deletePlayRoom($roomId): void
+    public function delete(int $roomId): void
     {
-        // TODO: Implement deletePlayRoom() method.
+        $this->roomRepository->delete($roomId);
     }
 
     public function getAll(): ?array

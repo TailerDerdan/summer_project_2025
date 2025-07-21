@@ -1,38 +1,64 @@
 function connectWebSocket() {
     const socket = new WebSocket('ws://localhost:8080/ws/global-updates');
-    socket.onopen = () => {
-        console.log("connect to global ws")
-    }
+
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log("data: ", data)
         if (data.type === 'room_create') {
-            console.log('asdfasdf')
-            addRoomToList(data.room);
+            addRoomToList(data.room, data.user);
+        }
+        if (data.type === "add_user") {
+            addUser(data.data)
+        }
+        if (data.type === "user_leaved_g") {
+            deleteUser(data.data)
+        }
+        if (data.type === "delete_room_g") {
+            deleteRoom(data.data.roomId)
+            const room = document.getElementById(`room_${data.data.roomId}`)
+            if (room) {
+                room.remove()
+                console.log("delete room: ", data.data.roomId)
+            }
         }
     };
 }
 
-function addRoomToList(room) {
+function addUser(user) {
+    const userList = document.getElementById(`users-list-${user['roomId']}`)
+    if (userList && !document.getElementById(`user-${user["userId"]}`)) {
+        const userElt = document.createElement("p")
+        userElt.id = `user-${user["userId"]}`
+        userElt.textContent = `${user["userId"]}: ${user["nickname"]}`
+        userList.appendChild(userElt)
+    }
+}
+
+function deleteUser(user) {
+    const userElt = document.getElementById(`user-${user["userId"]}`)
+    if (userElt) {
+        userElt.remove()
+    }
+}
+
+function addRoomToList(room, user) {
     if (!room) {
         return
     }
-    console.log("room ==== : ", room, room.userId, typeof room.userId)
     const container = document.querySelector('.room-list');
     const roomElt = document.createElement("div")
     roomElt.innerHTML = `
-        <div class="room">
+        <div class="room" id="room_${room.roomId}">
             <span>${room.name}</span>
             <p>Режим: ${room.gamemode}</p>
+            <div class="users-list" id="users-list-${room.roomId}"></div>
             <button onclick="joinRoom('${ room.roomId }')">JOIN</button>
         </div>
     `
-    console.log(typeof room.userId, room.userId, "===", room)
     container.appendChild(roomElt)
 }
 async function joinRoom(roomId) {
-    const response = await fetch('/room/join', {
-        method: "GET",
+    const response = await fetch(`/room/join/${roomId}`, {
+        method: "POST",
         headers: {
             'Content-Type': 'application/json',
         },
@@ -42,13 +68,33 @@ async function joinRoom(roomId) {
     }
     const dataJson = await response.json()
 
+
+    sessionStorage.setItem('roomSettings', JSON.stringify({
+        roomId: roomId,
+    }))
+
     sessionStorage.setItem('ws_join_data', JSON.stringify({
         roomId: roomId,
-        data: dataJson
+        data: {
+            userId: dataJson.userId,
+            nickname: dataJson.nickname,
+        }
     }));
-    console.log(typeof roomId, roomId, "---")
     window.location.href = ('/room/show/' + roomId)
 }
+
+async function deleteRoom(roomId) {
+    const response = await fetch ( `/room/delete/${roomId}`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+}
+
 
 document.addEventListener('DOMContentLoaded', () => {
     connectWebSocket()

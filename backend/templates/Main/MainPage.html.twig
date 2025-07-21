@@ -8,6 +8,7 @@
 
 {% block javascripts %}
     <script src="/scripts/script.js"></script>
+    <script src="/scripts/showDataOnMainPage.js"></script>
 {% endblock %}
 
 {% block body %}
@@ -31,9 +32,11 @@
         {% else %}
             <div class="room-list">
                 {% for room in rooms %}
-                    <div class="room">
+                    <div class="room" id="room_{{ room.id }}">
                         <span>{{ room.name }}</span>
                         <p>Режим: {{ room.gamemode }}</p>
+                        <p>{% if room.isOpen %}Закрытая{% else %}Открытая{% endif %}</p>
+                        <div class="users-list" id="users-list-{{room.id}}"></div>
                         <button onclick="joinRoom('{{ room.id }}')">JOIN</button>
 {#                        <p>Игроков: {{ room.playersCount }}/{{ room.maxPlayers }}</p>#}
 {#                        <div>#}

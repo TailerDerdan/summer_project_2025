@@ -20,7 +20,7 @@ class RoomController extends AbstractController {
 
     public function createPage(): Response
     {
-        return $this->render("Room/CreateRoom.html.twig");
+        return $this->render('Room/CreateRoom.html.twig');
     }
     public function create(Request $request): Response
     {
@@ -30,6 +30,7 @@ class RoomController extends AbstractController {
         }
         $data = json_decode($request->getContent(), true);
         $roomData = [
+            "nickname" => $user->getNickname(),
             "userId" => $user->getUserId() ?? null,
             "name" => $data['name'],
             "gamemode" => $data['gamemode'],
@@ -64,8 +65,9 @@ class RoomController extends AbstractController {
         ]);
     }
 
-    public function join(Request $request): Response {
+    public function join(int $roomId): Response {
         $user = $this->getUser();
+        $this->userService->updateRoomId($user->getUserId(), $roomId);
         if (!$user) {
             return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
@@ -75,25 +77,40 @@ class RoomController extends AbstractController {
         ]);
     }
 
-    public function createRoom(Request $request): Response
-    {
-        $roomData = $request->request->all();
-        return $this->json("roomId", $roomData["roomId"]);
-    }
-
-    public function showRoom(int $id): Response
+    public function show(int $id): Response
     {
         $room = $this->roomService->get($id);
         return $this->render("Room/Room.html.twig", ["room" => $room]);
     }
 
-    public function editPlayRoom(): Response
+    public function edit(): Response
     {
         return $this->render("asdf.html.twig");
     }
 
-    public function deletePlayRoom(): Response
+    public function delete(int $id): Response
     {
-        return $this->render("asdf.html.twig");
+        //$user = $this->getUser();
+        //$this->userService->deleteRoomId($user->getUserId());
+        $this->roomService->delete($id);
+        return $this->json([
+            "status" => "success"
+        ]);
+    }
+
+    public function deleteUser(): Response
+    {
+        $user = $this->getUser();
+        $this->userService->deleteRoomId($user->getUserId());
+        return $this->json([
+            "status" => "success"
+        ]);
+    }
+
+    public function getUsers(): Response {
+        $users = $this->userService->getAll();
+        return $this->json([
+            'users' => $users,
+        ]);
     }
 }

@@ -26,4 +26,12 @@ class RoomRepository extends ServiceEntityRepository implements RoomRepositoryIn
     public function getAll(): ?array {
         return $this->findAll();
     }
+
+    public function delete(int $roomId): void {
+        $room = $this->find($roomId);
+        if ($room) {
+            $this->getEntityManager()->remove($room);
+            $this->getEntityManager()->flush();
+        }
+    }
 }

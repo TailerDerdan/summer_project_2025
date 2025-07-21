@@ -3,9 +3,11 @@ declare (strict_types= 1);
 
 namespace App\Controller;
 
+use App\Entity\User\User;
 use App\Infrastructure\Room\RoomServiceInterface;
 use App\Infrastructure\User\UserServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class MainController extends AbstractController {
@@ -22,7 +24,17 @@ class MainController extends AbstractController {
         $rooms = $this->roomService->getAll();
         return $this->render('Main/MainPage.html.twig', [
             'user' => $user,
-            'rooms' => $rooms
+            'rooms' => $rooms,
+        ]);
+    }
+
+    /**
+     * @var User[] $users
+     */
+    public function getUsers(): JsonResponse {
+        $users = $this->userService->getAll();
+        return $this->json([
+            'users' => $users,
         ]);
     }
 }

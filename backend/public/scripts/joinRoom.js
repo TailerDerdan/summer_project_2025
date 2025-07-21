@@ -1,11 +1,11 @@
-document.addEventListener("DOMContentLoaded", (e) => {
+document.addEventListener("DOMContentLoaded", async (e) => {
+    //const usersArr = await loadUsersData()
     const dataJson = JSON.parse(sessionStorage.getItem('ws_join_data'));
-    sessionStorage.removeItem('ws_join_data');
-    console.log("dataJson: ", dataJson)
+    //sessionStorage.removeItem('ws_join_data');
     const socket = connectToWSRoom(dataJson)
+
     document.querySelector('.leave-room-btn').addEventListener('click', () => {
         if (socket && socket.readyState === WebSocket.OPEN) {
-            console.log('sending leaving from room')
             socket.send(JSON.stringify({
                 type: "leave_room",
                 data: {
@@ -28,7 +28,6 @@ document.addEventListener("DOMContentLoaded", (e) => {
                     }
                 }));
             }
-
         });
     }
 })
@@ -36,7 +35,6 @@ function connectToWSRoom(dataUser)   {
     console.log(typeof dataUser.roomId)
     const socket = new WebSocket(`ws://localhost:8080/ws/room/${dataUser.roomId}`);
     socket.onopen = () => {
-        console.log('dataUser: ', dataUser)
         socket.send(JSON.stringify({
             type: "auth",
             data: {
@@ -44,18 +42,10 @@ function connectToWSRoom(dataUser)   {
                 nickname: dataUser.data.nickname,
             }
         }));
-        console.log('====>: ', JSON.stringify({
-            type: "auth",
-            data: {
-                userId: (dataUser.data.userId).toString(),
-                nickname: dataUser.data.nickname,
-            }
-        }))
     };
 
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log('data .....', data)
         if (data.type === 'user_joined') {
             addUserToList(data.data.userId);
             showNotification(` присоединился к комнате`);
@@ -64,11 +54,11 @@ function connectToWSRoom(dataUser)   {
                 addUserToList(user.id);
             });
         }
-        if (data.type === 'leave_ack' || data.type === 'user_leaved') {
+        if (data.type === 'leave_ack' || data.type === 'user_leaved_l') {
             removeUserFromList(data.data.userId)
             showNotification(`${data.data.userId}: ${data.data.nickname} вызодит из комнаты...`);
-
             if (data.type === 'leave_ack') {
+                deleteUserFromRoom()
                 window.location.href = '/main';
             }
         }
@@ -78,9 +68,27 @@ function connectToWSRoom(dataUser)   {
         if (data.type === "not_all_ready") {
             showNotification(`Не все игроки нажали кнопку "ГОТОВ"`);
         }
+        if (data.type === "delete_room_l") {
+            deleteUserFromRoom()
+            deleteRoom(data.data.roomId)
+            window.location.href = ("/main")
+        }
     }
     return socket
 }
+
+async function deleteRoom(roomId) {
+    const response = await fetch ( `/room/delete/${roomId}`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+}
+
 function removeUserFromList(userId) {
     const userElement = document.getElementById(`user-${userId}`);
     if (userElement) {
@@ -90,7 +98,7 @@ function removeUserFromList(userId) {
     return false;
 }
 function addUserToList(userId) {
-    const userList = document.querySelector('.user-list');
+    const userList = document.querySelector('.users-list');
     if (!document.getElementById(`user-${userId}`)) {
         const userElement = document.createElement('div');
         userElement.id = `user-${userId}`;
@@ -128,3 +136,27 @@ function handleGameStart(data, userId) {
     })
 }
 
+async function deleteUserFromRoom() {
+    const response = await fetch('/room/deleteUser', {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+ }
+
+async function loadUsersData() {
+    const response = await fetch('/main/getUsers', {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json()
+}

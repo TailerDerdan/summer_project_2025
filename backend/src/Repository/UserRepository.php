@@ -37,8 +37,20 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
     public function saveAvatarPath(int $userId, string $avatarPath): bool {
         return true;
     }
-    public function getAll(): array {
-        return [];
+
+    /**
+     * @return ?User[]
+     */
+    public function getAll(): ?array {
+        //return $this->findAll();
+        $users = $this->findAll();
+        return array_map(function (User $user) {
+            return [
+                'roomId' => $user->getRoomId(),
+                'userId' => $user->getUserId(),
+                'nickname' => $user->getNickName(),
+            ];
+        }, $users);
     }
     public function delete(int $userId): void {
 
@@ -47,8 +59,21 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
     {
 
     }
+    public function deleteRoomId(int $userId): void {
+        $user = $this->find($userId);
+        if ($user->getRoomId() === null) {
+            return;
+        }
+        $user->setRoomId(null);
+        $this->getEntityManager()->flush();
+    }
+
     public function updateRoomId(int $userId, int $roomId): void {
         $user = $this->find($userId);
+        if ($user->getRoomId() === $roomId) {
+            return;
+        }
         $user->setRoomId($roomId);
+        $this->getEntityManager()->flush();
     }
 }

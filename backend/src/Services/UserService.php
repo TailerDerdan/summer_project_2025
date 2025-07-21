@@ -28,4 +28,15 @@ class UserService implements UserServiceInterface {
     public function updateRoomId(int $userId, int $roomId): void {
         $this->userRepository->updateRoomId($userId, $roomId);
     }
+
+    public function deleteRoomId(int $userId): void {
+        $this->userRepository->deleteRoomId($userId);
+    }
+
+    /**
+     * @return ?User[]
+     */
+    public function getAll(): ?array {
+        return $this->userRepository->getAll();
+    }
 }

@@ -15,8 +15,8 @@
     <div>
         <p>{{ room.name }}</p>
         <p class="gameType">{{ room.gamemode }}</p>
-        <p>{% if room.isOpen %}Открытая{% else %}Закрытая{% endif %}</p>
-        <div class="user-list"></div>
+        <p>{% if room.isOpen %}Закрытая{% else %}Открытая{% endif %}</p>
+        <div class="users-list" id="users-list-{{room.id}}"></div>
         <a href="{{ path('main_page') }}">Назад</a>
         <button class="leave-room-btn" type="submit">Выйти</button>
     </div>

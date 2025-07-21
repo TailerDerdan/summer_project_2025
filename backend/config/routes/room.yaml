@@ -11,14 +11,29 @@ room_create:
 show_room:
     path: /room/show/{id}
     methods: GET
-    controller: App\Controller\RoomController::showRoom
+    controller: App\Controller\RoomController::show
 
 room_join:
-    path: /room/join
-    methods: GET
+    path: /room/join/{roomId}
+    methods: POST
     controller: App\Controller\RoomController::join
 
 room_create_ws:
     path: /room/createRoom
     methods: POST
-    controller: App\Controller\RoomController::createRoom
+    controller: App\Controller\RoomController::create
+
+room_delete:
+    path: /room/delete/{id}
+    methods: POST
+    controller: App\Controller\RoomController::delete
+
+room_delete_user:
+    path: /room/deleteUser
+    methods: GET
+    controller: App\Controller\RoomController::deleteUser
+
+room_get_all_users:
+    path: /room/getUsers
+    methods: GET
+    controller: App\Controller\RoomController::getUsers
