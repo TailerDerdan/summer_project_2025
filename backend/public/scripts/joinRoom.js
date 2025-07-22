@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     //const usersArr = await loadUsersData()
     const dataJson = JSON.parse(sessionStorage.getItem('ws_join_data'));
     //sessionStorage.removeItem('ws_join_data');
+    console.log()
     const socket = connectToWSRoom(dataJson)
 
     document.querySelector('.leave-room-btn').addEventListener('click', () => {
@@ -15,7 +16,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
             }));
         }
     });
-    const startBtn = document.querySelector('.start-btn')
+    const startBtn = document.querySelector(".start-btn")
     if (startBtn) {
         startBtn.addEventListener('click', () => {
             if (socket && socket.readyState === WebSocket.OPEN) {
@@ -23,12 +24,29 @@ document.addEventListener("DOMContentLoaded", async (e) => {
                 socket.send(JSON.stringify({
                     type: "start_game",
                     data: {
-                        userId: (dataJson.userId).toString(),
+                        userId: (dataJson.data.userId).toString(),
                         gameType: gameType,
                     }
                 }));
             }
         });
+    }
+
+    const readyBtn = document.getElementById(`ready-btn-${dataJson.data.userId}`)
+    if (readyBtn) {
+        readyBtn.addEventListener('click', () => {
+            const isReady = (readyBtn.value === "ready")
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                console.log("click on READY BUTTON")
+                socket.send(JSON.stringify({
+                    type: "ready_state",
+                    data: {
+                        userId: (dataJson.data.userId).toString(),
+                        roomId: dataJson.roomId,
+                    }
+                }))
+            }
+        })
     }
 })
 function connectToWSRoom(dataUser)   {
@@ -44,37 +62,61 @@ function connectToWSRoom(dataUser)   {
         }));
     };
 
-    socket.onmessage = (event) => {
+    socket.onmessage = async (event) => {
         const data = JSON.parse(event.data);
+        console.log("data: ", data)
         if (data.type === 'user_joined') {
-            addUserToList(data.data.userId);
+            addUserToList(data.data);
             showNotification(` присоединился к комнате`);
         } else if (data.type === 'room_info') {
             data.users.forEach(user => {
-                addUserToList(user.id);
+                addUserToList(user);
             });
         }
         if (data.type === 'leave_ack' || data.type === 'user_leaved_l') {
             removeUserFromList(data.data.userId)
             showNotification(`${data.data.userId}: ${data.data.nickname} вызодит из комнаты...`);
             if (data.type === 'leave_ack') {
-                deleteUserFromRoom()
+                console.log('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW')
+                await deleteUserFromRoom()
                 window.location.href = '/main';
             }
         }
         if (data.type === 'start_game') {
-            handleGameStart(data, data.data.userId)
+            handleGameStart(data)
         }
         if (data.type === "not_all_ready") {
             showNotification(`Не все игроки нажали кнопку "ГОТОВ"`);
         }
         if (data.type === "delete_room_l") {
-            deleteUserFromRoom()
-            deleteRoom(data.data.roomId)
+            await deleteUserFromRoom()
+            await deleteRoom(data.data.roomId)
             window.location.href = ("/main")
+        }
+        if (data.type === "update_ready_state") {
+            console.log("UPDATE")
+            updateReadyState(data.data)
         }
     }
     return socket
+}
+
+function updateReadyState(data) {
+    const userElt = document.getElementById(`user-${data.userId}`)
+    const readyBtn = document.getElementById(`ready-btn-${data.userId}`)
+    if (data.isReady) {
+        userElt.setAttribute("style", "background-color: green")
+        if (readyBtn) {
+            readyBtn.value = "ready"
+        }
+    } else {
+        userElt.setAttribute("style", "background-color: red")
+        if (readyBtn) {
+            readyBtn.value = "not ready"
+        }
+    }
+
+
 }
 
 async function deleteRoom(roomId) {
@@ -97,13 +139,14 @@ function removeUserFromList(userId) {
     }
     return false;
 }
-function addUserToList(userId) {
+function addUserToList(user) {
     const userList = document.querySelector('.users-list');
-    if (!document.getElementById(`user-${userId}`)) {
+    if (!document.getElementById(`user-${user.userId}`)) {
         const userElement = document.createElement('div');
-        userElement.id = `user-${userId}`;
+        userElement.setAttribute("style", "background-color: red")
+        userElement.id = `user-${user.userId}`
         userElement.innerHTML = `
-            <p>ID: ${ userId }</p>
+            <p>${ user.userId }: ${user.nickname}</p>
         `
         userList.appendChild(userElement);
     }
@@ -117,13 +160,11 @@ function showNotification(message) {
     setTimeout(() => notification.remove(), 3000);
 }
 
-function handleGameStart(data, userId) {
+function handleGameStart(data) {
     sessionStorage.setItem('gameSession', JSON.stringify({
-        userId: userId,
-        gameId: data.data.gameId,
-        gameType: data.data.gameType,
+        data: data,
     }))
-    let countStart = 5
+    let countStart = 2
     const countStartElt = document.createElement("div")
     document.body.appendChild(countStartElt)
     const timer = setInterval(() => {
@@ -131,12 +172,13 @@ function handleGameStart(data, userId) {
         countStart--
         if (countStart < 0) {
             clearInterval(timer)
-            window.location.href = `/game/index.html?gameId=${data.data.gameId}`
+            window.location.href = `/game/index.html?${data.data.gameId}`
         }
-    })
+    }, 1000)
 }
 
 async function deleteUserFromRoom() {
+    console.log("QQQQQQ")
     const response = await fetch('/room/deleteUser', {
         method: "GET",
         headers: {
@@ -148,15 +190,15 @@ async function deleteUserFromRoom() {
     }
  }
 
-async function loadUsersData() {
-    const response = await fetch('/main/getUsers', {
-        method: "GET",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return await response.json()
-}
+// async function loadUsersData() {
+//     const response = await fetch('/main/getUsers', {
+//         method: "GET",
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//     })
+//     if (!response.ok) {
+//         throw new Error(`HTTP error! status: ${response.status}`);
+//     }
+//     return await response.json()
+// }

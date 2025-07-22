@@ -1,13 +1,15 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const roomSet = JSON.parse(sessionStorage.getItem('roomSettings'));
     if (roomSet) {
-        if (roomSet.userId) {
+        if (roomSet.hostId) {
             const startBtn = document.createElement("button")
             startBtn.className = ("start-btn")
             startBtn.textContent = "Играть"
             startBtn.type = "submit"
-            document.body.appendChild(startBtn)
+            const roomElt = document.querySelector(".room")
+            roomElt.appendChild(startBtn)
         }
+        addReadyButton(roomSet.userId)
     }
     //sessionStorage.removeItem('roomSettings');
 
@@ -21,9 +23,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
     const dataJson = await response.json()
+    console.log("dataJson: ", dataJson, "roomSet: ", roomSet)
     const users = dataJson["users"]
     users.forEach((user) => {
-        if (user["roomId"] === roomSet["roomId"]) {
+        if (user["roomId"] && user["roomId"].toString() === roomSet["roomId"].toString()) {
             addUserLocal(user)
         }
     })
@@ -37,4 +40,14 @@ function addUserLocal(user) {
         userElt.textContent = `${user.userId}: ${user.nickname}`
         userList.appendChild(userElt)
     }
+}
+
+function addReadyButton(userId) {
+    const btn = document.createElement("button")
+    btn.value = "not ready"
+    btn.type = "button"
+    btn.className = "ready-btn"
+    btn.id = `ready-btn-${ userId }`
+    btn.textContent = "ГОТОВ"
+    document.querySelector(".room").appendChild(btn)
 }
