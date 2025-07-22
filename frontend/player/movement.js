@@ -1,5 +1,5 @@
 import { player } from './player.js';
-import { canvas, ctx } from './../canvas.js';
+import { canvasWebgl, ctx } from './../canvas.js';
 
 const SQRT_2 = 0.707;
 const MAX_DIST = 1;
@@ -20,7 +20,7 @@ export const updateMovementPlayer = (xView, yView, deltaTime) => {
     let playerDir = player.dir;
 
     let distX = keyDict.KeyW && (keyDict.KeyA || keyDict.KeyD) ||
-            keyDict.KeyS && (keyDict.KeyA || keyDict.KeyD) ? SQRT_2 : MAX_DIST;
+                keyDict.KeyS && (keyDict.KeyA || keyDict.KeyD) ? SQRT_2 : MAX_DIST;
     
     let distY = keyDict.KeyW && (keyDict.KeyA || keyDict.KeyD) ||
             keyDict.KeyS && (keyDict.KeyA || keyDict.KeyD) ? SQRT_2 : MAX_DIST;
@@ -52,6 +52,9 @@ export const updateMovementPlayer = (xView, yView, deltaTime) => {
     {
         player.sprite.updateFrames(deltaTime);
     }
+
+    player.lightPosition.x = ((player.x - xView) / canvasWebgl.width) * 2 - 1;
+    player.lightPosition.y = -(((player.y - yView) / canvasWebgl.height) * 2 - 1);
 
     player.drawPlayer(ctx, xView, yView);
 }

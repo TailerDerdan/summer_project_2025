@@ -1,40 +1,63 @@
-import { ctx } from "../canvas.js";
+import { Container } from "../collisions/collisions.js";
+import { COUNT_TILE_X, COUNT_TILE_Y, HEIGHT_MAP, TILE_HEIGHT, TILE_WIDTH, WIDTH_MAP } from "../sizes.js";
 
-export const WIDTH_MAP = 5000;
-export const HEIGHT_MAP = 3000;
+export const COLOR_FLOOR = 'rgba(179, 211, 0, 1)';
+export const COLOR_WALL = 'rgba(231, 40, 10, 1)';
 
-class Map
+export class Map2D
 {
     constructor(width, height)
     {
         this.width = width;
         this.height = height;
+        this.tileMap = new Array(COUNT_TILE_X * COUNT_TILE_Y).fill(0);
+        this.walls = [];
+        this.wallsAddingByEditor = [];
         this.image = null;
     }
 
-    generate(ctx)
+    generateRectWall(x, y, width, height)
     {
-        ctx.canvas.width = this.width;
-        ctx.canvas.height = this.height;
-        let rows = ~~(this.width / 45) + 1;
-        let columns = ~~(this.height / 45) + 1;
+        for (let iterX = x; iterX < x + width; iterX++)
+        {
+            for (let iterY = y; iterY < y + height; iterY++)
+            {
+                this.tileMap[iterY * COUNT_TILE_Y + iterX] = 1;
+            }
+        }
+        const container = new Container(width * TILE_WIDTH, height * TILE_HEIGHT, x * TILE_WIDTH, y * TILE_HEIGHT, 0);
+        this.walls.push(container);
+    }
 
-        let color = 'rgba(179, 211, 0, 1)';
+    generate(ctx)
+    {        
+        let color = COLOR_FLOOR;
         ctx.save();
         ctx.fillStyle = color;
 
-        for (let x = 0, iter = 0; iter < rows; x+=45, iter++)
+        for (let iterY = 0; iterY < COUNT_TILE_Y; iterY++)
         {
-            ctx.beginPath();
-            for (let y = 0, iter2 = 0; iter2 < columns; y+=45, iter2++)
+            for (let iterX = 0; iterX < COUNT_TILE_X; iterX++)
             {
-                ctx.rect(x, y, 40, 40);
+                if (this.tileMap[iterY * COUNT_TILE_Y + iterX] == 0)
+                {
+                    color = COLOR_FLOOR;
+                }
+                else
+                {
+                    color = COLOR_WALL;
+                }
+                ctx.beginPath();
+                ctx.rect(iterX * TILE_WIDTH, iterY * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+                ctx.fillStyle = color;
+                ctx.fill();
+                ctx.closePath();
             }
-            color = (color == 'rgba(179, 211, 0, 1)' ? 'rgba(3, 194, 105, 1)' : 'rgba(179, 211, 0, 1)');
-            ctx.fillStyle = color;
-            ctx.fill();
-            ctx.closePath();
         }
+
+        this.walls.forEach((elem) => {
+            elem.drawContainer(ctx, elem.x, elem.y);
+        })
 
         ctx.restore();
 
@@ -68,5 +91,4 @@ class Map
     }
 }
 
-export const map = new Map(WIDTH_MAP, HEIGHT_MAP);
-map.generate(ctx);
+export const map = new Map2D(WIDTH_MAP, HEIGHT_MAP);

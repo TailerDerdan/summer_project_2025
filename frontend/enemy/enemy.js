@@ -1,3 +1,4 @@
+import { canvasWebgl } from "../canvas.js";
 import { Container } from "../collisions/collisions.js";
 import { randomPosition } from "../random.js";
 import { Sound } from "../soundsScript/sound.js";

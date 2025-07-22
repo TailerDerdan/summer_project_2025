@@ -1,4 +1,5 @@
-import { HEIGHT_MAP, WIDTH_MAP } from "./map/map.js";
+import { HEIGHT_MAP, WIDTH_MAP } from "./sizes.js";
+
 
 export function randomPosition()
 {

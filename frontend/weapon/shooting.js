@@ -8,6 +8,11 @@ import { getDir, inverseDir } from '../player/changeDir.js';
 
 const bullets = [];
 
+function randomMinMax(min, max)
+{
+    return Math.random() * (max - min) + min;
+}
+
 const updateBullets = (event) => {
 
     if (!player.weapon) return;
@@ -22,24 +27,31 @@ const updateBullets = (event) => {
         distY: 0
     }
 
-    objForMovement.dir = player.dir;
+    if (player.weapon.type == TYPE_WEAPON.SHOTGUN)
+    {
+        for (let iter = 0; iter < 6; iter++)
+        {
+            objForMovement.dir = randomMinMax(player.dir - 6, player.dir + 6);
 
-    objForMovement.distY = Math.cos(objForMovement.dir * Math.PI / 180) * Math.cos(objForMovement.dir * Math.PI / 180);
-    objForMovement.distX = Math.cos(objForMovement.dir * Math.PI / 180) * Math.sin(objForMovement.dir * Math.PI / 180);
+            objForMovement.distY = Math.cos(objForMovement.dir * Math.PI / 180) * Math.cos(objForMovement.dir * Math.PI / 180);
+            objForMovement.distX = Math.cos(objForMovement.dir * Math.PI / 180) * Math.sin(objForMovement.dir * Math.PI / 180);
 
-    let diag = Math.sqrt(objForMovement.distX * objForMovement.distX + objForMovement.distY * objForMovement.distY);
-    objForMovement.distX /= diag;
-    objForMovement.distY /= diag;
+            let diag = Math.sqrt(objForMovement.distX * objForMovement.distX + objForMovement.distY * objForMovement.distY);
+            objForMovement.distX /= diag;
+            objForMovement.distY /= diag;
 
-    inverseDir(objForMovement);
+            inverseDir(objForMovement);
 
-    let speedBullet = player.weapon.speedBullet;
+            let speedBullet = randomMinMax(player.weapon.speedBullet + 3, player.weapon.speedBullet + 7);
 
-    objForMovement.distX *= speedBullet;
-    objForMovement.distY *= speedBullet;
+            objForMovement.distX *= speedBullet;
+            objForMovement.distY *= speedBullet;
 
-    const bullet = new Bullet(player.x, player.y, speedBullet, objForMovement.dir, objForMovement.distX, objForMovement.distY, player.weapon.fireRange);
-    bullets.push(bullet);
+            const bullet = new Bullet(player.x, player.y, speedBullet, objForMovement.dir, objForMovement.distX, objForMovement.distY, player.weapon.fireRange);
+            bullets.push(bullet);
+        }
+    }
+
     enemy1.soundShoot.play();
 }
 
@@ -102,19 +114,19 @@ export function updateMovementBullets()
     });
 }
 
-// let throttleUpd = throttle(updateBullets, player.weapon.timeBetweenBul * 1000);
+let throttleUpd = throttle(updateBullets, player.weapon.timeBetweenBul * 1000);
 
-// function throttleUpdateBullets(event)
-// {
-//     throttleUpd(event);
-// }
+function throttleUpdateBullets(event)
+{
+    throttleUpd(event);
+}
 
-// document.addEventListener('mousedown', throttleUpdateBullets);
+document.addEventListener('mousedown', throttleUpdateBullets);
 
-let intervalId = 0;
-document.addEventListener('mousedown', (event) => {
-    intervalId = setInterval(() => {updateBullets(event);}, player.weapon.timeBetweenBul * 1000);
-})
-document.addEventListener('mouseup', () => {
-    clearInterval(intervalId);
-})
+// let intervalId = 0;
+// document.addEventListener('mousedown', (event) => {
+//     intervalId = setInterval(() => {updateBullets(event);}, player.weapon.timeBetweenBul * 1000);
+// })
+// document.addEventListener('mouseup', () => {
+//     clearInterval(intervalId);
+// })
