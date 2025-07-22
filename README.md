@@ -19,3 +19,6 @@
 ### 8. Или с полной пересборкой 
     docker compose down && docker compose up --build -d ws &&
     docker compose up -d api, db, frontend, nginx
+
+### 9. Удалить кэш
+    
