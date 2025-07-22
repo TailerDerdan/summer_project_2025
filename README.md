@@ -17,4 +17,8 @@
 ### 7. Можно одной командой
     docker compose down && docker compose up -d && docker compose ps -a
 ### 8. Или с полной пересборкой 
-    docker compose down && docker compose up --build -d && docker compose ps -a
+    docker compose down && docker compose up --build -d ws &&
+    docker compose up -d api, db, frontend, nginx
+
+### 9. Удалить кэш
+    
