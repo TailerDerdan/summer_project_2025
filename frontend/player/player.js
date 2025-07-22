@@ -28,7 +28,7 @@ export class Player
 
         this.isPlayerLive = true;
 
-        this.sprite = new Sprite(COUNT_FRAMES, './fronted/sprites/playerSprite.png', 0.1, true);
+        this.sprite = new Sprite(COUNT_FRAMES, './sprites/playerSprite.png', 0.1, true);
         this.sprite.makeFrames(WIDTH_FRAME, HEIGHT_FRAME, START_X);
 
         this.lightPosition = {x: 0, y: -1};

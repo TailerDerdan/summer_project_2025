@@ -24,9 +24,9 @@ class Enemy
 
         this.wasEnemyWounded = false;
 
-        this.spriteBlood = new Sprite(COUNT_SPRITE, './fronted/sprites/Gore/sprBloodSplat_strip8.png', 0.1, false);
+        this.spriteBlood = new Sprite(COUNT_SPRITE, './sprites/Gore/sprBloodSplat_strip8.png', 0.1, false);
         this.spriteBlood.makeFrames(WIDTH_FRAME, HEIGHT_FRAME, START_X);
-        this.soundShoot = new Sound('./fronted/sounds/Hotline_Miami_2_Wrong_Number/M16.wav');
+        this.soundShoot = new Sound('./sounds/Hotline_Miami_2_Wrong_Number/M16.wav');
     }
 
     delay(f, ms)

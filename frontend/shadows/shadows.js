@@ -38,8 +38,8 @@ async function setup()
     }
     let vertexShaderSrc, fragmentShaderSrc;
     [vertexShaderSrc, fragmentShaderSrc] = await Promise.all([
-            fetch("./fronted/shadows/shaders/shadow.vert").then(res => res.text()),
-            fetch("./fronted/shadows/shaders/shadow.frag").then(res => res.text()),
+            fetch("./shadows/shaders/shadow.vert").then(res => res.text()),
+            fetch("./shadows/shaders/shadow.frag").then(res => res.text()),
     ]);
 
     let programInfo = twgl.createProgramInfo(gl, [vertexShaderSrc, fragmentShaderSrc]);
@@ -69,21 +69,21 @@ async function setup()
     }
 
     const lightTexture = twgl.createTexture(gl, {
-        src: "./fronted/shadows/assets/lightsource.png",
+        src: "./shadows/assets/lightsource.png",
     });
 
     let vertexShaderSrcLight, fragmentShaderSrcLight;
     [vertexShaderSrcLight, fragmentShaderSrcLight] = await Promise.all([
-            fetch("./fronted/shadows/shaders/light.vert").then(res => res.text()),
-            fetch("./fronted/shadows/shaders/light.frag").then(res => res.text()),
+            fetch("./shadows/shaders/light.vert").then(res => res.text()),
+            fetch("./shadows/shaders/light.frag").then(res => res.text()),
     ]);
 
     const sceneTexture = texture2D;
 
     let vertexShaderSrcScene, fragmentShaderSrcScene;
     [vertexShaderSrcScene, fragmentShaderSrcScene] = await Promise.all([
-            fetch("./fronted/shadows/shaders/scene.vert").then(res => res.text()),
-            fetch("./fronted/shadows/shaders/scene.frag").then(res => res.text()),
+            fetch("./shadows/shaders/scene.vert").then(res => res.text()),
+            fetch("./shadows/shaders/scene.frag").then(res => res.text()),
     ]);
 
     const lightProgram = twgl.createProgramInfo(gl, [vertexShaderSrcLight, fragmentShaderSrcLight]);
