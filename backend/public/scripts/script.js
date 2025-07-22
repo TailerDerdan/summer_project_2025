@@ -1,7 +1,7 @@
 function connectWebSocket() {
     const socket = new WebSocket('ws://localhost:8080/ws/global-updates');
 
-    socket.onmessage = (event) => {
+    socket.onmessage = async (event) => {
         const data = JSON.parse(event.data);
         if (data.type === 'room_create') {
             addRoomToList(data.room, data.user);
@@ -13,7 +13,8 @@ function connectWebSocket() {
             deleteUser(data.data)
         }
         if (data.type === "delete_room_g") {
-            deleteRoom(data.data.roomId)
+            console.log('RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR')
+            await deleteRoom(data.data.roomId)
             const room = document.getElementById(`room_${data.data.roomId}`)
             if (room) {
                 room.remove()
@@ -40,7 +41,7 @@ function deleteUser(user) {
     }
 }
 
-function addRoomToList(room, user) {
+function addRoomToList(room) {
     if (!room) {
         return
     }
@@ -70,6 +71,7 @@ async function joinRoom(roomId) {
 
 
     sessionStorage.setItem('roomSettings', JSON.stringify({
+        userId: dataJson.userId,
         roomId: roomId,
     }))
 

@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const data = await response.json()
         sessionStorage.setItem('roomSettings', JSON.stringify({
+            hostId: data.userId,
             userId: data.userId,
             roomId: data.roomId,
         }))

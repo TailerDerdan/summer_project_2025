@@ -22,6 +22,7 @@ func main() {
 
 	http.HandleFunc("/ws/game/", func(w http.ResponseWriter, r *http.Request) {
 		gameID := strings.TrimPrefix(r.URL.Path, "/ws/game/")
+		//queryGameID := r.URL.Query().Get("gameId")
 		wsHandler.HandleGameConnection(w, r, gameID)
 	})
 	log.Println("Websocket server listening on :8080")
