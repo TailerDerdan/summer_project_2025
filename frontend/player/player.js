@@ -2,8 +2,8 @@ import { Container } from '../collisions/collisions.js';
 import { randomPosition } from '../random.js';
 import { Sprite } from '../spriteScript/spriteScript.js';
 import { InitAssaultRifle, InitShotgun, TYPE_WEAPON, Weapon } from './../weapon/typeWeapons.js';
-import {canvas, ctx} from "../canvas";
-import {camera} from "../camera/camera";
+import {canvas, ctx} from "../canvas.js";
+import {camera} from "../camera/camera.js";
 
 const WIDTH_FRAME = 23;
 const HEIGHT_FRAME = 34;

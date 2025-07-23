@@ -74,7 +74,7 @@ async function startTimer() {
 
 function showResultsAfterBattle() {
     const resultsBlock = document.createElement("div")
-    resultsBlock.className("resultsBlock")
+    resultsBlock.className = "resultsBlock"
     resultsBlock.setAttribute("style", "position: absolute; padding: 100px;")
     resultsBlock.innerHTML = `
         <span>КОНЕЦ БОЯ</span>
