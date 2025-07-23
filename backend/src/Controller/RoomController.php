@@ -85,8 +85,9 @@ class RoomController extends AbstractController {
 
     public function show(int $id): Response
     {
+        $user = $this->getUser();
         $room = $this->roomService->get($id);
-        return $this->render("Room/RoomLobby.html.twig", ["room" => $room]);
+        return $this->render("Room/RoomLobby.html.twig", ["room" => $room, "user" => $user]);
     }
 
     public function edit(): Response

@@ -88,7 +88,7 @@ function showResultsAfterBattle() {
         </div>
         <button class="endBtn" type="button">Выйти</button>
     `
-    document.body.appendChild(resultsBlock)
+    document.body.prepend(resultsBlock)
     const endBtn = document.querySelector(".endBtn")
     gameIsRun = false;
     endBtn.addEventListener('click', () => {

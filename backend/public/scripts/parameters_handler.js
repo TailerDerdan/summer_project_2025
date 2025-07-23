@@ -10,5 +10,5 @@ function closeParameters() {
     parameters.style.display = "none";
 }
 
-btnOpenParameters.addEventListener('click', openParameters);
-btnCloseParameters.addEventListener('click', closeParameters);
+if (btnOpenParameters) btnOpenParameters.addEventListener('click', openParameters);
+if (btnCloseParameters) btnCloseParameters.addEventListener('click', closeParameters);

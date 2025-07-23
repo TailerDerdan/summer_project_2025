@@ -8,7 +8,7 @@ import {} from './player/changeDir.js';
 import { Clock } from './clock/clock.js';
 import { player, arrEnemy } from './player/player.js';
 import { render, texture2D, updateTexture } from './shadows/shadows.js';
-import {gameIsRun} from "./game";
+import { gameIsRun } from "./game.js";
 
 const clock = new Clock();
 map.generate(ctx);
