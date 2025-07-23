@@ -20,5 +20,13 @@
     docker compose down && docker compose up --build -d ws &&
     docker compose up -d api, db, frontend, nginx
 
-### 9. Удалить кэш
+### 9. Удаление кэша сборки (build cache)
+    docker builder prune 
+    -a/--all - удалить ВЕСЬ кэш (включая неиспользуемый)
+    -f/--force - без подтверждения
+
+### 10. Удаление кэша образов (image cache)
+    docker image prune
+    -a - удалить все неиспользуемые образы (dangling и unreferenced)
+    --filter - фильтр по тегам/времени
     

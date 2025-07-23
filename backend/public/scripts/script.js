@@ -13,12 +13,10 @@ function connectWebSocket() {
             deleteUser(data.data)
         }
         if (data.type === "delete_room_g") {
-            console.log('RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR')
             await deleteRoom(data.data.roomId)
             const room = document.getElementById(`room_${data.data.roomId}`)
             if (room) {
                 room.remove()
-                console.log("delete room: ", data.data.roomId)
             }
         }
     };

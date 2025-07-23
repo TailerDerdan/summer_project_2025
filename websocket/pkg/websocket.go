@@ -43,7 +43,7 @@ type Game struct {
 	GameID  string
 	Type    string
 	RoomID  string
-	Players map[*websocket.Conn]PlayerInfo
+	Players map[*websocket.Conn]*PlayerInfo
 	State   GameState
 	mu      sync.RWMutex
 }
@@ -139,15 +139,21 @@ func (h *WebSocketHandler) HandleConnectionInRoom(w http.ResponseWriter, r *http
 					"nickname": msg.Data["nickname"],
 				},
 			}
-
 			if err := conn.WriteJSON(msgResponse); err != nil {
 				log.Printf("WebSocket error: %v", err)
 			}
-
 			h.unregisterConnection(conn, roomID, userID)
 		case "start_game":
 			log.Printf("Attempt to start game from user: %s", userID)
 			h.handleStartGame(conn, roomID, msg.Data["userId"], msg.Data["gameType"])
+			msg := map[string]interface{}{
+				"type": "delete_room_g",
+				"data": map[string]string{
+					"roomId": roomID,
+				},
+			}
+			h.sendMessageGlobal(msg)
+			h.sendMessageInsideRoomToAll(roomID, msg)
 			//h.unregisterConnection(conn, roomID, userID)
 		case "ready_state":
 			h.updateReadyState(conn, roomID)
@@ -294,7 +300,7 @@ func (h *WebSocketHandler) unregisterConnection(conn *websocket.Conn, roomID, us
 		return
 	}
 	leaveMsg := map[string]interface{}{
-		"type": "user_leaved_l",
+		"type": "user_leaved_g",
 		"data": map[string]interface{}{
 			"roomId":   roomID,
 			"userId":   clientInfo.UserID,
@@ -302,23 +308,24 @@ func (h *WebSocketHandler) unregisterConnection(conn *websocket.Conn, roomID, us
 		},
 	}
 
-	h.sendMessageInsideRoom(conn, roomID, leaveMsg)
-	leaveMsg["type"] = "user_leaved_g"
 	h.sendMessageGlobal(leaveMsg)
+	leaveMsg["type"] = "user_leaved_l"
+	h.sendMessageInsideRoom(conn, roomID, leaveMsg)
 
 	delete(room.Clients, conn)
 	delete(h.globalSubscribers, conn)
 
 	if len(room.Clients) == 0 || room.HostID == userID {
 		deleteRoomMsg := map[string]interface{}{
-			"type": "delete_room_l",
+			"type": "delete_room_g",
 			"data": map[string]string{
 				"roomId": roomID,
 			},
 		}
-		h.sendMessageInsideRoom(conn, roomID, deleteRoomMsg)
-		deleteRoomMsg["type"] = "delete_room_g"
 		h.sendMessageGlobal(deleteRoomMsg)
+		deleteRoomMsg["type"] = "delete_room_l"
+		h.sendMessageInsideRoom(conn, roomID, deleteRoomMsg)
+
 		for conn := range room.Clients {
 			conn.Close()
 			delete(room.Clients, conn)
@@ -406,7 +413,6 @@ func (h *WebSocketHandler) sendMessageInsideRoom(userConn *websocket.Conn, roomI
 }
 
 func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.Request, gameID string) {
-
 	conn, err := h.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("Game WS upgrade failed: %v", err)
@@ -414,7 +420,6 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 	}
 
 	game, exists := h.activeGames[gameID]
-
 	if !exists {
 		conn.WriteJSON(map[string]string{"error": "Game not found"})
 		conn.Close()
@@ -431,10 +436,24 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	game.Players[conn] = PlayerInfo{
+	game.Players[conn] = &PlayerInfo{
 		PlayerID: auth.Data["userId"],
 		Nickname: auth.Data["nickname"],
 	}
+
+	players := make(map[string]*PlayerInfo)
+	for _, player := range game.Players {
+		players[player.PlayerID] = player
+	}
+
+	conn.WriteJSON(map[string]interface{}{
+		"type": "game_connection",
+		"data": map[string]interface{}{
+			"players": players,
+		},
+	})
+
+	fmt.Println("Game connected")
 
 	for {
 		var msg struct {
@@ -442,14 +461,54 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 			Data json.RawMessage `json:"data"`
 		}
 		if err := conn.ReadJSON(&msg); err != nil {
+			h.removePlayerFromGame(gameID, conn)
 			conn.Close()
 			return
 		}
 		switch msg.Type {
 		case "update_position":
+			var positionData struct {
+				X float64 `json:"x"`
+				Y float64 `json:"y"`
+			}
+			if err := json.Unmarshal(msg.Data, &positionData); err != nil {
+				continue
+			}
+			for otherConn, player := range game.Players {
+				if otherConn != conn {
+					otherConn.WriteJSON(map[string]interface{}{
+						"type": "player_position",
+						"data": map[string]interface{}{
+							"playerId": player.PlayerID,
+							"x":        positionData.X,
+							"y":        positionData.Y,
+						},
+					})
+				}
+			}
 			break
 		case "update_players":
 			break
+		}
+	}
+}
+
+func (h *WebSocketHandler) removePlayerFromGame(gameID string, conn *websocket.Conn) {
+	game, exists := h.activeGames[gameID]
+	if !exists {
+		return
+	}
+
+	player, ok := game.Players[conn]
+	if ok {
+		delete(game.Players, conn)
+		for otherConn := range game.Players {
+			otherConn.WriteJSON(map[string]interface{}{
+				"type": "player_left",
+				"data": map[string]string{
+					"playerId": player.PlayerID,
+				},
+			})
 		}
 	}
 }
@@ -459,34 +518,48 @@ func (h *WebSocketHandler) handleStartGame(conn *websocket.Conn, roomID, userID,
 		return
 	}
 
-	if ok := h.checkUsersReadyToStartGame(roomID); !ok {
+	if ok := h.checkUsersReadyToStartGame(conn, roomID); !ok {
 		return
 	}
 
 	gameID := h.generateGameID(gameType)
 
+	players := make(map[string]*PlayerInfo)
+	for _, user := range h.rooms[roomID].Clients {
+		players[user.UserID] = &PlayerInfo{
+			PlayerID: user.UserID,
+			Nickname: user.Nickname,
+		}
+	}
+
 	startMsg := map[string]interface{}{
 		"type": "start_game",
-		"data": map[string]string{
+		"data": map[string]interface{}{
 			"userId":   userID,
 			"roomId":   roomID,
 			"gameId":   gameID,
 			"gameType": gameType,
+			"players":  players,
 		},
 	}
 
 	h.activeGames[gameID] = &Game{
-		RoomID: roomID,
-		Type:   gameType,
+		RoomID:  roomID,
+		Type:    gameType,
+		Players: make(map[*websocket.Conn]*PlayerInfo),
 	}
 
 	h.sendMessageInsideRoomToAll(roomID, startMsg)
 }
 
-func (h *WebSocketHandler) checkUsersReadyToStartGame(roomID string) bool {
+func (h *WebSocketHandler) checkUsersReadyToStartGame(conn *websocket.Conn, roomID string) bool {
 	for _, user := range h.rooms[roomID].Clients {
 		if !user.IsReady {
 			fmt.Println("Not all users ready to start game")
+			msg := map[string]interface{}{
+				"type": "not_all_ready",
+			}
+			conn.WriteJSON(msg)
 			return false
 		}
 	}

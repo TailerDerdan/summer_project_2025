@@ -37,7 +37,6 @@ document.addEventListener("DOMContentLoaded", async (e) => {
         readyBtn.addEventListener('click', () => {
             const isReady = (readyBtn.value === "ready")
             if (socket && socket.readyState === WebSocket.OPEN) {
-                console.log("click on READY BUTTON")
                 socket.send(JSON.stringify({
                     type: "ready_state",
                     data: {
@@ -77,7 +76,6 @@ function connectToWSRoom(dataUser)   {
             removeUserFromList(data.data.userId)
             showNotification(`${data.data.userId}: ${data.data.nickname} вызодит из комнаты...`);
             if (data.type === 'leave_ack') {
-                console.log('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW')
                 await deleteUserFromRoom()
                 window.location.href = '/main';
             }
@@ -94,7 +92,6 @@ function connectToWSRoom(dataUser)   {
             window.location.href = ("/main")
         }
         if (data.type === "update_ready_state") {
-            console.log("UPDATE")
             updateReadyState(data.data)
         }
     }
@@ -115,8 +112,6 @@ function updateReadyState(data) {
             readyBtn.value = "not ready"
         }
     }
-
-
 }
 
 async function deleteRoom(roomId) {
@@ -189,16 +184,3 @@ async function deleteUserFromRoom() {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
  }
-
-// async function loadUsersData() {
-//     const response = await fetch('/main/getUsers', {
-//         method: "GET",
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//     })
-//     if (!response.ok) {
-//         throw new Error(`HTTP error! status: ${response.status}`);
-//     }
-//     return await response.json()
-// }
