@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     //const usersArr = await loadUsersData()
     const dataJson = JSON.parse(sessionStorage.getItem('ws_join_data'));
     //sessionStorage.removeItem('ws_join_data');
-    console.log()
     const socket = connectToWSRoom(dataJson)
 
     document.querySelector('.leave-room-btn').addEventListener('click', () => {
@@ -35,7 +34,6 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     const readyBtn = document.getElementById(`ready-btn-${dataJson.data.userId}`)
     if (readyBtn) {
         readyBtn.addEventListener('click', () => {
-            const isReady = (readyBtn.value === "ready")
             if (socket && socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({
                     type: "ready_state",
@@ -50,9 +48,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
 })
 function connectToWSRoom(dataUser)   {
     console.log(typeof dataUser.roomId)
-    //const socket = new WebSocket(`ws://localhost:8080/ws/room/${dataUser.roomId}`);
-    const socket = new WebSocket(`ws://87.228.90.3:82/ws/room/${dataUser.roomId}`);
-   // const socket = new WebSocket(`/ws/room/${dataUser.roomId}`);
+    const socket = new WebSocket(`ws://87.228.90.3:8080/ws/room/${dataUser.roomId}`);
     socket.onopen = () => {
         socket.send(JSON.stringify({
             type: "auth",
@@ -84,6 +80,7 @@ function connectToWSRoom(dataUser)   {
         }
         if (data.type === 'start_game') {
             handleGameStart(data)
+            await deleteRoom(data.data.roomId)
         }
         if (data.type === "not_all_ready") {
             showNotification(`Не все игроки нажали кнопку "ГОТОВ"`);
@@ -140,7 +137,8 @@ function addUserToList(user) {
     const userList = document.querySelector('.users-list');
     if (!document.getElementById(`user-${user.userId}`)) {
         const userElement = document.createElement('div');
-        userElement.setAttribute("style", "background-color: red")
+        console.log("set style RED")
+        userElement.setAttribute("style", "background-color: red;")
         userElement.id = `user-${user.userId}`
         userElement.innerHTML = `
             <p>${ user.userId }: ${user.nickname}</p>

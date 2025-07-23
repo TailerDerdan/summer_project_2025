@@ -14,8 +14,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 })
 
 async function connectToWSGame(data) {
-    // const gameSocket = new WebSocket(`ws://localhost:8080/ws/game/${data.data.gameId}`)
-    const gameSocket = new WebSocket(`/ws/game/${data.data.gameId}`)
+    //const gameSocket = new WebSocket(`ws://localhost:8080/ws/game/${data.data.gameId}`)
+    const gameSocket = new WebSocket(`ws://87.228.90.3:8080/ws/game/${data.data.gameId}`)
     console.log("FFFFFF")
     await startTimer()
     console.log("JJJJJJ")
@@ -67,7 +67,28 @@ async function startTimer() {
         countStart--
         if (countStart < 0) {
             clearInterval(timer)
-            window.location.href = `/main`
+            showResultsAfterBattle()
         }
     }, 1000)
+}
+
+function showResultsAfterBattle() {
+    const resultsBlock = document.createElement("div")
+    resultsBlock.className("resultsBlock")
+    resultsBlock.setAttribute("style", "position: absolute; padding: 100px;")
+    resultsBlock.innerHTML = `
+        <span>КОНЕЦ БОЯ</span>
+        <p>Результаты:</p>
+        <div>
+            <p>1. ....</p>
+            <p>2. ....</p>
+            <p>3. ....</p>
+        </div>
+        <button class="endBtn" type="button">Выйти</button>
+    `
+    document.body.appendChild(resultsBlock)
+    const endBtn = document.querySelector(".endBtn")
+    endBtn.addEventListener('click', () => {
+        window.location.href = "/main"
+    })
 }
