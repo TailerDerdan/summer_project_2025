@@ -10,6 +10,8 @@ page.addEventListener("click", function() {
     }
 });
 
-volumeSlider.addEventListener("input", function() {
-    musicMenu.volume = this.value;
-});
+if (volumeSlider) {
+    volumeSlider.addEventListener("input", function () {
+        musicMenu.volume = this.value;
+    });
+}

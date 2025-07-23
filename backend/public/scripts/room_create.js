@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
             gamemode: document.getElementById("room_playmode").value,
             isOpen: document.getElementById("room_open").value === "open",
         };
+        console.log("formData: ", formData)
         const response = await fetch('/room/create', {
             method: "POST",
             headers: {
