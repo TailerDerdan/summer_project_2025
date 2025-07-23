@@ -1,7 +1,6 @@
 FROM php:8.2-fpm
 
 RUN apt-get update && apt-get install -y \
-    libxml2-dev \
     zlib1g-dev \
     g++ \
     git \
@@ -10,9 +9,11 @@ RUN apt-get update && apt-get install -y \
     iputils-ping \
     dnsutils \
     net-tools \
-    && docker-php-ext-install intl pdo pdo_mysql zip \
+    && docker-php-ext-install intl opcache pdo pdo_mysql \
     && pecl install apcu \
     && docker-php-ext-enable apcu \
+    && docker-php-ext-configure zip \
+    && docker-php-ext-install zip
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
