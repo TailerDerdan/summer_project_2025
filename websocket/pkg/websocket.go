@@ -441,9 +441,14 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 		Nickname: auth.Data["nickname"],
 	}
 
-	players := make(map[string]*PlayerInfo)
+	players := make([]*PlayerInfo, 0, len(game.Players))
 	for _, player := range game.Players {
-		players[player.PlayerID] = player
+		if player.PlayerID != auth.Data["userId"] {
+			players = append(players, &PlayerInfo{
+				PlayerID: player.PlayerID,
+				Nickname: player.Nickname,
+			})
+		}
 	}
 
 	conn.WriteJSON(map[string]interface{}{

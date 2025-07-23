@@ -34,11 +34,9 @@ async function connectToWSGame(data) {
         console.log("msg: ", msg)
         switch (msg.type) {
             case "init_players":
-                msg.data.players.forEach(playerData => {
-                    if (playerData.id !== msg.data.userId) {
-                        console.log("playerData: ", playerData)
-                        arrEnemy.push(playerData)
-                    }
+                Object.values(msg.data.players).forEach(playerData => {
+                    console.log("playerData: ", playerData)
+                    arrEnemy.push(playerData)
                 })
                 break;
             //
@@ -78,7 +76,7 @@ function showResultsAfterBattle() {
     console.log("show results")
     const resultsBlock = document.createElement("div")
     resultsBlock.className = "resultsBlock"
-    resultsBlock.setAttribute("style", "position: absolute; padding: 100px;")
+    resultsBlock.setAttribute("style", "position: absolute; padding: 100px; background-color: red;")
     resultsBlock.innerHTML = `
         <span>КОНЕЦ БОЯ</span>
         <p>Результаты:</p>
