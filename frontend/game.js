@@ -14,7 +14,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 })
 
 async function connectToWSGame(data) {
-    const gameSocket = new WebSocket(`ws://localhost:8080/ws/game/${data.data.gameId}`)
+    // const gameSocket = new WebSocket(`ws://localhost:8080/ws/game/${data.data.gameId}`)
+    const gameSocket = new WebSocket(`/ws/game/${data.data.gameId}`)
     console.log("FFFFFF")
     await startTimer()
     console.log("JJJJJJ")
