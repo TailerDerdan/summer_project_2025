@@ -42,7 +42,8 @@ class RoomController extends AbstractController {
         $roomData["roomId"] = strval($roomId);
         $response = $this->httpClient->request(
             'POST',
-            "http://ws:8080/ws/room/create",
+//            "http://ws:8080/ws/room/create",
+            "http://87.228.90.3/ws/room/create",
             [
                 'headers' => [
                     'Content-Type' => 'application/json',

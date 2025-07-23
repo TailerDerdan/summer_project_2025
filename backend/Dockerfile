@@ -25,7 +25,7 @@ COPY composer.json composer.lock symfony.lock ./
 COPY entrypoint.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/entrypoint.sh
-RUN composer install --no-dev --no-scripts --no-interaction --optimize-autoloader
+RUN composer install #--no-dev --no-scripts --no-interaction --optimize-autoloader
 RUN composer dump-autoload
 
 COPY . .
