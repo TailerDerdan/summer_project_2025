@@ -1,6 +1,7 @@
 FROM php:8.2-fpm
 
 RUN apt-get update && apt-get install -y \
+    libxml2-dev \
     zlib1g-dev \
     g++ \
     git \
@@ -13,7 +14,9 @@ RUN apt-get update && apt-get install -y \
     && pecl install apcu \
     && docker-php-ext-enable apcu \
     && docker-php-ext-configure zip \
-    && docker-php-ext-install zip
+    && docker-php-ext-install zip \
+    && docker-php-ext-install xml \
+    && docker-php-ext-enable xml \
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
