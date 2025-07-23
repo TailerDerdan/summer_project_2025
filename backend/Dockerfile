@@ -33,5 +33,5 @@ RUN composer dump-autoload
 
 COPY . .
 
-#ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]
 CMD ["php-fpm", "-F"]
