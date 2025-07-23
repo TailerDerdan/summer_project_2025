@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Main Page{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="../mapEditor/styleMapEditor.css">
+{% endblock %}
+
+{% block javascripts %}
+    <script type="module" src="../mapEditor/redactor.js"></script>
+{% endblock %}
+
+{% block body %}
+    <section class="app-editor">
+        <section class="menu">
+            <div class="buldings">
+                <p>Сооружения:</p>
+                <div class="bulding floor">
+                    <img src="../mapEditor/sprites/level1/floorSprites.png" class="bulding_img" alt="пол">
+                </div>
+                <div class="bulding wall">
+                    <img src="../mapEditor/sprites/level1/wallSprites.png" class="bulding_img" alt="стена">
+                </div>
+                <div class="bulding car">
+                    <img src="../mapEditor/sprites/level1/car.png" class="bulding_img" alt="машина">
+                </div>
+            </div>
+            <div class="button-saving">
+                <button>Сохранить</button>
+            </div>
+            <div class="choosen-sprites">
+                <canvas id="sprites"></canvas>
+            </div>
+        </section>
+        <section class="map">
+            <canvas id="editor"></canvas>
+        </section>
+    </section>
+{% endblock %}

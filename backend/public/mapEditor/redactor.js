@@ -1,5 +1,5 @@
-import { Clock } from "../clock/clock.js";
-import { HEIGHT_MAP, viewportHeight, viewportWidth, WIDTH_MAP } from "../sizes.js";
+import { Clock } from "./clock/clock.js";
+import { HEIGHT_MAP, viewportHeight, viewportWidth, WIDTH_MAP } from "./sizes.js";
 import { MapEditor } from "./mapForEdit.js";
 import { stateEditor } from "./state.js";
 import { applyEventsToCanvas } from "./drawing.js";

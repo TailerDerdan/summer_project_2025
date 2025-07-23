@@ -1,4 +1,4 @@
-import { COUNT_TILE_X, COUNT_TILE_Y, TILE_HEIGHT, TILE_WIDTH } from "../sizes.js";
+import { COUNT_TILE_X, COUNT_TILE_Y, TILE_HEIGHT, TILE_WIDTH } from "./sizes.js";
 import { CountOfBuildings, rectForFloor, rectForWall, TypeBuilding } from "./fillingBuldings.js";
 import { stateEditor } from "./state.js";
 
@@ -217,10 +217,17 @@ export class MapEditor
             image: imageMap,
             walls: this.containers,
         }
-        fetch("/main/saveMap", {
+        fetch("saveMap", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(newMap),
+        })
+        .then(response => response.text())
+        .then(result => {
+            console.log('Успешно:', result);
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
         });
     }
 }

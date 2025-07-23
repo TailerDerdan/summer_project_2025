@@ -1,4 +1,4 @@
-import { HEIGHT_MAP, viewportHeight, viewportWidth, WIDTH_MAP } from "../sizes.js";
+import { HEIGHT_MAP, viewportHeight, viewportWidth, WIDTH_MAP } from "./sizes.js";
 import { stateEditor } from "./state.js";
 
 export const panOffset = {
