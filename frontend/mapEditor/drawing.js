@@ -1,6 +1,6 @@
 import { COUNT_TILE_X, TILE_HEIGHT, TILE_WIDTH } from "../sizes.js";
 import { choosenBuilding, CountOfBuildings, TypeBuilding } from "./fillingBuldings.js";
-import { panOffset } from "./panning.js";
+import { panOffset, scaleData } from "./panning.js";
 import { stateEditor } from "./state.js";
 
 let drawing = false;
@@ -36,8 +36,8 @@ const handleMouseMove = (event) => {
 
     const {offsetX, offsetY} = event;
 
-    let iterX = Math.floor((offsetX + panOffset.x) / TILE_WIDTH);
-    let iterY = Math.floor((offsetY + panOffset.y) / TILE_HEIGHT);
+    let iterX = Math.floor((offsetX + panOffset.x * scaleData.scale - scaleData.scaleOffset.x) / scaleData.scale / TILE_WIDTH);
+    let iterY = Math.floor((offsetY + panOffset.y * scaleData.scale - scaleData.scaleOffset.y) / scaleData.scale / TILE_HEIGHT);
 
     console.log(iterX, iterY);
 

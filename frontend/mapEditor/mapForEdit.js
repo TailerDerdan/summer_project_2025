@@ -16,10 +16,10 @@ export class MapEditor
         this.imageWall = imageWall;
     }
 
-    draw(ctx, x, y, viewportWidth, viewportHeight, panOffset)
+    draw(ctx, x, y, viewportWidth, viewportHeight, panOffset, scaleData)
     {
-        const viewportEndX = x + viewportWidth + panOffset.x;
-        const viewportEndY = y + viewportHeight + panOffset.y;
+        const viewportEndX = (x + viewportWidth + panOffset.x * scaleData.scale - scaleData.scaleOffset.x) / scaleData.scale;
+        const viewportEndY = (y + viewportHeight + panOffset.y * scaleData.scale - scaleData.scaleOffset.y) / scaleData.scale;
 
         for (let iterY = 0; iterY < COUNT_TILE_Y; iterY++)
         {
@@ -32,9 +32,6 @@ export class MapEditor
                     tileY + TILE_HEIGHT >= y &&
                     tileY <= viewportEndY)
                 {
-
-                    // if (iterY > 33) console.log(iterX);
-
                     if (this.tileMap[iterY * COUNT_TILE_Y + iterX] == 0)
                     {
                         ctx.fillStyle = COLOR_FLOOR;
