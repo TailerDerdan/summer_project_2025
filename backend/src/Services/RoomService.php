@@ -13,6 +13,8 @@ class RoomService implements RoomServiceInterface {
     public function create(array $roomData): ?int {
         $room = new Room(
             null,
+            $roomData['playersCount'],
+            $roomData['maxPlayers'],
             $roomData['userId'],
             $roomData['name'],
             $roomData['gamemode'],
@@ -45,16 +47,16 @@ class RoomService implements RoomServiceInterface {
 
     public function addUserInRoom(int $userId, int $roomId): void
     {
-        // TODO: Implement addUserInRoom() method.
+        $this->roomRepository->addUserInRoom($userId, $roomId);
     }
 
-    public function removeUserFromRoom(int $userId): void
+    public function removeUserFromRoom(int $userId, int $roomId): void
     {
-        // TODO: Implement removeUserFromRoom() method.
+        $this->roomRepository->removeUserFromRoom($userId, $roomId);
     }
 
     public function getRoomById($roomId): ?Room
     {
-        // TODO: Implement getRoomById() method.
+        return $this->roomRepository->get($roomId);
     }
 }

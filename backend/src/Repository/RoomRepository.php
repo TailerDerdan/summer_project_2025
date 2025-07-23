@@ -34,4 +34,20 @@ class RoomRepository extends ServiceEntityRepository implements RoomRepositoryIn
             $this->getEntityManager()->flush();
         }
     }
+    public function addUserInRoom(int $userId, int $roomId): void {
+        $room = $this->find($roomId);
+        if ($room) {
+            $room->incPlayersCount();
+            $this->getEntityManager()->persist($room);
+            $this->getEntityManager()->flush();
+        }
+    }
+    public function removeUserFromRoom(int $userId, int $roomId): void {
+        $room = $this->find($roomId);
+        if ($room) {
+            $room->decPlayersCount();
+            $this->getEntityManager()->persist($room);
+            $this->getEntityManager()->flush();
+        }
+    }
 }

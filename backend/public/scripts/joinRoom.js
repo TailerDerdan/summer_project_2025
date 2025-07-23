@@ -75,7 +75,7 @@ function connectToWSRoom(dataUser)   {
             removeUserFromList(data.data.userId)
             showNotification(`${data.data.userId}: ${data.data.nickname} вызодит из комнаты...`);
             if (data.type === 'leave_ack') {
-                await deleteUserFromRoom()
+                await deleteUserFromRoom(data.data.roomId)
                 window.location.href = '/main';
             }
         }
@@ -87,7 +87,7 @@ function connectToWSRoom(dataUser)   {
             showNotification(`Не все игроки нажали кнопку "ГОТОВ"`);
         }
         if (data.type === "delete_room_l") {
-            await deleteUserFromRoom()
+            await deleteUserFromRoom(data.data.roomId)
             await deleteRoom(data.data.roomId)
             window.location.href = ("/main")
         }
@@ -173,13 +173,16 @@ function handleGameStart(data) {
     }, 1000)
 }
 
-async function deleteUserFromRoom() {
+async function deleteUserFromRoom(roomId) {
     console.log("QQQQQQ")
     const response = await fetch('/room/deleteUser', {
-        method: "GET",
+        method: "POST",
         headers: {
             'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+            roomId: roomId,
+        })
     })
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

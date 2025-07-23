@@ -9,6 +9,8 @@ class Room
 
     public function __construct(
         private ?int $id,
+        private int $playersCount,
+        private int $maxPlayers,
         private int $hostId,
         private string $name,
         private string $gamemode,
@@ -20,6 +22,14 @@ class Room
     public function getId(): ?int
     {
         return $this->id;
+    }
+    public function getPlayersCount(): ?int
+    {
+        return $this->playersCount;
+    }
+    public function getMaxPlayers(): ?int
+    {
+        return $this->maxPlayers;
     }
     public function getName(): string
     {
@@ -46,7 +56,6 @@ class Room
         return $this->hostId;
     }
 
-
     public function setName(string $newName): void
     {
         $this->name = $newName;
@@ -69,5 +78,21 @@ class Room
     public function setHostId(int $newHostId): void
     {
         $this->hostId = $newHostId;
+    }
+    public function incPlayersCount(): void
+    {
+        if ($this->playersCount < $this->maxPlayers) {
+            $this->playersCount++;
+        }
+    }
+    public function decPlayersCount(): void
+    {
+        if ($this->playersCount > 0) {
+            $this->playersCount--;
+        }
+    }
+    public function setMaxPlayers(int $maxPlayers): void
+    {
+        $this->maxPlayers = $maxPlayers;
     }
 }

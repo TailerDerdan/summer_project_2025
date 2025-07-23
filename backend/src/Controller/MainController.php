@@ -22,7 +22,7 @@ class MainController extends AbstractController {
             return $this->redirectToRoute('login');
         }
         $rooms = $this->roomService->getAll();
-        return $this->render('Main/MainPage.html.twig', [
+        return $this->render('Room/RoomMenu.html.twig', [
             'user' => $user,
             'rooms' => $rooms,
         ]);

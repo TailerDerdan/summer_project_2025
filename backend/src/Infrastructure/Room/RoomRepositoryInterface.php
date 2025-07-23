@@ -11,4 +11,6 @@ interface RoomRepositoryInterface {
 
     public function getAll(): ?array;
     public function delete(int $roomId): void;
+    public function addUserInRoom(int $userId, int $roomId): void;
+    public function removeUserFromRoom(int $userId, int $roomId): void;
 }

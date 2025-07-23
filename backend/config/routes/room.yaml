@@ -30,7 +30,7 @@ room_delete:
 
 room_delete_user:
     path: /room/deleteUser
-    methods: GET
+    methods: POST
     controller: App\Controller\RoomController::deleteUser
 
 room_get_all_users:

@@ -30,6 +30,8 @@ class RoomController extends AbstractController {
         }
         $data = json_decode($request->getContent(), true);
         $roomData = [
+            "playersCount" => 1,
+            "maxPlayers" => 5,
             "nickname" => $user->getNickname(),
             "userId" => $user->getUserId() ?? null,
             "name" => $data['name'],
@@ -70,6 +72,7 @@ class RoomController extends AbstractController {
     public function join(int $roomId): Response {
         $user = $this->getUser();
         $this->userService->updateRoomId($user->getUserId(), $roomId);
+        $this->roomService->addUserInRoom($user->getUserId(), $roomId);
         if (!$user) {
             return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
@@ -92,18 +95,19 @@ class RoomController extends AbstractController {
 
     public function delete(int $id): Response
     {
-        //$user = $this->getUser();
-        //$this->userService->deleteRoomId($user->getUserId());
         $this->roomService->delete($id);
         return $this->json([
             "status" => "success"
         ]);
     }
 
-    public function deleteUser(): Response
+    public function deleteUser(Request $request): Response
     {
+        $data = json_decode($request->getContent(), true);
+        $roomId = $data["roomId"];
         $user = $this->getUser();
         $this->userService->deleteRoomId($user->getUserId());
+        $this->roomService->removeUserFromRoom($user->getUserId(), $roomId);
         return $this->json([
             "status" => "success"
         ]);
