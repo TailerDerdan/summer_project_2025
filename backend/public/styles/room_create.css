@@ -4,7 +4,6 @@
     position: fixed;
     left: 202px;
     background-color: #4C6351;
-    display: none;
     z-index: 5;
     flex-wrap: wrap;
     justify-content: center;

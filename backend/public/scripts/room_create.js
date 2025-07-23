@@ -3,9 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', async (e) => {
         e.preventDefault()
         const formData = {
-            name: document.querySelectorAll(".parameters-room-list-item__input")[0].value,
-            gamemode: document.querySelector(".room-playmode-list").value,
-            isOpen: document.querySelector(".room-open-list").value === "open",
+            name: document.getElementById("room_name")[0].value,
+            gamemode: document.getElementById("room_playmode").value,
+            isOpen: document.getElementById("room_open").value === "open",
         };
         const response = await fetch('/room/create', {
             method: "POST",
