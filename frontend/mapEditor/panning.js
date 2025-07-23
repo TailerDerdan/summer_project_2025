@@ -7,7 +7,7 @@ export const panOffset = {
 }
 
 export const scaleData = {
-    scale: 1,
+    scale: 0.5,
     scaleOffset: {x: 0, y: 0},
 }
 
@@ -49,9 +49,9 @@ const panFunction = (event) => {
     {
         scaleData.scale = 0.1;
     }
-    if (scaleData.scale > 2)
+    if (scaleData.scale > 1)
     {
-        scaleData.scale = 2;
+        scaleData.scale = 1;
     }
 
     console.log(scaleData, panOffset)

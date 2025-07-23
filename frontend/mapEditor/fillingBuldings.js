@@ -15,7 +15,8 @@ export const CountOfBuildings = {
 }
 
 export const choosenBuilding = {
-    state: 0
+    state: 0,
+    rotation: 0,
 };
 
 export const SPRITE_FLOOR_WIDTH = 16;

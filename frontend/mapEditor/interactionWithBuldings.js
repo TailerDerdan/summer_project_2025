@@ -1,4 +1,5 @@
 import { choosenBuilding, CountOfBuildings, imageFloor, imageWall, rectForFloor, rectForWall, stateMouseDowning, TypeBuilding } from "./fillingBuldings.js";
+import { stateEditor } from "./state.js";
 
 const spritesFloor = document.getElementsByClassName("floor")[0];
 const spritesWall = document.getElementsByClassName("wall")[0];

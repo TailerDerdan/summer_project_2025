@@ -48,6 +48,11 @@ function edit()
 
 setupForEditor();
 
+const buttonSave = document.getElementsByClassName("button-saving")[0];
+buttonSave.addEventListener("click", () => {
+    stateEditor.map.saveMap();
+});
+
 window.addEventListener("load", () => {
 
     stateEditor.canvas.width = stateEditor.canvas.offsetWidth;
