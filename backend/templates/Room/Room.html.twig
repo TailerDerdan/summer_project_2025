@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Room{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/styles/login.css">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="/scripts/roomSettings.js"></script>
+    <script src="/scripts/joinRoom.js"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="room">
+        <p>{{ room.name }}</p>
+        <p class="gameType">{{ room.gamemode }}</p>
+        <p>{% if room.isOpen %}Закрытая{% else %}Открытая{% endif %}</p>
+        <div class="users-list" id="users-list-{{room.id}}"></div>
+        <a href="{{ path('main_page') }}">Назад</a>
+        <button class="leave-room-btn" type="submit">Выйти</button>
+    </div>
+{% endblock %}

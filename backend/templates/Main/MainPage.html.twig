@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Main Page{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="/styles/login.css">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="/scripts/script.js"></script>
+    <script src="/scripts/showDataOnMainPage.js"></script>
+{% endblock %}
+
+{% block body %}
+<div>
+    <header>
+        <h1>#Название игры</h1>
+        <div>
+            <a href="{{ path('profile', {id: user.userId}) }}">
+                <img src="{{ user.avatarPath }}" alt="Профиль" class="avatar">
+                <span>{{ user.nickName }}</span>
+            </a>
+            <a href="{{ path('logout') }}">Выйти</a>
+        </div>
+    </header>
+
+    <div>
+        <h2>Доступные комнаты:</h2>
+
+        {% if rooms is empty %}
+            <div class="room-list">Нет доступных комнат</div>
+        {% else %}
+            <div class="room-list">
+                {% for room in rooms %}
+                    <div class="room" id="room_{{ room.id }}">
+                        <span>{{ room.name }}</span>
+                        <p>Режим: {{ room.gamemode }}</p>
+                        <p>{% if room.isOpen %}Закрытая{% else %}Открытая{% endif %}</p>
+                        <div class="users-list" id="users-list-{{room.id}}"></div>
+                        <button onclick="joinRoom('{{ room.id }}')">JOIN</button>
+{#                        <p>Игроков: {{ room.playersCount }}/{{ room.maxPlayers }}</p>#}
+{#                        <div>#}
+{#                            {% if room.isOpen %}#}
+{#                                <a href="{{ path('room_join', {id: room.id}) }}">Присоединиться</a>#}
+{#                            {% else %}#}
+{#                                <span >Приватная</span>#}
+{#                            {% endif %}#}
+{#                        </div>#}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <a href="{{ path('room_create_page') }}">Создать комнату</a>
+    </div>
+</div>
+{% endblock %}

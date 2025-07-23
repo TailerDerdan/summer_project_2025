@@ -1,0 +1,16 @@
+<doctrine-mapping>
+    <entity name="App\Entity\User\User" table="user">
+        <id name="userId" type="integer" column="user_id">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="roomId" column="room_id" type="integer" nullable="true"/>
+        <field name="nickName" column="nick_name" type="string" length="255"/>
+        <field name="password" column="password" type="string" length="255"/>
+        <field name="avatarPath" column="avatar_path" type="string" length="255" nullable="true"/>
+        <field name="countGames" column="count_games" type="integer" nullable="true"/>
+        <field name="countWins" column="count_wins" type="integer" nullable="true"/>
+        <field name="countKills" column="count_kills" type="integer" nullable="true"/>
+        <field name="countDeaths" column="count_deaths" type="integer" nullable="true"/>
+    </entity>    
+</doctrine-mapping>

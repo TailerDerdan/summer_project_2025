@@ -1,0 +1,9 @@
+main_page:
+    path: /main
+    methods: GET
+    controller: App\Controller\MainController::mainPage
+
+get_all_users:
+    path: /main/getUsers
+    methods: GET
+    controller: App\Controller\MainController::getUsers

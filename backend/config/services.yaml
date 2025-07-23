@@ -1,0 +1,43 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+
+    Symfony\Component\HttpFoundation\Session\SessionInterface: '@session'
+
+    # Ваш SessionService
+#    App\Services\SessionService:
+#        arguments:
+#            $session: '@Symfony\Component\HttpFoundation\Session\SessionInterface'
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+# Явное определение сервисов сессии
+    session.handler.native_file:
+        class: Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler
+        arguments:
+            - '%kernel.project_dir%/var/sessions'
+
+    session.storage.native:
+        class: Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage
+        arguments:
+            - {} # options
+            - '@session.handler.native_file'
+
+    session:
+        class: Symfony\Component\HttpFoundation\Session\Session
+        arguments: ['@session.storage.native']
+        public: true

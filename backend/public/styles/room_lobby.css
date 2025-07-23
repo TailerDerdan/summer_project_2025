@@ -1,0 +1,256 @@
+* {
+    font-family: Ubuntu Mono, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    box-sizing: border-box;
+    margin: 0 0 0 0;
+}
+
+.menu-bar {
+    display: flex;
+    flex-wrap: wrap;
+    width: 202px;
+    height: 1080px;
+    background-color: #4F4C34;
+    /*position: relative;*/
+    position: fixed;
+    top: 0;
+    left: 0;
+    justify-content: center;
+    z-index: 1;
+}
+
+.menu-bar__buttons {
+    display: flex;
+    width: 128px;
+    height: 514px;
+    background-color: #A78058;
+    position: relative;
+    top: 75px;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+    padding: 28px 0 0 0;
+    border-radius: 16px;
+}
+
+.menu-bar__buttons-item {
+    display: flex;
+    width: 70px;
+    height: 70px;
+    background-color: #A78058;
+    border: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    margin: 20px 0 20px 0;
+}
+
+.parameters {
+    display: none;
+    z-index: 10;
+    width: 1920px;
+    height: 1080px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgb(79 76 52 / 90%);
+}
+
+.parameters-content {
+    width: 1822px;
+    height: 1020px;
+    position: relative;
+    top: 60px;
+    left: 98px;
+}
+
+.parameters-list {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.parameters-list-item {
+    width: 100%;
+    height: 144px;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    margin: 0 0 0 0;
+}
+
+.parameters-volume-title {
+    width: 254px;
+    height: 54px;
+    position: relative;
+    left: 88px;
+    font-size: 48px;
+    color: #FC9930;
+}
+
+.parameters-volume-slider {
+    width: 1298px;
+    height: 72px;
+    position: relative;
+    left: 138px;
+}
+
+.parameters-close {
+    width: 520px;
+    height: 84px;
+    background-color: #A78058;
+    border-radius: 25px;
+    border: none;
+    font-size: 48px;
+    color: #240502;
+    position: relative;
+    top: 64px;
+    left: 146px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.room-window {
+    width: 1718px;
+    height: 1080px;
+    position: fixed;
+    left: 202px;
+    background-color: #4C6351;
+    display: flex;
+    z-index: 5;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+}
+
+.room-window__header {
+    width: 1496px;
+    height: 88px;
+    position: relative;
+    top: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 80px;
+    color: #FFFFFF;
+    margin: 0 0 0 0;
+}
+
+.room-window__room-info {
+    width: 1463px;
+    height: 590px;
+    position: relative;
+    top: 38px;
+    border-radius: 25px;
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.room-info__main {
+    width: 1049px;
+    height: 100%;
+    background-color: #4F4C34;
+    border-radius: 25px 0 0 25px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.room-info__main-parameters-list {
+    width: 950px;
+    height: 168px;
+    position: relative;
+    top: 130px;
+    left: 80px;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+}
+
+.room-info__main-parameters-list-item {
+    width: 100%;
+    height: 52px;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    margin: 2px 0 2px 0;
+}
+
+.room-info__main-parameters-list-item-title {
+    width: 324px;
+    height: 100%;
+    font-size: 48px;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    margin: 0 0 0 0;
+}
+
+.room-info__main-parameters-list-item-value {
+    width: 572px;
+    height: 100%;
+    font-size: 48px;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    margin: 0 0 0 0;
+}
+
+.room-info__main-indicator-bar {
+    width: 840px;
+    height: 120px;
+    position: relative;
+    top: 78px;
+    left: 48px;
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.room-info__main-indicator-bar-elem {
+    width: 120px;
+    height: 100%;
+    margin: 0 10px 0 10px;
+}
+
+.room-info__main-indicator-bar-elem-icon {
+    width: 26px;
+    height: 26px;
+    position: relative;
+    left: 94px;
+    top: -26px;
+}
+
+.room-info__decorations {
+    width: 414px;
+    height: 100%;
+    border-radius: 0 25px 25px 0;
+    overflow: hidden;
+}
+
+.room-window__buttons {
+    width: 1474px;
+    height: 102px;
+    position: relative;
+    top: 16px;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+
+.room-window__button {
+    width: 614px;
+    height: 100%;
+    background-color: #A78058;
+    font-size: 48px;
+    color: #FFFFFF;
+    border-radius: 25px;
+    border: none;
+    overflow: hidden;
+    margin: 0 0 0 0;
+}
