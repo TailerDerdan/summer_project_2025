@@ -43,8 +43,8 @@ class RoomController extends AbstractController {
         $response = $this->httpClient->request(
             'POST',
 //            "http://ws:8080/ws/room/create",
-            //"http://87.228.90.3:82/ws/room/create",
-            "/ws/room/create",
+            "http://87.228.90.3:8080/ws/room/create",
+//            "/ws/room/create",
             [
                 'headers' => [
                     'Content-Type' => 'application/json',

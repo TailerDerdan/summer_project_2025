@@ -228,8 +228,8 @@ func (h *WebSocketHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Reque
 	w.WriteHeader(http.StatusOK)
 	resp := map[string]interface{}{
 		"roomId": request.RoomID,
-// 		"ws_url": "ws://87.228.90.3:82/ws/room_" + request.RoomID,
-        "ws_url": "/ws/room_" + request.RoomID,
+ 		"ws_url": "ws://87.228.90.3:8080/ws/room_" + request.RoomID,
+        //"ws_url": "/ws/room_" + request.RoomID,
 	}
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("WebSocket error: %v", err)
