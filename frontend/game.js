@@ -1,4 +1,7 @@
-document.addEventListener('DOMContentLoaded', () => {
+//import { player } from './player/player.js';
+
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log("START GAME 0_0")
     const data = JSON.parse(sessionStorage.getItem('gameSession'))
     console.log("DATA: ", data.data)
     if (!data) {
@@ -7,31 +10,85 @@ document.addEventListener('DOMContentLoaded', () => {
         return
     }
     sessionStorage.removeItem('gameSession');
-    connectToWSGame(data.data)
+    await connectToWSGame(data.data)
 })
 
-function connectToWSGame(data) {
-    const gameSocket = new WebSocket(`ws://localhost:8080/ws/game/${data.data.gameId}`)
+async function connectToWSGame(data) {
+    //const gameSocket = new WebSocket(`ws://localhost:8080/ws/game/${data.data.gameId}`)
+    const gameSocket = new WebSocket(`ws://87.228.90.3:8080/ws/game/${data.data.gameId}`)
+    console.log("FFFFFF")
+    await startTimer()
+    console.log("JJJJJJ")
     gameSocket.onopen = (e) => {
         console.log(`Success connect to game map`)
         gameSocket.send(JSON.stringify({
-            type: "game_state",
+            type: "game_auth",
             data: {
                 userId: data.data.userId,
-                gameId: data.data.gameId,
+                nickname: data.data.nickname,
             }
         }))
     }
-    gameSocket.onmessage = (e) => {
-        const dataJson = JSON.parse(e.data)
-        console.log("data: ", dataJson)
-        switch (dataJson.type) {
-            case "game_state":
-                break
-            case "update_position":
-                break
-            case "update_players":
-                break
+    console.log("DDDDDD")
+    gameSocket.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        switch (msg.type) {
+            // case "initial_players":
+            //     console.log("initial_players")
+            //     Object.values(msg.data).forEach(playerData => {
+            //         if (playerData.id !== msg.data.userId) {
+            //             player.addOtherPlayer(playerData);
+            //         }
+            //     });
+            //     break;
+            //
+            // case "player_position":
+            //     console.log("player_position")
+            //     player.updatePlayerPosition(msg.data.id, msg.data.x, msg.data.y);
+            //     break;
+            //
+            // case "player_left":
+            //     console.log("player_left")
+            //     player.removePlayer(msg.data.id);
+            //     break;
         }
-    }
+    };
+    console.log("XXXXXX")
+}
+
+
+async function startTimer() {
+    let countStart = 10
+    const countStartElt = document.createElement("div")
+    countStartElt.setAttribute("style", "position: fixed; padding: 20px; font-size: 20px;")
+    document.body.prepend(countStartElt)
+    const timer = setInterval(() => {
+        countStartElt.textContent = `Игра завершится через: ${countStart}`
+        countStart--
+        if (countStart < 0) {
+            clearInterval(timer)
+            showResultsAfterBattle()
+        }
+    }, 1000)
+}
+
+function showResultsAfterBattle() {
+    const resultsBlock = document.createElement("div")
+    resultsBlock.className = "resultsBlock"
+    resultsBlock.setAttribute("style", "position: absolute; padding: 100px;")
+    resultsBlock.innerHTML = `
+        <span>КОНЕЦ БОЯ</span>
+        <p>Результаты:</p>
+        <div>
+            <p>1. ....</p>
+            <p>2. ....</p>
+            <p>3. ....</p>
+        </div>
+        <button class="endBtn" type="button">Выйти</button>
+    `
+    document.body.appendChild(resultsBlock)
+    const endBtn = document.querySelector(".endBtn")
+    endBtn.addEventListener('click', () => {
+        window.location.href = "/main"
+    })
 }
