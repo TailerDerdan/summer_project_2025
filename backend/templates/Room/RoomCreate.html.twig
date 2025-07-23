@@ -18,7 +18,7 @@
         <div class="create-room__main">
             <div class="create-room__parameters-room-list">
                 <form class="create-room__parameters-room-list-content" id="room_parameters" action="{{ path('room_create') }}" method="POST">
-                    <input type="hidden" name="user_id" value="{{ currentUser.id }}">
+                    <input type="hidden" name="user_id" value="{{ user.userId }}">
                     <div class="create-room__parameters-room-list-item">
                         <label class="parameters-room-list-item__header" for="room_name">Введите ваше название</label>
                         <input class="parameters-room-list-item__input" type="text" id="room_name" name="room_name" required>

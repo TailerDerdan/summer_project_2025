@@ -39,16 +39,16 @@
                     {% endif %}
                 </div>
                 <div class="room-info__main-indicator-bar">
-                    {% for player in room.players %}
-                        <div class="room-info__main-indicator-bar-elem">
-                            <img src="public/images/carbon_user-avatar.png" alt="Аватар 1">
-                            {% if player.isReady %}
-                                <img class="room-info__main-indicator-bar-elem-icon" src="public/images/green_indicator.png" alt="Y">
-                            {% else %}
-                                <img class="room-info__main-indicator-bar-elem-icon" src="public/images/red_indicator.png" alt="N">
-                            {% endif %}
-                        </div>
-                    {% endfor %}
+{#                    {% for player in room.players %}#}
+{#                        <div class="room-info__main-indicator-bar-elem">#}
+{#                            <img src="public/images/carbon_user-avatar.png" alt="Аватар 1">#}
+{#                            {% if player.isReady %}#}
+{#                                <img class="room-info__main-indicator-bar-elem-icon" src="public/images/green_indicator.png" alt="Y">#}
+{#                            {% else %}#}
+{#                                <img class="room-info__main-indicator-bar-elem-icon" src="public/images/red_indicator.png" alt="N">#}
+{#                            {% endif %}#}
+{#                        </div>#}
+{#                    {% endfor %}#}
                 </div>
             </div>
             <div class="room-info__decorations">

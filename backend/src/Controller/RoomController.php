@@ -20,7 +20,8 @@ class RoomController extends AbstractController {
 
     public function createPage(): Response
     {
-        return $this->render('Room/CreateRoom.html.twig');
+        $user = $this->getUser();
+        return $this->render('Room/RoomCreate.html.twig', ["user" => $user]);
     }
     public function create(Request $request): Response
     {
@@ -85,7 +86,7 @@ class RoomController extends AbstractController {
     public function show(int $id): Response
     {
         $room = $this->roomService->get($id);
-        return $this->render("Room/Room.html.twig", ["room" => $room]);
+        return $this->render("Room/RoomLobby.html.twig", ["room" => $room]);
     }
 
     public function edit(): Response

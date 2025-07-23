@@ -31,7 +31,7 @@ function addRoomToList(room) {
                 </div>
                 <div class="room-list-item__avatar-list">
                     {% for player in room.players %}
-                        <img class="room-list-item__avatar-list-item" src="{{ player.avatarPath }}" alt="Аватар">
+                        <img class="room-list-item__avatar-list-item" src="" alt="Аватар">
                     {% endfor %}
                 </div>
             </div>
@@ -49,8 +49,8 @@ function addRoomToList(room) {
     container.appendChild(roomElt)
 }
 async function joinRoom(roomId) {
-    const response = await fetch('/room/join', {
-        method: "GET",
+    const response = await fetch(`/room/join/${roomId}`, {
+        method: "POST",
         headers: {
             'Content-Type': 'application/json',
         },
