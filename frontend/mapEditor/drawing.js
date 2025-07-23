@@ -1,6 +1,6 @@
 import { COUNT_TILE_X, TILE_HEIGHT, TILE_WIDTH } from "../sizes.js";
 import { choosenBuilding, CountOfBuildings, TypeBuilding } from "./fillingBuldings.js";
-import { panOffset } from "./panning.js";
+import { panOffset, scaleData } from "./panning.js";
 import { stateEditor } from "./state.js";
 
 let drawing = false;
@@ -36,15 +36,24 @@ const handleMouseMove = (event) => {
 
     const {offsetX, offsetY} = event;
 
-    let iterX = Math.floor((offsetX + panOffset.x) / TILE_WIDTH);
-    let iterY = Math.floor((offsetY + panOffset.y) / TILE_HEIGHT);
-
-    console.log(iterX, iterY);
+    let iterX = Math.floor((offsetX + panOffset.x * scaleData.scale - scaleData.scaleOffset.x) / scaleData.scale / TILE_WIDTH);
+    let iterY = Math.floor((offsetY + panOffset.y * scaleData.scale - scaleData.scaleOffset.y) / scaleData.scale / TILE_HEIGHT);
 
     if (erasing)
     {
         stateEditor.map.tileMap[iterY * COUNT_TILE_X + iterX] = 0;
         stateEditor.map.buldings[iterY * COUNT_TILE_X + iterX] = 0;
+
+        const wall = stateEditor.map.buldingsObject.find((elem) => {
+            if (elem.x == iterX && elem.y == iterY) return true;
+        });
+
+        if (wall)
+        {
+            const indexDeletedWall = stateEditor.map.buldingsObject.indexOf(wall);
+            stateEditor.map.buldingsObject.splice(indexDeletedWall, 1);
+        }
+
         return;
     }
     if (drawing)
@@ -61,6 +70,15 @@ const handleMouseMove = (event) => {
         )
         {
             stateEditor.map.buldings[iterY * COUNT_TILE_X + iterX] = choosenBuilding.state;
+
+            const wall = stateEditor.map.buldingsObject.find((elem) => {
+                if (elem.x == iterX && elem.y == iterY) return true;
+            });
+
+            if (wall == undefined)
+            {
+                stateEditor.map.buldingsObject.push({x: iterX, y: iterY, choosenBuilding: choosenBuilding.state, rotation: choosenBuilding.rotation});
+            }
         }
     }
     
@@ -72,10 +90,25 @@ const handleMouseUp = (event) => {
     erasing = false;
 }
 
+const rotationObject = (event) => {
+    
+    if (event.key == 'к' || event.key == 'К' || event.key == 'r' || event.key == 'R')
+    {
+        choosenBuilding.rotation += 90;
+        console.log(choosenBuilding.rotation)
+    }
+    if (choosenBuilding.rotation == 360)
+    {
+        choosenBuilding.rotation = 0;
+    }
+}
+
+
 export function applyEventsToCanvas(canvas)
 {
     canvas.addEventListener('mousedown', handleMouseDown);
     canvas.addEventListener('mouseup', handleMouseUp);
     canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('contextmenu', handleLeftMouseDown);
+    document.addEventListener('keydown', rotationObject);
 }

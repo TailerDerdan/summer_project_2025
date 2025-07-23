@@ -2,14 +2,11 @@ import { Container } from '../collisions/collisions.js';
 import { randomPosition } from '../random.js';
 import { Sprite } from '../spriteScript/spriteScript.js';
 import { InitAssaultRifle, InitShotgun, TYPE_WEAPON, Weapon } from './../weapon/typeWeapons.js';
-// import {canvas, ctx} from "../canvas.js";
-// import {camera} from "../camera/camera.js";
 
 const WIDTH_FRAME = 23;
 const HEIGHT_FRAME = 34;
 const START_X = 0;
 const COUNT_FRAMES = 10;
-//const otherPlayers = {};
 
 // const WIDTH_FRAME = 25;
 // const HEIGHT_FRAME = 16;
@@ -136,39 +133,6 @@ export class Player
         let appearance = this.delay(this.appearanceAfterDeath, 3000);
         appearance(this);
     }
-
-    // addOtherPlayer(playerInfo) {
-    //     if (!otherPlayers[playerInfo.id]) {
-    //         // Создаем НОВЫЙ экземпляр игрока, а не используем существующий
-    //         const newPlayer = new Player(
-    //             playerInfo.x || 0,
-    //             playerInfo.y || 0,
-    //             this.speed,
-    //             0,
-    //             this.width,
-    //             this.height,
-    //             new Weapon(InitShotgun, TYPE_WEAPON.SHOTGUN)
-    //         );
-    //         newPlayer.id = playerInfo.id;
-    //         otherPlayers[playerInfo.id] = newPlayer;
-    //     }
-    // }
-
-    // updatePlayerPosition(playerId, x, y) {
-    //     if (otherPlayers[playerId]) {
-    //         otherPlayers[playerId].x = x;
-    //         otherPlayers[playerId].y = y;
-    //     }
-    // }
-    //
-    // removePlayer(playerId) {
-    //     delete otherPlayers[playerId];
-    // }
-    // drawOtherPlayers() {
-    //     Object.values(otherPlayers).forEach(player => {
-    //         player.drawPlayer(ctx, camera.xView, camera.yView);
-    //     });
-    // }
 }
 
 const weapon1 = new Weapon(InitShotgun, TYPE_WEAPON.SHOTGUN);

@@ -5,7 +5,7 @@ import { stateEditor } from "./state.js";
 import { applyEventsToCanvas } from "./drawing.js";
 import {} from "./interactionWithBuldings.js";
 import { imageFloor, imageWall } from "./fillingBuldings.js";
-import { panOffset } from "./panning.js";
+import { panOffset, scaleData } from "./panning.js";
 
 function setupForEditor()
 {
@@ -31,10 +31,13 @@ function edit()
     
     stateEditor.ctx.save();
 
-    stateEditor.ctx.translate(-panOffset.x, -panOffset.y);
+    stateEditor.ctx.translate(-panOffset.x * scaleData.scale + scaleData.scaleOffset.x,
+                              -panOffset.y * scaleData.scale + scaleData.scaleOffset.y);
+    stateEditor.ctx.scale(scaleData.scale, scaleData.scale);
 
-    stateEditor.ctx.clearRect(0, 0, stateEditor.canvas.width, stateEditor.canvas.height);
-    stateEditor.map.draw(stateEditor.ctx, 0, 0, viewportWidth, viewportHeight, panOffset);
+    stateEditor.ctx.clearRect(0, 0, (stateEditor.canvas.width * scaleData.scale - scaleData.scaleOffset.x) / scaleData.scale,
+                                    (stateEditor.canvas.height * scaleData.scale - scaleData.scaleOffset.y) / scaleData.scale);
+    stateEditor.map.draw(stateEditor.ctx, 0, 0, viewportWidth, viewportHeight, panOffset, scaleData);
 
     stateEditor.ctx.restore();
     
@@ -44,6 +47,11 @@ function edit()
 }
 
 setupForEditor();
+
+const buttonSave = document.getElementsByClassName("button-saving")[0];
+buttonSave.addEventListener("click", () => {
+    stateEditor.map.saveMap();
+});
 
 window.addEventListener("load", () => {
 
