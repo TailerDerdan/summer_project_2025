@@ -1,4 +1,4 @@
-import {arrEnemy, player} from "./player/player";
+import {arrEnemy} from "./player/player";
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("START GAME 0_0")
