@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
-    <link href="styles/room_base.css" rel="stylesheet">
+    <link href="/styles/room_base.css" rel="stylesheet">
 
     {% block stylesheets %}
     {% endblock %}
@@ -18,20 +18,20 @@
 </head>
 <body>
     <audio id="music_for_menu" autoplay loop>
-        <source src="../../public/music/Baron.mp3" type="audio/mpeg">
+        <source src="/music/Baron.mp3" type="audio/mpeg">
     </audio>
     <div class="menu-bar">
         <div class="menu-bar__buttons">
             <a class="menu-bar__buttons-item" href="{{ path('profile', {id: user.userId}) }}">
-                <img class="menu-bar__buttons-item-photo" src="public/images/profile.png" alt="Перейти в профиль">
+                <img class="menu-bar__buttons-item-photo" src="/images/profile.png" alt="Перейти в профиль">
             </a>
 
             <button class="menu-bar__buttons-item" id="open_parameters" name="go_to_parameters">
-                <img class="menu-bar__buttons-item-photo" src="public/images/parameters.png" alt="Перейти к настройкам">
+                <img class="menu-bar__buttons-item-photo" src="/images/parameters.png" alt="Перейти к настройкам">
             </button>
 
             <a class="menu-bar__buttons-item" href="{{ path('logout') }}">
-                <img class="menu-bar__buttons-item-photo" src="public/images/leave.png" alt="Выйти из игры">
+                <img class="menu-bar__buttons-item-photo" src="/images/leave.png" alt="Выйти из игры">
             </a>
         </div>
     </div>

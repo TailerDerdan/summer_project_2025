@@ -1,5 +1,5 @@
 function connectWebSocket() {
-    const socket = new WebSocket('ws://localhost:8080/ws/global-updates');
+    const socket = new WebSocket('ws://87.228.90.3:8080/ws/global-updates');
     socket.onopen = () => {
         console.log("connect to global ws")
     }
@@ -26,13 +26,13 @@ function addRoomToList(room) {
                 <div class="room-list-item__header">
                     <p class="room-list-item__name">{{ room.name }}</p>
                     {% if not room.isOpen %}
-                        <img class="room-list-item__status-indicator" src="../../public/images/lock.png" alt="">
+                        <img class="room-list-item__status-indicator" src="/images/lock.png" alt="">
                     {% endif %}
                 </div>
                 <div class="room-list-item__avatar-list">
-                    {% for player in room.players %}
-                        <img class="room-list-item__avatar-list-item" src="" alt="Аватар">
-                    {% endfor %}
+<!--                    {% for player in room.players %}-->
+<!--                        <img class="room-list-item__avatar-list-item" src="" alt="Аватар">-->
+<!--                    {% endfor %}-->
                 </div>
             </div>
             <div class="room-list-item__extra">
