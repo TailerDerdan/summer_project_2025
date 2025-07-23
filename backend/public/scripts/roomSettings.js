@@ -36,6 +36,7 @@ function addUserLocal(user) {
     const userList = document.getElementById(`users-list-${user.roomId}`)
     if (userList &&  !document.getElementById(`user-${user.userId}`)) {
         const userElt = document.createElement("p")
+        userElt.setAttribute("style", "background-color: red;")
         userElt.id = `user-${user.userId}`
         userElt.textContent = `${user.userId}: ${user.nickname}`
         userList.appendChild(userElt)
