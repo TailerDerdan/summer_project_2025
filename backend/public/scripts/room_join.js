@@ -115,7 +115,7 @@ function handleGameStart(data, userId) {
         gameId: data.data.gameId,
         gameType: data.data.gameType,
     }))
-    let countStart = 5
+    let countStart = 2
     const countStartElt = document.createElement("div")
     document.body.appendChild(countStartElt)
     const timer = setInterval(() => {
@@ -125,6 +125,6 @@ function handleGameStart(data, userId) {
             clearInterval(timer)
             window.location.href = `/game/index.html?gameId=${data.data.gameId}`
         }
-    })
+    }, 1000)
 }
 

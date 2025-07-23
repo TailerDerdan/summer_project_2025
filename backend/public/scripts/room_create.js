@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', async (e) => {
         e.preventDefault()
         const formData = {
-            name: document.getElementById("room_name")[0].value,
+            name: document.getElementById("room_name").value,
             gamemode: document.getElementById("room_playmode").value,
             isOpen: document.getElementById("room_open").value === "open",
         };
@@ -28,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 nickname: data.nickname,
             }
         }));
-        console.log(typeof data.roomId, data.roomId, "+++")
         window.location.href = ('/room/show/' + data.roomId)
     })
 })
