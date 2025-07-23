@@ -1,5 +1,6 @@
 function connectWebSocket() {
-    const socket = new WebSocket('ws://localhost:8080/ws/global-updates');
+    //const socket = new WebSocket('ws://localhost:8080/ws/global-updates');
+    const socket = new WebSocket('ws://87.228.90.3:82/ws/global-updates');
 
     socket.onmessage = async (event) => {
         const data = JSON.parse(event.data);
