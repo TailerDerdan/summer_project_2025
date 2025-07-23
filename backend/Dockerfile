@@ -10,13 +10,9 @@ RUN apt-get update && apt-get install -y \
     iputils-ping \
     dnsutils \
     net-tools \
-    && docker-php-ext-install intl opcache pdo pdo_mysql \
+    && docker-php-ext-install intl pdo pdo_mysql zip \
     && pecl install apcu \
     && docker-php-ext-enable apcu \
-    && docker-php-ext-configure zip \
-    && docker-php-ext-install zip \
-    && docker-php-ext-install xml \
-    && docker-php-ext-enable xml \
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
