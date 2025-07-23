@@ -6,7 +6,7 @@ import { map } from './map/map.js';
 import { camera } from './camera/camera.js';
 import {} from './player/changeDir.js';
 import { Clock } from './clock/clock.js';
-import { player } from './player/player.js';
+import { player, arrEnemy } from './player/player.js';
 import { render, texture2D, updateTexture } from './shadows/shadows.js';
 
 const clock = new Clock();
@@ -20,10 +20,12 @@ function gameLoop()
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     map.draw(ctx, camera.xView, camera.yView);
 
-    enemy1.drawEnemy(ctx, camera.xView, camera.yView);
+    arrEnemy.forEach(enemy => enemy1.drawEnemy(ctx, camera.xView, camera.yView))
+
+    //enemy1.drawEnemy(ctx, camera.xView, camera.yView);
     enemy1.drawBlood(ctx, camera.xView, camera.yView);
 
-    enemy1.updateEnemy();
+    //enemy1.updateEnemy();
 
     updateMovementBullets();
 

@@ -1,4 +1,4 @@
-//import { player } from './player/player.js';
+import {arrEnemy, player} from "./player/player";
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("START GAME 0_0")
@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 })
 
 async function connectToWSGame(data) {
-    //const gameSocket = new WebSocket(`ws://localhost:8080/ws/game/${data.data.gameId}`)
     const gameSocket = new WebSocket(`ws://87.228.90.3:8080/ws/game/${data.data.gameId}`)
     console.log("FFFFFF")
     await startTimer()
@@ -32,15 +31,16 @@ async function connectToWSGame(data) {
     console.log("DDDDDD")
     gameSocket.onmessage = (event) => {
         const msg = JSON.parse(event.data);
+        console.log("msg: ", msg)
         switch (msg.type) {
-            // case "initial_players":
-            //     console.log("initial_players")
-            //     Object.values(msg.data).forEach(playerData => {
-            //         if (playerData.id !== msg.data.userId) {
-            //             player.addOtherPlayer(playerData);
-            //         }
-            //     });
-            //     break;
+            case "init_players":
+                msg.data.players.forEach(playerData => {
+                    if (playerData.id !== msg.data.userId) {
+                        console.log("playerData: ", playerData)
+                        arrEnemy.push(playerData)
+                    }
+                })
+                break;
             //
             // case "player_position":
             //     console.log("player_position")
@@ -67,12 +67,15 @@ async function startTimer() {
         countStart--
         if (countStart < 0) {
             clearInterval(timer)
+            console.log("111")
             showResultsAfterBattle()
+            console.log("222")
         }
     }, 1000)
 }
 
 function showResultsAfterBattle() {
+    console.log("show results")
     const resultsBlock = document.createElement("div")
     resultsBlock.className = "resultsBlock"
     resultsBlock.setAttribute("style", "position: absolute; padding: 100px;")
