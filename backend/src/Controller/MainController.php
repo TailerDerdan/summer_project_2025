@@ -37,4 +37,25 @@ class MainController extends AbstractController {
             'users' => $users,
         ]);
     }
+
+    public function saveMap(): JsonResponse {
+        $jsonDate = file_get_contents("php://input");
+        $data = json_decode($jsonDate, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            http_response_code(400);
+            die(json_encode(['error' => 'Невалидный JSON']));
+        }
+
+        $mapsJson = file_get_contents("./../../../frontend/maps/maps.json");
+        $maps = json_decode($mapsJson, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            http_response_code(400);
+            die(json_encode(['error' => 'Невалидный JSON']));
+        }
+
+        $maps['maps'][] = $data;
+        file_put_contents("./../../../frontend/maps/maps.json", $maps);
+    }
 }

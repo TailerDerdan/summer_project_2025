@@ -39,8 +39,6 @@ const handleMouseMove = (event) => {
     let iterX = Math.floor((offsetX + panOffset.x * scaleData.scale - scaleData.scaleOffset.x) / scaleData.scale / TILE_WIDTH);
     let iterY = Math.floor((offsetY + panOffset.y * scaleData.scale - scaleData.scaleOffset.y) / scaleData.scale / TILE_HEIGHT);
 
-    console.log(iterX, iterY);
-
     if (erasing)
     {
         stateEditor.map.tileMap[iterY * COUNT_TILE_X + iterX] = 0;
@@ -72,7 +70,15 @@ const handleMouseMove = (event) => {
         )
         {
             stateEditor.map.buldings[iterY * COUNT_TILE_X + iterX] = choosenBuilding.state;
-            stateEditor.map.buldingsObject.push({x: iterX, y: iterY, choosenBuilding: choosenBuilding.state, rotation: choosenBuilding.rotation});
+
+            const wall = stateEditor.map.buldingsObject.find((elem) => {
+                if (elem.x == iterX && elem.y == iterY) return true;
+            });
+
+            if (wall == undefined)
+            {
+                stateEditor.map.buldingsObject.push({x: iterX, y: iterY, choosenBuilding: choosenBuilding.state, rotation: choosenBuilding.rotation});
+            }
         }
     }
     

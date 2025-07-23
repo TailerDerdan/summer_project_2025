@@ -1,5 +1,6 @@
 import { COUNT_TILE_X, COUNT_TILE_Y, TILE_HEIGHT, TILE_WIDTH } from "../sizes.js";
 import { CountOfBuildings, rectForFloor, rectForWall, TypeBuilding } from "./fillingBuldings.js";
+import { stateEditor } from "./state.js";
 
 export const COLOR_FLOOR = 'rgba(179, 211, 0, 1)';
 export const COLOR_WALL = 'rgba(231, 40, 10, 1)';
@@ -128,13 +129,98 @@ export class MapEditor
     saveMap()
     {
         this.preparingToGreedyMeshing();
+        this.containers = [];
+
+        let isWallStartedHoriz = false;
+        let horWall = null; 
 
         for (let iterY = 0; iterY < COUNT_TILE_Y; iterY++)
         {
             for (let iterX = 0; iterX < COUNT_TILE_X; iterX++)
             {
-                
+                if (iterX == COUNT_TILE_X - 1)
+                {
+                    if (horWall)
+                    {
+                        this.containers.push(horWall);
+                        horWall = null;
+                        isWallStartedHoriz = false;
+                        continue;
+                    }
+                }
+                if (!this.horizontalWalls[iterY * COUNT_TILE_Y + iterX] && isWallStartedHoriz)
+                {
+                    this.containers.push(horWall);
+                    horWall = null;
+                    isWallStartedHoriz = false;
+                    continue;
+                }
+                if (this.horizontalWalls[iterY * COUNT_TILE_Y + iterX])
+                {
+                    if (isWallStartedHoriz)
+                    {
+                        horWall.w++;
+                    }
+                    else
+                    {
+                        horWall = new GreedyQuad(iterX, iterY, 1, 1);
+                        isWallStartedHoriz = true;
+                    }
+                    continue;
+                    
+                }
             }
         }
+
+        let isWallStartedVert = false;
+        let vertWall = null;
+
+        for (let iterX = 0; iterX < COUNT_TILE_X; iterX++)
+        {
+            for (let iterY = 0; iterY < COUNT_TILE_Y; iterY++)
+            {
+                if (iterY == COUNT_TILE_Y - 1)
+                {
+                    if (vertWall)
+                    {
+                        this.containers.push(vertWall);
+                        vertWall = null;
+                        isWallStartedVert = false;
+                        continue;
+                    }
+                }
+                if (!this.verticalWalls[iterY * COUNT_TILE_Y + iterX] && isWallStartedVert)
+                {
+                    this.containers.push(vertWall);
+                    vertWall = null;
+                    isWallStartedVert = false;
+                    continue;
+                }
+                if (this.verticalWalls[iterY * COUNT_TILE_Y + iterX])
+                {
+                    if (isWallStartedVert)
+                    {
+                        vertWall.h++;
+                    }
+                    else
+                    {
+                        vertWall = new GreedyQuad(iterX, iterY, 1, 1);
+                        isWallStartedVert = true;
+                    }
+                    continue;
+                }
+            }
+        }
+
+        const imageMap = stateEditor.canvas.toDataURL("image/png");
+        const newMap = {
+            image: imageMap,
+            walls: this.containers,
+        }
+        fetch("/main/saveMap", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newMap),
+        });
     }
 }
