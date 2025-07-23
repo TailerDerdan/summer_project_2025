@@ -1,0 +1,59 @@
+{% extends 'base_room.html.twig' %}
+
+{% block title %}Create Room{% endblock %}
+
+{% block stylesheets %}
+    <link href="styles/room_create.css" rel="stylesheet">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="scripts/room_create.js"></script>
+    <script src="scripts/parameters_handler.js"></script>
+    <script src="scripts/volume_controller.js"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="create-room" id="create_room">
+        <p class="create-room__header">Создание комнаты</p>
+        <div class="create-room__main">
+            <div class="create-room__parameters-room-list">
+                <form class="create-room__parameters-room-list-content" id="room_parameters" action="{{ path('room_create') }}" method="POST">
+                    <input type="hidden" name="user_id" value="{{ currentUser.id }}">
+                    <div class="create-room__parameters-room-list-item">
+                        <label class="parameters-room-list-item__header" for="room_name">Введите ваше название</label>
+                        <input class="parameters-room-list-item__input" type="text" id="room_name" name="room_name" required>
+                    </div>
+                    <div class="create-room__parameters-room-list-item">
+                        <label class="parameters-room-list-item__header-room-playmode" for="room_playmode">Выберите режим игры</label>
+                        <select class="room-playmode-list" id="room_playmode" name="room_playmode">
+                            <option class="room-playmode-list-item" value="standard">Стандарт</option>
+                            <option class="room-playmode-list-item" value="invisibility">Невидимость</option>
+                            <option class="room-playmode-list-item" value="fog_of_war">Туман войны</option>
+                            <option class="room-playmode-list-item" value="arms_race">Гонка вооружений</option>
+                        </select>
+                        <br><br>
+                    </div>
+                    <div class="create-room__parameters-room-list-item">
+                        <label class="parameters-room-list-item__header" for="room_open">Сделать комнату закрытой?</label>
+                        <select class="room-open-list" id="room_open" name="room_open">
+                            <option class="room-open-list-item" value="open">Нет</option>
+                            <option class="room-open-list-item" value="closed">Да</option>
+                        </select>
+                        <br><br>
+                    </div>
+                    <div class="create-room__parameters-room-list-item">
+                        <label class="parameters-room-list-item__header" for="room_password">Установите пароль</label>
+                        <input class="parameters-room-list-item__input" type="password" id="room_password" name="room_password">
+                    </div>
+                </form>
+            </div>
+            <div class="create-room__main-decorations">
+                <img src="public/images/cool_man.png" alt="Здесь должна быть картинка с крутым чуваком">
+            </div>
+        </div>
+        <div class="create-room__buttons">
+            <a class="create-room__button" href="{{ path('main_page') }}">Отменить</a>
+            <button class="create-room__button" form="room_parameters" type="submit">Создать комнату</button>
+        </div>
+    </div>
+{% endblock %}
