@@ -1,5 +1,6 @@
 import {arrEnemy} from "./player/player.js";
 
+export let gameIsRun = true;
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("START GAME 0_0")
     const data = JSON.parse(sessionStorage.getItem('gameSession'))
@@ -23,7 +24,7 @@ async function connectToWSGame(data) {
         gameSocket.send(JSON.stringify({
             type: "game_auth",
             data: {
-                userId: data.data.userId,
+                userId: (data.data.userId).toString(),
                 nickname: data.data.nickname,
             }
         }))
@@ -89,6 +90,7 @@ function showResultsAfterBattle() {
     `
     document.body.appendChild(resultsBlock)
     const endBtn = document.querySelector(".endBtn")
+    gameIsRun = false;
     endBtn.addEventListener('click', () => {
         window.location.href = "/main"
     })

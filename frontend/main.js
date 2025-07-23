@@ -8,6 +8,7 @@ import {} from './player/changeDir.js';
 import { Clock } from './clock/clock.js';
 import { player, arrEnemy } from './player/player.js';
 import { render, texture2D, updateTexture } from './shadows/shadows.js';
+import {gameIsRun} from "./game";
 
 const clock = new Clock();
 map.generate(ctx);
@@ -20,12 +21,13 @@ function gameLoop()
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     map.draw(ctx, camera.xView, camera.yView);
 
-    arrEnemy.forEach(enemy => enemy1.drawEnemy(ctx, camera.xView, camera.yView))
+    arrEnemy.forEach(enemy => {
+        enemy1.drawEnemy(ctx, camera.xView, camera.yView)
+        enemy1.drawBlood(ctx, camera.xView, camera.yView);
+        enemy1.updateEnemy();
+    })
 
     //enemy1.drawEnemy(ctx, camera.xView, camera.yView);
-    enemy1.drawBlood(ctx, camera.xView, camera.yView);
-
-    //enemy1.updateEnemy();
 
     updateMovementBullets();
 
@@ -41,7 +43,10 @@ function gameLoop()
     render(state);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, texture2D);
-
+    if (!gameIsRun) {
+        console.log("game over")
+        return
+    }
     window.requestAnimationFrame(gameLoop);
 }
 

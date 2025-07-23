@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
                     type: "start_game",
                     data: {
                         userId: (dataJson.data.userId).toString(),
+                        nickname: dataJson.data.nickname,
                         gameType: gameType,
                     }
                 }));
