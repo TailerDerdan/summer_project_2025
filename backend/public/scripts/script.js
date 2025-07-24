@@ -32,6 +32,7 @@ function addUser(user) {
         userList.appendChild(userElt)
         const playersCount = document.getElementById(`playersCount-${ user['roomId'] }`)
         playersCount.dataset.count++
+        playersCount.textContent = `${playersCount.dataset.count}/${playersCount.dataset.count.max}`
     }
 }
 
@@ -41,6 +42,7 @@ async function deleteUser(user) {
         userElt.remove()
         const playersCount = document.getElementById(`playersCount-${ user["roomId"] }`)
         playersCount.dataset.count--
+        playersCount.textContent = `${playersCount.dataset.count}/${playersCount.dataset.count.max}`
         if (parseInt(playersCount.dataset.count) <= 0) {
             await deleteRoom()
             const room = document.getElementById(`room-menu__room-list-item-${user["roomId"]}`)

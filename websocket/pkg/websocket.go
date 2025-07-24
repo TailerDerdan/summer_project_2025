@@ -265,19 +265,19 @@ func (h *WebSocketHandler) HandleGlobalUpdates(w http.ResponseWriter, r *http.Re
 	h.mu.Unlock()
 }
 
-func (h *WebSocketHandler) getRoomList() []map[string]interface{} {
-	var rooms []map[string]interface{}
-	for _, room := range h.rooms {
-		rooms = append(rooms, map[string]interface{}{
-			"roomId":   room.RoomID,
-			"name":     room.Name,
-			"gamemode": room.Gamemode,
-			"isOpen":   room.IsOpen,
-			"userId":   room.HostID,
-		})
-	}
-	return rooms
-}
+//func (h *WebSocketHandler) getRoomList() []map[string]interface{} {
+//	var rooms []map[string]interface{}
+//	for _, room := range h.rooms {
+//		rooms = append(rooms, map[string]interface{}{
+//			"roomId":   room.RoomID,
+//			"name":     room.Name,
+//			"gamemode": room.Gamemode,
+//			"isOpen":   room.IsOpen,
+//			"userId":   room.HostID,
+//		})
+//	}
+//	return rooms
+//}
 
 //
 //func (h *WebSocketHandler) registerConnection(conn *websocket.Conn, roomID, userID, nickname string) {
@@ -333,8 +333,8 @@ func (h *WebSocketHandler) registerConnection(conn *websocket.Conn, roomID, user
 }
 
 func (h *WebSocketHandler) unregisterConnection(conn *websocket.Conn, roomID, userID string) {
-	h.mu.Lock()
-	defer h.mu.Unlock()
+	//h.mu.Lock()
+	//defer h.mu.Unlock()
 	log.Printf("Unregistering connection for user %s", userID)
 	room, exists := h.rooms[roomID]
 	if !exists {
@@ -419,8 +419,8 @@ func (h *WebSocketHandler) sendMessageGlobal(msg map[string]interface{}) {
 	//		h.mu.Unlock()
 	//	}
 	//}
-	h.mu.Lock()
-	defer h.mu.Unlock()
+	//h.mu.Lock()
+	//defer h.mu.Unlock()
 	for conn := range h.globalSubscribers {
 		if err := conn.WriteJSON(msg); err != nil {
 			log.Printf("Error sending global message: %v", err)
