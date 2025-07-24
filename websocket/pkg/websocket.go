@@ -171,9 +171,7 @@ func (h *WebSocketHandler) HandleConnectionInRoom(w http.ResponseWriter, r *http
 
 func (h *WebSocketHandler) updateReadyState(conn *websocket.Conn, roomID string) {
 	user := h.rooms[roomID].Clients[conn]
-	fmt.Printf("%b ДО", user.IsReady)
 	user.IsReady = !user.IsReady
-	fmt.Printf("%b ПОСЛЕ", user.IsReady)
 }
 
 func (h *WebSocketHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Request) {
@@ -440,15 +438,17 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 		PlayerID: auth.Data["userId"],
 		Nickname: auth.Data["nickname"],
 	}
+	fmt.Printf("Connect: %s + %s\n", auth.Data["userId"], auth.Data["nickname"])
 
 	players := make([]*PlayerInfo, 0, len(game.Players))
 	for _, player := range game.Players {
-		if player.PlayerID != auth.Data["userId"] {
-			players = append(players, &PlayerInfo{
-				PlayerID: player.PlayerID,
-				Nickname: player.Nickname,
-			})
-		}
+		//if player.PlayerID != auth.Data["userId"] {
+		fmt.Printf("MSG: %s + %s\n", player.PlayerID, auth.Data["userId"])
+		players = append(players, &PlayerInfo{
+			PlayerID: player.PlayerID,
+			Nickname: player.Nickname,
+		})
+		//}
 	}
 
 	conn.WriteJSON(map[string]interface{}{
