@@ -30,7 +30,7 @@ function addUser(user) {
         userElt.id = `user-${user["userId"]}`
         userElt.textContent = `${user["userId"]}: ${user["nickname"]}`
         userList.appendChild(userElt)
-        const playersCount = document.getElementById(`playersCount-${ room.id }`)
+        const playersCount = document.getElementById(`playersCount-${ user['roomId'] }`)
         playersCount.dataset.count++
     }
 }
@@ -41,7 +41,7 @@ async function deleteUser(user) {
         userElt.remove()
         const playersCount = document.getElementById(`playersCount-${ user["roomId"] }`)
         playersCount.dataset.count--
-        if (parseInt(playersCount.dataset.count) === 0) {
+        if (parseInt(playersCount.dataset.count) <= 0) {
             await deleteRoom()
             const room = document.getElementById(`room-menu__room-list-item-${user["roomId"]}`)
             if (room) {

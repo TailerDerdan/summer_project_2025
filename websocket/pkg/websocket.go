@@ -96,6 +96,10 @@ func (h *WebSocketHandler) HandleConnectionInRoom(w http.ResponseWriter, r *http
 		http.Error(w, "room_id and user_id are required", http.StatusBadRequest)
 		return
 	}
+	if _, exists := h.rooms[roomID]; !exists {
+		conn.WriteJSON(map[string]string{"error": "Room does not exist"})
+		return
+	}
 
 	h.registerConnection(conn, roomID, userID, nickname)
 
@@ -275,25 +279,57 @@ func (h *WebSocketHandler) getRoomList() []map[string]interface{} {
 	return rooms
 }
 
+//
+//func (h *WebSocketHandler) registerConnection(conn *websocket.Conn, roomID, userID, nickname string) {
+//	log.Printf("Registering connection for user %s", nickname)
+//	if _, exists := h.rooms[roomID]; !exists {
+//		h.rooms[roomID] = &Room{
+//			MaxPlayers:   5,
+//			PlayersCount: 1,
+//			RoomID:       roomID,
+//			Clients:      make(map[*websocket.Conn]*UserInfo),
+//		}
+//	}
+//	if h.rooms[roomID].PlayersCount < h.rooms[roomID].MaxPlayers {
+//		h.rooms[roomID].PlayersCount++
+//	}
+//	h.rooms[roomID].Clients[conn] = &UserInfo{
+//		IsReady:  false,
+//		UserID:   userID,
+//		Nickname: nickname,
+//	}
+//	h.globalSubscribers[conn] = true
+//}
+
 func (h *WebSocketHandler) registerConnection(conn *websocket.Conn, roomID, userID, nickname string) {
-	log.Printf("Registering connection for user %s", nickname)
 	if _, exists := h.rooms[roomID]; !exists {
-		h.rooms[roomID] = &Room{
-			MaxPlayers:   5,
-			PlayersCount: 1,
-			RoomID:       roomID,
-			Clients:      make(map[*websocket.Conn]*UserInfo),
+		log.Printf("Attempt to join non-existent room: %s", roomID)
+		conn.WriteJSON(map[string]string{"error": "Room does not exist"})
+		conn.Close()
+		return
+	}
+
+	for existingConn, user := range h.rooms[roomID].Clients {
+		if user.UserID == userID {
+			log.Printf("User %s already in room %s", userID, roomID)
+			existingConn.Close()
+			delete(h.rooms[roomID].Clients, existingConn)
+			break
 		}
 	}
+
 	if h.rooms[roomID].PlayersCount < h.rooms[roomID].MaxPlayers {
 		h.rooms[roomID].PlayersCount++
+		h.rooms[roomID].Clients[conn] = &UserInfo{
+			UserID:   userID,
+			Nickname: nickname,
+			IsReady:  false,
+		}
+		log.Printf("User %s joined room %s", nickname, roomID)
+	} else {
+		conn.WriteJSON(map[string]string{"error": "Room is full"})
+		conn.Close()
 	}
-	h.rooms[roomID].Clients[conn] = &UserInfo{
-		IsReady:  false,
-		UserID:   userID,
-		Nickname: nickname,
-	}
-	h.globalSubscribers[conn] = true
 }
 
 func (h *WebSocketHandler) unregisterConnection(conn *websocket.Conn, roomID, userID string) {
@@ -372,15 +408,32 @@ func (h *WebSocketHandler) sendRoomInfo(conn *websocket.Conn, roomID string) {
 }
 
 func (h *WebSocketHandler) sendMessageGlobal(msg map[string]interface{}) {
+	//for conn := range h.globalSubscribers {
+	//	if err := conn.WriteJSON(msg); err != nil {
+	//		fmt.Println("Error writing to client, G")
+	//		if err := conn.Close(); err != nil {
+	//			fmt.Println("Error conn closing to client, G")
+	//		}
+	//		h.mu.Lock()
+	//		delete(h.globalSubscribers, conn)
+	//		h.mu.Unlock()
+	//	}
+	//}
+	h.mu.Lock()
+	defer h.mu.Unlock()
 	for conn := range h.globalSubscribers {
 		if err := conn.WriteJSON(msg); err != nil {
-			fmt.Println("Error writing to client, G")
-			if err := conn.Close(); err != nil {
-				fmt.Println("Error conn closing to client, G")
-			}
-			h.mu.Lock()
+			log.Printf("Error sending global message: %v", err)
+			conn.Close()
 			delete(h.globalSubscribers, conn)
-			h.mu.Unlock()
+
+			// Также удаляем из всех комнат
+			for _, room := range h.rooms {
+				if _, exists := room.Clients[conn]; exists {
+					delete(room.Clients, conn)
+					room.PlayersCount--
+				}
+			}
 		}
 	}
 }
