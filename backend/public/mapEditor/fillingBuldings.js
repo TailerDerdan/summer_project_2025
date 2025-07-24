@@ -1,10 +1,10 @@
-import { TILE_HEIGHT, TILE_WIDTH } from "../sizes.js";
+import { TILE_HEIGHT, TILE_WIDTH } from "./sizes.js";
 
 export const imageFloor = new Image();
-imageFloor.src = "./../sprites/level1/floorSprites.png";
+imageFloor.src = "../mapEditor/sprites/level1/floorSprites.png";
 
 export const imageWall = new Image();
-imageWall.src = "./../sprites/level1/wallSprites.png";
+imageWall.src = "../mapEditor/sprites/level1/wallSprites.png";
 
 export const TypeBuilding = {};
 

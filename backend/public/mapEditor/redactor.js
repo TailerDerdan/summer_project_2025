@@ -1,5 +1,5 @@
-import { Clock } from "../clock/clock.js";
-import { HEIGHT_MAP, viewportHeight, viewportWidth, WIDTH_MAP } from "../sizes.js";
+import { Clock } from "./clock/clock.js";
+import { HEIGHT_MAP, viewportHeight, viewportWidth, WIDTH_MAP } from "./sizes.js";
 import { MapEditor } from "./mapForEdit.js";
 import { stateEditor } from "./state.js";
 import { applyEventsToCanvas } from "./drawing.js";
@@ -26,6 +26,8 @@ const clock = new Clock();
 
 function edit()
 {
+    if (stateEditor.map.isSaveMap) return;
+
     let deltaTime = clock.getElapsedTime();
     clock.restart();
     
@@ -50,7 +52,11 @@ setupForEditor();
 
 const buttonSave = document.getElementsByClassName("button-saving")[0];
 buttonSave.addEventListener("click", () => {
-    stateEditor.map.saveMap();
+    const inputName = document.getElementById("name");
+    const nameMap = inputName.value;
+    console.log(nameMap);
+    if (nameMap.length == 0) return;
+    stateEditor.map.saveMap(nameMap, stateEditor.ctx);
 });
 
 window.addEventListener("load", () => {

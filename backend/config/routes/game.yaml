@@ -1,0 +1,4 @@
+get_map:
+    path: /gameMap/getMap/{nameMap}
+    methods: GET
+    controller: App\Controller\GameController::getMap

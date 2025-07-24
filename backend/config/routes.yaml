@@ -6,3 +6,5 @@ uses_routes:
     resource: routes/user.yaml
 room_routes:
     resource: routes/room.yaml
+game_routes:
+    resource: routes/game.yaml

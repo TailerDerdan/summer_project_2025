@@ -1,4 +1,4 @@
-import { HEIGHT_MAP, WIDTH_MAP } from "../sizes.js";
+import { HEIGHT_MAP, viewportHeight, viewportWidth, WIDTH_MAP } from "../sizes.js";
 import { player } from "../player/player.js";
 
 class WrapperRect
@@ -116,9 +116,6 @@ export class Camera
         }
     }
 }
-
-const viewportWidth = 1920;
-const viewportHeight = 1080;
 
 export const camera = new Camera(0, 0, viewportWidth, viewportHeight, WIDTH_MAP, HEIGHT_MAP);
 camera.follow(player, viewportWidth / 2, viewportHeight / 2);
