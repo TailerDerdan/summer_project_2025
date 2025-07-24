@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
+	"github.com/TailerDerdan/summer_project_2025/websocket/internal"
 	"github.com/gorilla/websocket"
 	"log"
 	"math/big"
@@ -31,6 +32,7 @@ type Room struct {
 }
 
 type PlayerInfo struct {
+	X, Y     int
 	PlayerID string `json:"playerId"`
 	Nickname string `json:"nickname"`
 }
@@ -465,6 +467,8 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 
 	h.mu.Lock()
 	game.Players[conn] = &PlayerInfo{
+		X:        internal.GeneratePosition(),
+		Y:        internal.GeneratePosition(),
 		PlayerID: auth.Data["userId"],
 		Nickname: auth.Data["nickname"],
 	}
@@ -476,6 +480,8 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 		if player.PlayerID != auth.Data["userId"] {
 			fmt.Printf("MSG: %s + %s\n", player.PlayerID, auth.Data["userId"])
 			players = append(players, &PlayerInfo{
+				X:        player.X,
+				Y:        player.Y,
 				PlayerID: player.PlayerID,
 				Nickname: player.Nickname,
 			})
@@ -492,6 +498,8 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 	msg := map[string]interface{}{
 		"type": "join_player",
 		"data": map[string]interface{}{
+			"x":        game.Players[conn].X,
+			"y":        game.Players[conn].Y,
 			"userId":   auth.Data["userId"],
 			"nickname": auth.Data["nickname"],
 		},

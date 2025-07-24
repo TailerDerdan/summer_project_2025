@@ -31,14 +31,17 @@ async function connectToWSGame(data) {
             case "init_players":
                 Object.values(msg.data.players).forEach(playerData => {
                     console.log("playerData: ", playerData)
-                    arrEnemy.push(playerData)
+                    arrEnemy.push({
+                        x: playerData.x,
+                        y: playerData.y,
+                    })
                 })
                 break;
             case "join_player":
                 console.log("playerData: ", msg.data)
                 arrEnemy.push({
-                    playerId: msg.data.userId,
-                    nickname: msg.data.nickname,
+                    x: msg.data.x,
+                    y: msg.data.y,
                 })
             //
             // case "player_position":

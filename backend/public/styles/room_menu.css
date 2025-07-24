@@ -51,7 +51,8 @@
 
 .room-menu__room-list {
     width: 1296px;
-    max-height: -webkit-fill-available;
+    max-height: 800px;
+    overflow-y: auto;
     position: relative;
     top: 17px;
     left: 322px;
