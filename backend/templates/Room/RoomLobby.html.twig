@@ -57,7 +57,7 @@
         </div>
         <div class="room-window__buttons">
             {% if user.userId == room.hostId %}
-                <a class="room-window__button" id="room_leave" href="{{ path('room_delete', {roomId: room.id }) }}">Удалить комнату</a>
+                <a class="room-window__button" id="room_leave" href="{{ path('room_delete', {id: room.id }) }}">Удалить комнату</a>
 
                 <a class="room-window__button" id="room_start">Поехали!</a>
             {% else %}

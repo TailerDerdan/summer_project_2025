@@ -57,17 +57,18 @@ function connectToWSRoom(dataUser)   {
         const data = JSON.parse(event.data);
         console.log('data .....', data)
         if (data.type === 'user_joined') {
-            addUserToList(data.data.userId);
-            showNotification(` присоединился к комнате`);
+            if (addUserToList(data.data.userId)) {
+                showNotification(` присоединился к комнате`);
+            }
         } else if (data.type === 'room_info') {
             data.users.forEach(user => {
                 addUserToList(user.id);
             });
         }
         if (data.type === 'leave_ack' || data.type === 'user_leaved') {
-            removeUserFromList(data.data.userId)
-            showNotification(`${data.data.userId}: ${data.data.nickname} вызодит из комнаты...`);
-
+            if (removeUserFromList(data.data.userId)) {
+                showNotification(`${data.data.userId}: ${data.data.nickname} вызодит из комнаты...`);
+            }
             if (data.type === 'leave_ack') {
                 window.location.href = '/main';
             }
@@ -98,7 +99,9 @@ function addUserToList(userId) {
             <p>ID: ${ userId }</p>
         `
         userList.appendChild(userElement);
+        return true
     }
+    return false
 }
 
 function showNotification(message) {

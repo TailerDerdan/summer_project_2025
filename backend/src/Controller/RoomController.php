@@ -72,8 +72,10 @@ class RoomController extends AbstractController {
 
     public function join(int $roomId): Response {
         $user = $this->getUser();
-        $this->userService->updateRoomId($user->getUserId(), $roomId);
-        $this->roomService->addUserInRoom($user->getUserId(), $roomId);
+        if ($user->getRoomId() != $roomId) {
+            $this->userService->updateRoomId($user->getUserId(), $roomId);
+            $this->roomService->addUserInRoom($user->getUserId(), $roomId);
+        }
         if (!$user) {
             return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
@@ -108,8 +110,10 @@ class RoomController extends AbstractController {
         $data = json_decode($request->getContent(), true);
         $roomId = $data["roomId"];
         $user = $this->getUser();
-        $this->userService->deleteRoomId($user->getUserId());
-        $this->roomService->removeUserFromRoom($user->getUserId(), $roomId);
+        if ($user->getRoomId() == $roomId) {
+            $this->userService->deleteRoomId($user->getUserId());
+            $this->roomService->removeUserFromRoom($user->getUserId(), $roomId);
+        }
         return $this->json([
             "status" => "success"
         ]);
