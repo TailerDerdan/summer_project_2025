@@ -61,7 +61,7 @@ function addRoomToList(room) {
     const roomElt = document.createElement("div")
     roomElt.className = "room-menu__room-list-item"
     roomElt.id = `room-menu__room-list-item-${room.roomId}`
-    roomElt.click(joinRoom(`${ room.roomId }`))
+    roomElt.setAttribute('onclick', `joinRoom('${room.roomId}')`);
     roomElt.innerHTML = `
             <div class="room-list-item__main">
                 <div class="room-list-item__header">
