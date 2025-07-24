@@ -13,9 +13,9 @@ class RoomService implements RoomServiceInterface {
     public function create(array $roomData): ?int {
         $room = new Room(
             null,
-            $roomData['userId'],
             $roomData['playersCount'],
             $roomData['maxPlayers'],
+            $roomData['userId'],
             $roomData['name'],
             $roomData['gamemode'],
             $roomData['isOpen'] ?? true,

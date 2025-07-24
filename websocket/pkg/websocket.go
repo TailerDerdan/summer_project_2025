@@ -188,12 +188,14 @@ func (h *WebSocketHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	var request struct {
-		Nickname string `json:"nickname"`
-		HostID   string `json:"userId"`
-		Name     string `json:"name"`
-		Gamemode string `json:"gamemode"`
-		IsOpen   bool   `json:"isOpen"`
-		RoomID   string `json:"roomId"`
+		PlayersCount int    `json:"playersCount"`
+		MaxCount     int    `json:"maxCount"`
+		Nickname     string `json:"nickname"`
+		HostID       string `json:"userId"`
+		Name         string `json:"name"`
+		Gamemode     string `json:"gamemode"`
+		IsOpen       bool   `json:"isOpen"`
+		RoomID       string `json:"roomId"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -209,8 +211,8 @@ func (h *WebSocketHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Reque
 		Gamemode:     request.Gamemode,
 		IsOpen:       request.IsOpen,
 		HostID:       request.HostID,
-		MaxPlayers:   5,
-		PlayersCount: 1,
+		MaxPlayers:   request.MaxCount,
+		PlayersCount: request.PlayersCount,
 		Clients:      make(map[*websocket.Conn]*UserInfo),
 	}
 
@@ -224,8 +226,8 @@ func (h *WebSocketHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Reque
 			"gamemode":     room.Gamemode,
 			"isOpen":       room.IsOpen,
 			"userId":       room.HostID,
-			"maxPlayers":   5,
-			"playersCount": 1,
+			"maxPlayers":   room.MaxPlayers,
+			"playersCount": room.PlayersCount,
 		},
 		"user": map[string]interface{}{
 			"userId":   request.HostID,
