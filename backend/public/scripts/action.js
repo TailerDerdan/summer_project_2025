@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
             isOpen: document.getElementById("room_open").value === "open",
         };
         console.log("formData: ", formData)
-        console.log(name, name.value)
         const response = await fetch('/room/create', {
             method: "POST",
             headers: {

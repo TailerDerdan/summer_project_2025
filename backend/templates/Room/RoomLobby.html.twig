@@ -61,7 +61,7 @@
             {% endif %}
             <a class="room-window__button" id="room_leave" href="{{ path('main_page') }}">Назад</a>
             <button class="room-window__button" id="leave-room-btn" type="button">Выйти из комнаты</button>
-            <button value="not ready" type="button" class="room-window__button-ready" id="room_ready-{{ user.userId }}">ГОТОВ</button>
+            <button value="not ready" type="button" class="room-window__button room-window__button-ready" id="room_ready-{{ user.userId }}">ГОТОВ</button>
         </div>
     </div>
 {% endblock %}

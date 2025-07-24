@@ -46,8 +46,9 @@ function addRoomToList(room) {
     }
     const container = document.querySelector('.room-menu__room-list');
     const roomElt = document.createElement("div")
+    roomElt.className = "room-menu__room-list-item"
+    roomElt.click(joinRoom(`${ room.roomId }`))
     roomElt.innerHTML = `
-        <div class="room-menu__room-list-item" onclick="joinRoom('${ room.id }')">
             <div class="room-list-item__main">
                 <div class="room-list-item__header">
                     <p class="room-list-item__name">${ room.name }</p>
@@ -59,9 +60,9 @@ function addRoomToList(room) {
     }
     roomElt.innerHTML += `
                 </div>
-            <div class="room-list-item__avatar-list" id="room-list-item__avatar-list-{{ room.id }}">
+                <div class="room-list-item__avatar-list" id="room-list-item__avatar-list-{{ room.id }}">
+                </div>
             </div>
-        </div>
             <div class="room-list-item__extra">
     `
     if (room.playersCount < room.maxPlayers) {
@@ -76,7 +77,6 @@ function addRoomToList(room) {
     roomElt.innerHTML += `
                 <p class="room-list-item__gamemode">${room.gamemode}</p>
             </div>
-        </div>
     `
     container.appendChild(roomElt)
 }
