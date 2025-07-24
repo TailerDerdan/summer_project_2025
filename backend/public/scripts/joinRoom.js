@@ -170,7 +170,7 @@ function handleGameStart(data, user) {
         countStart--
         if (countStart < 0) {
             clearInterval(timer)
-            window.location.href = `/game/index.html?${data.data.gameId}`
+            window.location.href = `/game/index.html?${data.gameId}`
         }
     }, 1000)
 }
