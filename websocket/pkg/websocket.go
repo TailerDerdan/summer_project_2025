@@ -442,13 +442,13 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 
 	players := make([]*PlayerInfo, 0, len(game.Players))
 	for _, player := range game.Players {
-		//if player.PlayerID != auth.Data["userId"] {
-		fmt.Printf("MSG: %s + %s\n", player.PlayerID, auth.Data["userId"])
-		players = append(players, &PlayerInfo{
-			PlayerID: player.PlayerID,
-			Nickname: player.Nickname,
-		})
-		//}
+		if player.PlayerID != auth.Data["userId"] {
+			fmt.Printf("MSG: %s + %s\n", player.PlayerID, auth.Data["userId"])
+			players = append(players, &PlayerInfo{
+				PlayerID: player.PlayerID,
+				Nickname: player.Nickname,
+			})
+		}
 	}
 
 	conn.WriteJSON(map[string]interface{}{
