@@ -14,6 +14,13 @@
     <section class="app-editor">
         <section class="menu">
             <div class="buldings">
+                <div class="button-saving">
+                    <button>Сохранить</button>
+                </div>
+                <div class="map-name">
+                    <label for="name"></label>
+                    <input type="text" id="name" name="name" required minlength="4" maxlength="10" size="12">
+                </div>
                 <p>Сооружения:</p>
                 <div class="bulding floor">
                     <img src="../mapEditor/sprites/level1/floorSprites.png" class="bulding_img" alt="пол">
@@ -24,9 +31,6 @@
                 <div class="bulding car">
                     <img src="../mapEditor/sprites/level1/car.png" class="bulding_img" alt="машина">
                 </div>
-            </div>
-            <div class="button-saving">
-                <button>Сохранить</button>
             </div>
             <div class="choosen-sprites">
                 <canvas id="sprites"></canvas>

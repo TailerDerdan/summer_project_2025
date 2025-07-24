@@ -8,9 +8,9 @@ import {} from './player/changeDir.js';
 import { Clock } from './clock/clock.js';
 import { player } from './player/player.js';
 import { render, texture2D, updateTexture } from './shadows/shadows.js';
+import { getMap } from './requests/requests.js';
 
 const clock = new Clock();
-map.generate(ctx);
 
 function gameLoop()
 {
@@ -43,6 +43,17 @@ function gameLoop()
     window.requestAnimationFrame(gameLoop);
 }
 
-setTimeout(() => {
-    gameLoop();
-}, 1000);
+const initGame = async () => {
+    
+    const gettedMap = await getMap();
+    const imgMap = new Image();
+    imgMap.src = gettedMap.image;
+    map.image = imgMap;
+    map.generate(ctx);
+    map.fillWalls(gettedMap.walls);
+    setTimeout(() => {
+        gameLoop();
+    }, 3000);
+}
+
+initGame();

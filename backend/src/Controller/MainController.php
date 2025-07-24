@@ -62,7 +62,7 @@ class MainController extends AbstractController {
         $data = json_decode($jsonData, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            http_response_code(400); // 400 = Bad Request
+            http_response_code(400);
             echo json_encode([
                 'success' => false,
                 'error' => 'Невалидный JSON: ' . json_last_error_msg()
@@ -72,9 +72,9 @@ class MainController extends AbstractController {
 
         if (file_exists("../mapEditor/maps/maps.json"))
         {
-            http_response_code(302); // 400 = Bad Request
+            http_response_code(302);
             echo json_encode([
-                'success' => false, // ✅ Правильный статус ошибки
+                'success' => false,
                 'error' => 'Невалидный JSON: ' . json_last_error_msg()
             ]);
             die;
@@ -84,9 +84,9 @@ class MainController extends AbstractController {
         $maps = json_decode($mapsJson, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            http_response_code(400); // 400 = Bad Request
+            http_response_code(400);
             echo json_encode([
-                'success' => false, // ✅ Правильный статус ошибки
+                'success' => false,
                 'error' => 'Невалидный JSON: ' . json_last_error_msg()
             ]);
             die;

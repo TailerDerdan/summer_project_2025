@@ -5,6 +5,7 @@ namespace App\Controller;
 
 use App\Infrastructure\Game\GameServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -16,5 +17,13 @@ class GameController extends AbstractController {
     
     public function index(): Response {
         return $this->render("asdf.html.twig");
+    }
+
+    public function getMap(): JsonResponse {
+
+        $mapsJson = file_get_contents("./mapEditor/maps/maps.json");
+        $map = json_decode($mapsJson, true)["maps"][0];
+
+        return $this->json(["success"=> true, "map" => $map]);
     }
 }

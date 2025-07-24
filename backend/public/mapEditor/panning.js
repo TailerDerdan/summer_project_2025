@@ -7,7 +7,7 @@ export const panOffset = {
 }
 
 export const scaleData = {
-    scale: 0.5,
+    scale: 1,
     scaleOffset: {x: 0, y: 0},
 }
 
@@ -27,7 +27,9 @@ const panFunction = (event) => {
         }
     }
 
-    scaleData.scale = Math.trunc(scaleData.scale * 10) / 10;
+    console.log(scaleData, 1)
+
+    scaleData.scale = Math.round((scaleData.scale + Number.EPSILON) * 10) / 10;
 
     panOffset.x += deltaX;
     panOffset.y += deltaY;
@@ -45,6 +47,8 @@ const panFunction = (event) => {
     if ((panOffset.x * scaleData.scale - scaleData.scaleOffset.x) / scaleData.scale > WIDTH_MAP - viewportWidth) panOffset.x = ((WIDTH_MAP - viewportWidth) * scaleData.scale + scaleData.scaleOffset.x) / scaleData.scale;
     if ((panOffset.y * scaleData.scale - scaleData.scaleOffset.y) / scaleData.scale > HEIGHT_MAP - viewportHeight) panOffset.y = ((HEIGHT_MAP - viewportHeight) * scaleData.scale + scaleData.scaleOffset.y) / scaleData.scale;
 
+    console.log(scaleData, 2)
+
     if (scaleData.scale < 0.1)
     {
         scaleData.scale = 0.1;
@@ -54,7 +58,7 @@ const panFunction = (event) => {
         scaleData.scale = 1;
     }
 
-    console.log(scaleData, panOffset)
+    console.log(scaleData, 3)
 }
 
 document.addEventListener("wheel", panFunction);

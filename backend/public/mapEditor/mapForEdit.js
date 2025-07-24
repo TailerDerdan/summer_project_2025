@@ -1,4 +1,4 @@
-import { COUNT_TILE_X, COUNT_TILE_Y, TILE_HEIGHT, TILE_WIDTH } from "./sizes.js";
+import { COUNT_TILE_X, COUNT_TILE_Y, HEIGHT_MAP, TILE_HEIGHT, TILE_WIDTH, WIDTH_MAP } from "./sizes.js";
 import { CountOfBuildings, rectForFloor, rectForWall, TypeBuilding } from "./fillingBuldings.js";
 import { stateEditor } from "./state.js";
 
@@ -30,6 +30,7 @@ export class MapEditor
         this.horizontalWalls = new Array(COUNT_TILE_X * COUNT_TILE_Y).fill(0);
         this.verticalWalls = new Array(COUNT_TILE_X * COUNT_TILE_Y).fill(0);
         this.containers = [];
+        this.isSaveMap = false;
     }
 
     draw(ctx, x, y, viewportWidth, viewportHeight, panOffset, scaleData)
@@ -126,8 +127,69 @@ export class MapEditor
         }
     }
 
-    saveMap()
+    drawAllField(ctx)
     {
+        for (let iterY = 0; iterY < COUNT_TILE_Y; iterY++)
+        {
+            for (let iterX = 0; iterX < COUNT_TILE_X; iterX++)
+            {
+                const tileX = iterX * TILE_WIDTH;
+                const tileY = iterY * TILE_HEIGHT;
+                if (this.tileMap[iterY * COUNT_TILE_Y + iterX] == 0)
+                {
+                    ctx.fillStyle = COLOR_FLOOR;
+                    ctx.fillRect(tileX, tileY, TILE_WIDTH, TILE_HEIGHT);
+                }
+                if (this.tileMap[iterY * COUNT_TILE_Y + iterX] >= TypeBuilding.Floor1 &&
+                    this.tileMap[iterY * COUNT_TILE_Y + iterX] <= TypeBuilding.Floor1 + CountOfBuildings.Floor - 1)
+                {
+                    let iter = this.tileMap[iterY * COUNT_TILE_Y + iterX] - TypeBuilding.Floor1;
+                    ctx.drawImage(this.imageFloor,
+                        rectForFloor[iter].sx,
+                        rectForFloor[iter].sy,
+                        rectForFloor[iter].sWidth,
+                        rectForFloor[iter].sHeight,
+                        tileX,
+                        tileY,
+                        rectForFloor[iter].dWidth,
+                        rectForFloor[iter].dHeight
+                    );
+                }
+                if (this.buldings[iterY * COUNT_TILE_Y + iterX] >= TypeBuilding.Wall1 &&
+                    this.buldings[iterY * COUNT_TILE_Y + iterX] <= TypeBuilding.Wall1 + CountOfBuildings.Wall - 1)
+                {
+                    const wall = this.buldingsObject.find((elem) => {
+                        if (elem.x == iterX && elem.y == iterY) return true;
+                    })
+                    let rotation = 0;
+                    if (wall)
+                    {
+                        rotation = wall.rotation;
+                    }
+                    let iter = this.buldings[iterY * COUNT_TILE_Y + iterX] - TypeBuilding.Wall1;
+                    ctx.save();
+                    ctx.translate(iterX * TILE_WIDTH + TILE_WIDTH / 2,
+                                    iterY * TILE_HEIGHT + TILE_HEIGHT / 2);
+                    ctx.rotate(rotation * Math.PI / 180);
+                    ctx.drawImage(this.imageWall,
+                        rectForWall[iter].sx,
+                        rectForWall[iter].sy,
+                        rectForWall[iter].sWidth,
+                        rectForWall[iter].sHeight,
+                        -TILE_WIDTH / 2 + 12,
+                        -TILE_HEIGHT / 2,
+                        rectForWall[iter].dWidth,
+                        rectForWall[iter].dHeight
+                    );
+                    ctx.restore();
+                }
+            }
+        }
+    }
+
+    saveMap(nameMap, ctx)
+    {
+        this.isSaveMap = true;
         this.preparingToGreedyMeshing();
         this.containers = [];
 
@@ -212,8 +274,11 @@ export class MapEditor
             }
         }
 
-        const imageMap = stateEditor.canvas.toDataURL("image/png");
+        this.drawAllField(ctx);
+
+        const imageMap = stateEditor.ctx.canvas.toDataURL("image/png");
         const newMap = {
+            nameMap: nameMap,
             image: imageMap,
             walls: this.containers,
         }
