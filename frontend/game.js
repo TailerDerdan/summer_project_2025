@@ -4,18 +4,18 @@ export let gameIsRun = true;
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("START GAME 0_0")
     const data = JSON.parse(sessionStorage.getItem('gameSession'))
-    console.log("DATA: ", data.data)
+    console.log("DATA: ", data)
     if (!data) {
         console.log('Did not get session game data')
         window.location.href = `/main`
         return
     }
     sessionStorage.removeItem('gameSession');
-    await connectToWSGame(data.data)
+    await connectToWSGame(data)
 })
 
 async function connectToWSGame(data) {
-    const gameSocket = new WebSocket(`ws://87.228.90.3:8080/ws/game/${data.data.gameId}`)
+    const gameSocket = new WebSocket(`ws://87.228.90.3:8080/ws/game/${data.gameId}`)
     console.log("FFFFFF")
     await startTimer()
     console.log("JJJJJJ")
@@ -24,8 +24,8 @@ async function connectToWSGame(data) {
         gameSocket.send(JSON.stringify({
             type: "game_auth",
             data: {
-                userId: (data.data.userId).toString(),
-                nickname: data.data.nickname,
+                userId: (data.userId).toString(),
+                nickname: data.nickname,
             }
         }))
     }

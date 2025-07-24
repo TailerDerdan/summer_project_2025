@@ -80,7 +80,7 @@ function connectToWSRoom(dataUser)   {
             }
         }
         if (data.type === 'start_game') {
-            handleGameStart(data, dataUser.data)
+            handleGameStart(data.data, dataUser.data)
             await deleteRoom(data.data.roomId)
         }
         if (data.type === "not_all_ready") {
@@ -158,6 +158,7 @@ function showNotification(message) {
 
 function handleGameStart(data, user) {
     sessionStorage.setItem('gameSession', JSON.stringify({
+        gameId: data.gameId,
         userId: user.userId,
         nickname: user.nickname,
     }))
