@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.querySelector(".create-room__button")
+    const btn = document.querySelector(".create-room__btn")
     btn.addEventListener('click', async (e) => {
         e.preventDefault()
         console.log("hjkhlgkjhlkjhl")
@@ -10,32 +10,32 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         console.log("formData: ", formData)
         console.log(name, name.value)
-        // const response = await fetch('/room/create', {
-        //     method: "POST",
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify(formData)
-        // })
-        //
-        // if (!response.ok) {
-        //     throw new Error(`HTTP error! status: ${response.status}`);
-        // }
-        //
-        // const data = await response.json()
-        // sessionStorage.setItem('roomSettings', JSON.stringify({
-        //     hostId: data.userId,
-        //     userId: data.userId,
-        //     roomId: data.roomId,
-        // }))
-        // sessionStorage.setItem('ws_join_data', JSON.stringify({
-        //     roomId: data.roomId,
-        //     data: {
-        //         userId: data.userId,
-        //         nickname: data.nickname,
-        //     }
-        // }));
-        // window.location.href = ('/room/show/' + data.roomId)
+        const response = await fetch('/room/create', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json()
+        sessionStorage.setItem('roomSettings', JSON.stringify({
+            hostId: data.userId,
+            userId: data.userId,
+            roomId: data.roomId,
+        }))
+        sessionStorage.setItem('ws_join_data', JSON.stringify({
+            roomId: data.roomId,
+            data: {
+                userId: data.userId,
+                nickname: data.nickname,
+            }
+        }));
+        window.location.href = ('/room/show/' + data.roomId)
     })
 })
 
