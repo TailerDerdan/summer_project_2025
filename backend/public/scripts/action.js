@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btn = document.querySelector(".create-room__button")
     btn.addEventListener('click', async (e) => {
         e.preventDefault()
+        console.log("hjkhlgkjhlkjhl")
         const formData = {
             name: document.getElementById("room_name").value,
             gamemode: document.getElementById("room_playmode").value,
