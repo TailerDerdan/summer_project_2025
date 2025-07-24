@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             startBtn.className = ("start-btn")
             startBtn.textContent = "Играть"
             startBtn.type = "submit"
-            const roomElt = document.querySelector(".room")
+            const roomElt = document.querySelector(".room-window__buttons")
             roomElt.appendChild(startBtn)
         }
         addReadyButton(roomSet.userId)
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 })
 
 function addUserLocal(user) {
-    const userList = document.getElementById(`users-list-${user.roomId}`)
+    const userList = document.querySelector(`.room-info__main-indicator-bar`)
     if (userList &&  !document.getElementById(`user-${user.userId}`)) {
         const userElt = document.createElement("p")
         userElt.setAttribute("style", "background-color: red;")

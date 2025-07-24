@@ -24,7 +24,7 @@ function connectWebSocket() {
 }
 
 function addUser(user) {
-    const userList = document.getElementById(`users-list-${user['roomId']}`)
+    const userList = document.getElementById(`room-list-item__avatar-list-${user['roomId']}`)
     if (userList && !document.getElementById(`user-${user["userId"]}`)) {
         const userElt = document.createElement("p")
         userElt.id = `user-${user["userId"]}`
@@ -44,7 +44,7 @@ function addRoomToList(room) {
     if (!room) {
         return
     }
-    const container = document.querySelector('.room-list');
+    const container = document.querySelector('.room-menu__room-list');
     const roomElt = document.createElement("div")
     roomElt.innerHTML = `
         <div class="room" id="room_${room.roomId}">

@@ -7,8 +7,8 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script src="/scripts/room_settings.js"></script>
-    <script src="/scripts/room_join.js"></script>
+    <script src="/scripts/roomSettings.js"></script>
+    <script src="/scripts/joinRoom.js"></script>
     <script src="/scripts/parameters_handler.js"></script>
     <script src="/scripts/volume_controller.js"></script>
 {% endblock %}
@@ -57,12 +57,11 @@
         </div>
         <div class="room-window__buttons">
             {% if user.userId == room.hostId %}
-                <a class="room-window__button" id="room_leave" href="{{ path('room_delete', {id: room.id }) }}">Удалить комнату</a>
 
                 <a class="room-window__button" id="room_start">Поехали!</a>
             {% else %}
                 <a class="room-window__button" id="room_leave" href="{{ path('main_page') }}">Назад</a>
-
+                <a class="room-window__button" id="leave-room-btn" href="{{ path('room_delete', {id: room.id }) }}">Выйти из комнату</a>
                 <a class="room-window__button" id="room_ready-{{ user.userId }}">Готов</a>
             {% endif %}
         </div>

@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     //sessionStorage.removeItem('ws_join_data');
     const socket = connectToWSRoom(dataJson)
 
-    document.querySelector('.leave-room-btn').addEventListener('click', () => {
+    document.getElementById('leave-room-btn').addEventListener('click', () => {
         if (socket && socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify({
                 type: "leave_room",
@@ -15,11 +15,11 @@ document.addEventListener("DOMContentLoaded", async (e) => {
             }));
         }
     });
-    const startBtn = document.querySelector(".start-btn")
+    const startBtn = document.getElementById("room_start")
     if (startBtn) {
         startBtn.addEventListener('click', () => {
             if (socket && socket.readyState === WebSocket.OPEN) {
-                const gameType = document.querySelector(".gameType").textContent
+                const gameType = document.getElementById("room-gamemode").textContent
                 socket.send(JSON.stringify({
                     type: "start_game",
                     data: {
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
         });
     }
 
-    const readyBtn = document.getElementById(`ready-btn-${dataJson.data.userId}`)
+    const readyBtn = document.getElementById(`room_ready-${dataJson.data.userId}`)
     if (readyBtn) {
         readyBtn.addEventListener('click', () => {
             if (socket && socket.readyState === WebSocket.OPEN) {
@@ -100,7 +100,7 @@ function connectToWSRoom(dataUser)   {
 
 function updateReadyState(data) {
     const userElt = document.getElementById(`user-${data.userId}`)
-    const readyBtn = document.getElementById(`ready-btn-${data.userId}`)
+    const readyBtn = document.getElementById(`room_ready-${data.userId}`)
     if (data.isReady) {
         userElt.setAttribute("style", "background-color: green")
         if (readyBtn) {
@@ -135,7 +135,7 @@ function removeUserFromList(userId) {
     return false;
 }
 function addUserToList(user) {
-    const userList = document.querySelector('.users-list');
+    const userList = document.querySelector('.room-info__main-indicator-bar');
     if (!document.getElementById(`user-${user.userId}`)) {
         const userElement = document.createElement('div');
         console.log("set style RED")
