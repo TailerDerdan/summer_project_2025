@@ -10,7 +10,6 @@
         <field name="name" column="name" type="string" length="255"/>
         <field name="gamemode" column="gamemode" type="string" length="255"/>
         <field name="isOpen" column="is_open" type="boolean" options='{"default": true}'/>
-        <field name="isRun" column="is_run" type="boolean" options='{"default": true}'/>
         <field name="timeCreate" column="time_create" type="datetime" options='{"default": "CURRENT_TIMESTAMP"}'/>
     </entity>
 </doctrine-mapping>

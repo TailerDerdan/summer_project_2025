@@ -15,7 +15,6 @@ class Room
         private string $name,
         private string $gamemode,
         private bool $isOpen,
-        private bool $isRun,
         private \DateTime $timeCreate,
     ) {}
 
@@ -43,10 +42,6 @@ class Room
     {
         return $this->isOpen;
     }
-    public function isRunning(): bool
-    {
-        return $this->isRun;
-    }
     public function getTimeCreate(): \DateTime
     {
         return $this->timeCreate;
@@ -69,11 +64,6 @@ class Room
     public function setOpen(bool $newOpenState): void
     {
         $this->isOpen = $newOpenState;
-    }
-
-    public function setRunning(bool $newRunningState): void
-    {
-        $this->isRun = $newRunningState;
     }
     public function setHostId(int $newHostId): void
     {
