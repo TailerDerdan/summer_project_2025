@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.querySelector(".create-btn")
+    const btn = document.querySelector(".create-room__button")
     btn.addEventListener('click', async (e) => {
         e.preventDefault()
         const formData = {
