@@ -1,15 +1,18 @@
-import { updateMovementPlayer } from './player/movement.js'
-import { updateMovementBullets } from './weapon/shooting.js';
+import { updateMovementPlayer } from './player/movement.js';
+import { throttleBotShoot, updateMovementBullets } from './weapon/shooting.js';
 import { canvas, ctx, gl, state } from './canvas.js';
 import { enemy1 } from './enemy/enemy.js';
+import { bot1 } from './bot/Bot.js';
 import { map } from './map/map.js';
 import { camera } from './camera/camera.js';
-import {} from './player/changeDir.js';
 import { Clock } from './clock/clock.js';
-import { player, arrEnemy } from './player/player.js';
+import { player } from './player/player.js';
 import { render, texture2D, updateTexture } from './shadows/shadows.js';
 import { gameIsRun } from "./game.js";
 import { getMap } from './requests/requests.js';
+
+export const arrEnemy = [enemy1];
+export const arrBot = [bot1];
 
 const clock = new Clock();
 
@@ -22,20 +25,23 @@ function gameLoop()
     map.draw(ctx, camera.xView, camera.yView);
 
     arrEnemy.forEach(enemy => {
-        enemy1.drawEnemy(ctx, enemy.x, enemy.y)
+        enemy1.drawCharacter(ctx, enemy.x, enemy.y);
         enemy1.drawBlood(ctx, enemy.x, enemy.y);
-        enemy1.updateEnemy();
+        enemy1.updateCharacter();
     })
 
-    //enemy1.drawEnemy(ctx, camera.xView, camera.yView);
+    arrBot.forEach(bot => {
+        bot.drawBlood(ctx, camera.xView, camera.yView);
+        bot.updateMovementBot(ctx, camera.xView, camera.yView);
+        bot.updateCharacter();
+    })
 
+    throttleBotShoot();
     updateMovementBullets();
 
     updateMovementPlayer(camera.xView, camera.yView, deltaTime);
-    if (!player.isPlayerLive)
-    {
-        player.appearanceAfterDeathWidthDelay();
-    }
+    player.drawBlood(ctx, camera.xView, camera.yView);
+    player.updateCharacter();
 
     camera.update();
 

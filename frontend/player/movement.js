@@ -1,5 +1,5 @@
 import { player } from './player.js';
-import { canvasWebgl, ctx } from './../canvas.js';
+import { canvasWebgl, ctx } from '../canvas.js';
 
 const SQRT_2 = 0.707;
 const MAX_DIST = 1;
@@ -20,10 +20,10 @@ export const updateMovementPlayer = (xView, yView, deltaTime) => {
     let playerDir = player.dir;
 
     let distX = keyDict.KeyW && (keyDict.KeyA || keyDict.KeyD) ||
-                keyDict.KeyS && (keyDict.KeyA || keyDict.KeyD) ? SQRT_2 : MAX_DIST;
-    
+    keyDict.KeyS && (keyDict.KeyA || keyDict.KeyD) ? SQRT_2 : MAX_DIST;
+
     let distY = keyDict.KeyW && (keyDict.KeyA || keyDict.KeyD) ||
-            keyDict.KeyS && (keyDict.KeyA || keyDict.KeyD) ? SQRT_2 : MAX_DIST;
+    keyDict.KeyS && (keyDict.KeyA || keyDict.KeyD) ? SQRT_2 : MAX_DIST;
 
     distY *= Math.cos(playerDir * Math.PI / 180) * Math.cos(playerDir * Math.PI / 180);
     distX *= Math.cos(playerDir * Math.PI / 180) * Math.sin(playerDir * Math.PI / 180);
@@ -46,7 +46,7 @@ export const updateMovementPlayer = (xView, yView, deltaTime) => {
 
     player.changeDistXYByPhysic(dist);
 
-    let isWasMovement = player.updatePostion(dist.distX, dist.distY, keyDict);
+    let isWasMovement = player.updatePosition(dist.distX, dist.distY, keyDict);
 
     if (isWasMovement)
     {
@@ -56,7 +56,7 @@ export const updateMovementPlayer = (xView, yView, deltaTime) => {
     player.lightPosition.x = ((player.x - xView) / canvasWebgl.width) * 2 - 1;
     player.lightPosition.y = -(((player.y - yView) / canvasWebgl.height) * 2 - 1);
 
-    player.drawPlayer(ctx, xView, yView);
+    player.drawCharacter(ctx, xView, yView);
 }
 
 document.addEventListener('keydown', updateKeyDict);

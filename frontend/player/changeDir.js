@@ -1,5 +1,5 @@
 import { player } from "./player.js";
-import { camera } from './../camera/camera.js';
+import { camera } from '../camera/camera.js';
 
 export function getDir(event)
 {
@@ -8,14 +8,11 @@ export function getDir(event)
 
     let dir = Math.atan2((yMouse - player.getCenterY()), (xMouse - player.getCenterX()));
     dir = dir * 180 / Math.PI;
-    
     dir += 90;
-
     if (dir < 0)
     {
         dir += 360;
     }
-
     return dir;
 }
 
