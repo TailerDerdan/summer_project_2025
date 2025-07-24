@@ -1,11 +1,12 @@
 CREATE TABLE room
 (
     `id`          INT             NOT NULL AUTO_INCREMENT,
-    `host_id`          INT             NOT NULL,
+    `host_id`     INT             NOT NULL,
+    `players_count`     INT             NOT NULL,
+    `max_players`     INT             NOT NULL,
     `name`        VARCHAR(255)    NOT NULL,
     `gamemode`    VARCHAR(255)    NOT NULL,
     `is_open`    TINYINT(1)      NOT NULL,
-    `is_run`     TINYINT(1)      NOT NULL,
     `time_create`      TIMESTAMP       NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE INDEX `room_name_idx` (`name`)
