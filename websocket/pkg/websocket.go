@@ -20,12 +20,14 @@ type WebSocketHandler struct {
 }
 
 type Room struct {
-	RoomID   string
-	Name     string
-	Gamemode string
-	IsOpen   bool
-	HostID   string
-	Clients  map[*websocket.Conn]*UserInfo
+	RoomID       string
+	Name         string
+	Gamemode     string
+	IsOpen       bool
+	HostID       string
+	MaxPlayers   int
+	PlayersCount int
+	Clients      map[*websocket.Conn]*UserInfo
 }
 
 type PlayerInfo struct {
@@ -196,12 +198,14 @@ func (h *WebSocketHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	room := &Room{
-		RoomID:   request.RoomID,
-		Name:     request.Name,
-		Gamemode: request.Gamemode,
-		IsOpen:   request.IsOpen,
-		HostID:   request.HostID,
-		Clients:  make(map[*websocket.Conn]*UserInfo),
+		RoomID:       request.RoomID,
+		Name:         request.Name,
+		Gamemode:     request.Gamemode,
+		IsOpen:       request.IsOpen,
+		HostID:       request.HostID,
+		MaxPlayers:   5,
+		PlayersCount: 1,
+		Clients:      make(map[*websocket.Conn]*UserInfo),
 	}
 
 	h.rooms[request.RoomID] = room
@@ -209,11 +213,13 @@ func (h *WebSocketHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Reque
 	msg := map[string]interface{}{
 		"type": "room_create",
 		"room": map[string]interface{}{
-			"roomId":   room.RoomID,
-			"name":     room.Name,
-			"gamemode": room.Gamemode,
-			"isOpen":   room.IsOpen,
-			"userId":   room.HostID,
+			"roomId":       room.RoomID,
+			"name":         room.Name,
+			"gamemode":     room.Gamemode,
+			"isOpen":       room.IsOpen,
+			"userId":       room.HostID,
+			"maxPlayers":   5,
+			"playersCount": len(room.Clients),
 		},
 		"user": map[string]interface{}{
 			"userId":   request.HostID,
@@ -271,17 +277,20 @@ func (h *WebSocketHandler) registerConnection(conn *websocket.Conn, roomID, user
 	log.Printf("Registering connection for user %s", nickname)
 	if _, exists := h.rooms[roomID]; !exists {
 		h.rooms[roomID] = &Room{
-			RoomID:  roomID,
-			Clients: make(map[*websocket.Conn]*UserInfo),
+			MaxPlayers:   5,
+			PlayersCount: 1,
+			RoomID:       roomID,
+			Clients:      make(map[*websocket.Conn]*UserInfo),
 		}
 	}
-
+	if h.rooms[roomID].PlayersCount < h.rooms[roomID].MaxPlayers {
+		h.rooms[roomID].PlayersCount++
+	}
 	h.rooms[roomID].Clients[conn] = &UserInfo{
 		IsReady:  false,
 		UserID:   userID,
 		Nickname: nickname,
 	}
-
 	h.globalSubscribers[conn] = true
 }
 
@@ -310,10 +319,14 @@ func (h *WebSocketHandler) unregisterConnection(conn *websocket.Conn, roomID, us
 	leaveMsg["type"] = "user_leaved_l"
 	h.sendMessageInsideRoom(conn, roomID, leaveMsg)
 
+	if room.PlayersCount > 0 {
+		room.PlayersCount--
+	}
+	conn.Close()
 	delete(room.Clients, conn)
 	delete(h.globalSubscribers, conn)
 
-	if len(room.Clients) == 0 || room.HostID == userID {
+	if room.PlayersCount == 0 || room.HostID == userID {
 		deleteRoomMsg := map[string]interface{}{
 			"type": "delete_room_g",
 			"data": map[string]string{
@@ -334,9 +347,6 @@ func (h *WebSocketHandler) unregisterConnection(conn *websocket.Conn, roomID, us
 	if err := conn.Close(); err != nil {
 		log.Printf("Error closing websocket connection: %v", err)
 	}
-}
-
-func (h *WebSocketHandler) deleteRoomHTTPRequest() {
 }
 
 func (h *WebSocketHandler) sendRoomInfo(conn *websocket.Conn, roomID string) {
@@ -409,6 +419,25 @@ func (h *WebSocketHandler) sendMessageInsideRoom(userConn *websocket.Conn, roomI
 		}
 	}
 }
+func (h *WebSocketHandler) sendMessageInsideGame(playerConn *websocket.Conn, gameID string, msg map[string]interface{}) {
+	game, exists := h.activeGames[gameID]
+	if !exists {
+		return
+	}
+	for conn := range game.Players {
+		if conn != playerConn {
+			if err := conn.WriteJSON(msg); err != nil {
+				if err := conn.Close(); err != nil {
+					fmt.Println("Error conn closing to client")
+					return
+				}
+				h.mu.Lock()
+				delete(game.Players, conn)
+				h.mu.Unlock()
+			}
+		}
+	}
+}
 
 func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.Request, gameID string) {
 	conn, err := h.upgrader.Upgrade(w, r, nil)
@@ -434,11 +463,13 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 		return
 	}
 
+	h.mu.Lock()
 	game.Players[conn] = &PlayerInfo{
 		PlayerID: auth.Data["userId"],
 		Nickname: auth.Data["nickname"],
 	}
-	fmt.Printf("Connect: %s + %s\n", auth.Data["userId"], auth.Data["nickname"])
+	h.mu.Unlock()
+	fmt.Printf("Connect: %s + %s + len: %d\n", auth.Data["userId"], auth.Data["nickname"], len(game.Players))
 
 	players := make([]*PlayerInfo, 0, len(game.Players))
 	for _, player := range game.Players {
@@ -458,12 +489,19 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 		},
 	})
 
-	fmt.Println("Game connected")
+	msg := map[string]interface{}{
+		"type": "join_player",
+		"data": map[string]interface{}{
+			"userId":   auth.Data["userId"],
+			"nickname": auth.Data["nickname"],
+		},
+	}
+	h.sendMessageInsideGame(conn, gameID, msg)
 
 	for {
 		var msg struct {
-			Type string          `json:"type"`
-			Data json.RawMessage `json:"data"`
+			Type string                 `json:"type"`
+			Data map[string]interface{} `json:"data"`
 		}
 		if err := conn.ReadJSON(&msg); err != nil {
 			h.removePlayerFromGame(gameID, conn)
@@ -471,14 +509,17 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 			return
 		}
 		switch msg.Type {
+		//case "init_players":
+		//
+		//
 		case "update_position":
 			var positionData struct {
 				X float64 `json:"x"`
 				Y float64 `json:"y"`
 			}
-			if err := json.Unmarshal(msg.Data, &positionData); err != nil {
-				continue
-			}
+			//if err := json.Unmarshal(msg.Data["positions"], &positionData); err != nil {
+			//	continue
+			//}
 			for otherConn, player := range game.Players {
 				if otherConn != conn {
 					otherConn.WriteJSON(map[string]interface{}{

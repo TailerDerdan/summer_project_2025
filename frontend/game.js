@@ -2,11 +2,9 @@ import {arrEnemy} from "./player/player.js";
 
 export let gameIsRun = true;
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log("START GAME 0_0")
     const data = JSON.parse(sessionStorage.getItem('gameSession'))
     console.log("DATA: ", data)
     if (!data) {
-        console.log('Did not get session game data')
         window.location.href = `/main`
         return
     }
@@ -16,11 +14,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function connectToWSGame(data) {
     const gameSocket = new WebSocket(`ws://87.228.90.3:8080/ws/game/${data.gameId}`)
-    console.log("FFFFFF")
     await startTimer()
-    console.log("JJJJJJ")
     gameSocket.onopen = (e) => {
-        console.log(`Success connect to game map`)
         gameSocket.send(JSON.stringify({
             type: "game_auth",
             data: {
@@ -29,7 +24,6 @@ async function connectToWSGame(data) {
             }
         }))
     }
-    console.log("DDDDDD")
     gameSocket.onmessage = (event) => {
         const msg = JSON.parse(event.data);
         console.log("msg: ", msg)
@@ -40,6 +34,12 @@ async function connectToWSGame(data) {
                     arrEnemy.push(playerData)
                 })
                 break;
+            case "join_player":
+                console.log("playerData: ", msg.data)
+                arrEnemy.push({
+                    playerId: msg.data.userId,
+                    nickname: msg.data.nickname,
+                })
             //
             // case "player_position":
             //     console.log("player_position")

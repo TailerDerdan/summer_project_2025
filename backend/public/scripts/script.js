@@ -1,7 +1,6 @@
 function connectWebSocket() {
     const socket = new WebSocket('ws://87.228.90.3:8080/ws/global-updates');
 
-
     socket.onmessage = async (event) => {
         const data = JSON.parse(event.data);
         if (data.type === 'room_create') {
@@ -26,6 +25,7 @@ function connectWebSocket() {
 function addUser(user) {
     const userList = document.getElementById(`room-list-item__avatar-list-${user['roomId']}`)
     if (userList && !document.getElementById(`user-${user["userId"]}`)) {
+        console.log('add user to list global')
         const userElt = document.createElement("p")
         userElt.id = `user-${user["userId"]}`
         userElt.textContent = `${user["userId"]}: ${user["nickname"]}`
@@ -47,11 +47,35 @@ function addRoomToList(room) {
     const container = document.querySelector('.room-menu__room-list');
     const roomElt = document.createElement("div")
     roomElt.innerHTML = `
-        <div class="room" id="room_${room.roomId}">
-            <span>${room.name}</span>
-            <p>Режим: ${room.gamemode}</p>
-            <div class="users-list" id="users-list-${room.roomId}"></div>
-            <button onclick="joinRoom('${ room.roomId }')">JOIN</button>
+        <div class="room-menu__room-list-item" onclick="joinRoom('${ room.id }')">
+            <div class="room-list-item__main">
+                <div class="room-list-item__header">
+                    <p class="room-list-item__name">${ room.name }</p>
+    `
+    if (!room.isOpen) {
+        roomElt.innerHTML += `
+                    <img class="room-list-item__status-indicator" src="/images/lock.png" alt="">
+        `
+    }
+    roomElt.innerHTML += `
+                </div>
+            <div class="room-list-item__avatar-list" id="room-list-item__avatar-list-{{ room.id }}">
+            </div>
+        </div>
+            <div class="room-list-item__extra">
+    `
+    if (room.playersCount < room.maxPlayers) {
+        roomElt.innerHTML += `
+                <p class="room-list-item__fill-indicator">${room.playersCount}/${room.maxPlayers}</p>
+        `
+    } else {
+        roomElt.innerHTML += `
+                <p class="room-list-item__fill-indicator-full">${room.maxPlayers}/${room.maxPlayers}</p>
+        `
+    }
+    roomElt.innerHTML += `
+                <p class="room-list-item__gamemode">${room.gamemode}</p>
+            </div>
         </div>
     `
     container.appendChild(roomElt)

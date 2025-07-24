@@ -176,7 +176,6 @@ function handleGameStart(data, user) {
 }
 
 async function deleteUserFromRoom(roomId) {
-    console.log("QQQQQQ")
     const response = await fetch('/room/deleteUser', {
         method: "POST",
         headers: {
