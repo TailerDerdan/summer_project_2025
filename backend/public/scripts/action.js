@@ -2,13 +2,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const btn = document.querySelector(".create-room__btn")
     btn.addEventListener('click', async (e) => {
         e.preventDefault()
-        console.log("hjkhlgkjhlkjhl")
         const formData = {
             name: document.getElementById("room_name").value,
             gamemode: document.getElementById("room_playmode").value,
             isOpen: document.getElementById("room_open").value === "open",
         };
-        console.log("formData: ", formData)
         const response = await fetch('/room/create', {
             method: "POST",
             headers: {

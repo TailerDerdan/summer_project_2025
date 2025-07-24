@@ -13,8 +13,8 @@ function connectWebSocket() {
             deleteUser(data.data)
         }
         if (data.type === "delete_room_g") {
-            await deleteRoom(data.data.roomId)
-            const room = document.getElementById(`room_${data.data.roomId}`)
+            await deleteRoom()
+            const room = document.getElementById(`room-menu__room-list-item-${data.data.roomId}`)
             if (room) {
                 room.remove()
             }
@@ -30,13 +30,24 @@ function addUser(user) {
         userElt.id = `user-${user["userId"]}`
         userElt.textContent = `${user["userId"]}: ${user["nickname"]}`
         userList.appendChild(userElt)
+        const playersCount = document.getElementById(`playersCount-${ room.id }`)
+        playersCount.dataset.count++
     }
 }
 
-function deleteUser(user) {
+async function deleteUser(user) {
     const userElt = document.getElementById(`user-${user["userId"]}`)
     if (userElt) {
         userElt.remove()
+        const playersCount = document.getElementById(`playersCount-${ user["roomId"] }`)
+        playersCount.dataset.count--
+        if (parseInt(playersCount.dataset.count) === 0) {
+            await deleteRoom()
+            const room = document.getElementById(`room-menu__room-list-item-${user["roomId"]}`)
+            if (room) {
+                room.remove()
+            }
+        }
     }
 }
 
@@ -47,6 +58,7 @@ function addRoomToList(room) {
     const container = document.querySelector('.room-menu__room-list');
     const roomElt = document.createElement("div")
     roomElt.className = "room-menu__room-list-item"
+    roomElt.id = `room-menu__room-list-item-${room.roomId}`
     roomElt.click(joinRoom(`${ room.roomId }`))
     roomElt.innerHTML = `
             <div class="room-list-item__main">

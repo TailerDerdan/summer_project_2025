@@ -221,7 +221,7 @@ func (h *WebSocketHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Reque
 			"isOpen":       room.IsOpen,
 			"userId":       room.HostID,
 			"maxPlayers":   5,
-			"playersCount": len(room.Clients),
+			"playersCount": 1,
 		},
 		"user": map[string]interface{}{
 			"userId":   request.HostID,
