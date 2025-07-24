@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 nickname: data.nickname,
             }
         }));
-        // window.location.href = ('/room/show/' + data.roomId)
+         window.location.href = ('/room/show/' + data.roomId)
     })
 })
 
