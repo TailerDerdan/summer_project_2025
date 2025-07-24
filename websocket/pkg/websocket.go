@@ -100,7 +100,7 @@ func (h *WebSocketHandler) HandleConnectionInRoom(w http.ResponseWriter, r *http
 		conn.WriteJSON(map[string]string{"error": "Room does not exist"})
 		return
 	}
-
+	fmt.Printf("Room %s user %s\n", roomID, userID)
 	h.registerConnection(conn, roomID, userID, nickname)
 
 	msg := map[string]interface{}{
@@ -241,7 +241,7 @@ func (h *WebSocketHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Reque
 	w.WriteHeader(http.StatusOK)
 	resp := map[string]interface{}{
 		"roomId": request.RoomID,
-		"ws_url": "ws://87.228.90.3:8080/ws/room_" + request.RoomID,
+		//"ws_url": "ws://87.228.90.3:8080/ws/room_" + request.RoomID,
 	}
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("WebSocket error: %v", err)
@@ -413,34 +413,34 @@ func (h *WebSocketHandler) sendRoomInfo(conn *websocket.Conn, roomID string) {
 }
 
 func (h *WebSocketHandler) sendMessageGlobal(msg map[string]interface{}) {
-	//for conn := range h.globalSubscribers {
-	//	if err := conn.WriteJSON(msg); err != nil {
-	//		fmt.Println("Error writing to client, G")
-	//		if err := conn.Close(); err != nil {
-	//			fmt.Println("Error conn closing to client, G")
-	//		}
-	//		h.mu.Lock()
-	//		delete(h.globalSubscribers, conn)
-	//		h.mu.Unlock()
-	//	}
-	//}
-	//h.mu.Lock()
-	//defer h.mu.Unlock()
 	for conn := range h.globalSubscribers {
 		if err := conn.WriteJSON(msg); err != nil {
-			log.Printf("Error sending global message: %v", err)
-			conn.Close()
-			delete(h.globalSubscribers, conn)
-
-			// Также удаляем из всех комнат
-			for _, room := range h.rooms {
-				if _, exists := room.Clients[conn]; exists {
-					delete(room.Clients, conn)
-					room.PlayersCount--
-				}
+			fmt.Println("Error writing to client, G")
+			if err := conn.Close(); err != nil {
+				fmt.Println("Error conn closing to client, G")
 			}
+			h.mu.Lock()
+			delete(h.globalSubscribers, conn)
+			h.mu.Unlock()
 		}
 	}
+	//h.mu.Lock()
+	//defer h.mu.Unlock()
+	//for conn := range h.globalSubscribers {
+	//	if err := conn.WriteJSON(msg); err != nil {
+	//		log.Printf("Error sending global message: %v", err)
+	//		conn.Close()
+	//		delete(h.globalSubscribers, conn)
+	//
+	//		// Также удаляем из всех комнат
+	//		for _, room := range h.rooms {
+	//			if _, exists := room.Clients[conn]; exists {
+	//				delete(room.Clients, conn)
+	//				room.PlayersCount--
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 func (h *WebSocketHandler) sendMessageInsideRoomToAll(roomID string, msg map[string]interface{}) {

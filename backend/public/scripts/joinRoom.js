@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     //const usersArr = await loadUsersData()
     const dataJson = JSON.parse(sessionStorage.getItem('ws_join_data'));
     //sessionStorage.removeItem('ws_join_data');
+    console.log("dataJson: ", dataJson)
     const socket = connectToWSRoom(dataJson)
 
     document.getElementById('leave-room-btn').addEventListener('click', () => {
