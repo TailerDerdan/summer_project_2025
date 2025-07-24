@@ -189,7 +189,7 @@ func (h *WebSocketHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Reque
 	}
 	var request struct {
 		PlayersCount int    `json:"playersCount"`
-		MaxCount     int    `json:"maxCount"`
+		MaxPlayers   int    `json:"maxPlayers"`
 		Nickname     string `json:"nickname"`
 		HostID       string `json:"userId"`
 		Name         string `json:"name"`
@@ -205,13 +205,14 @@ func (h *WebSocketHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Reque
 		http.Error(w, "Room already exists", http.StatusConflict)
 		return
 	}
+	fmt.Printf("MaxPlayers: %d, PlayersCount: %d\n", request.MaxPlayers, request.PlayersCount)
 	room := &Room{
 		RoomID:       request.RoomID,
 		Name:         request.Name,
 		Gamemode:     request.Gamemode,
 		IsOpen:       request.IsOpen,
 		HostID:       request.HostID,
-		MaxPlayers:   request.MaxCount,
+		MaxPlayers:   request.MaxPlayers,
 		PlayersCount: request.PlayersCount,
 		Clients:      make(map[*websocket.Conn]*UserInfo),
 	}
@@ -320,7 +321,9 @@ func (h *WebSocketHandler) registerConnection(conn *websocket.Conn, roomID, user
 		}
 	}
 
+	fmt.Printf("max players: %d\n", h.rooms[roomID].MaxPlayers)
 	if h.rooms[roomID].PlayersCount < h.rooms[roomID].MaxPlayers {
+		fmt.Printf("add player %s to room %s\n", userID, roomID)
 		h.rooms[roomID].PlayersCount++
 		h.rooms[roomID].Clients[conn] = &UserInfo{
 			UserID:   userID,
