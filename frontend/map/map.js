@@ -30,7 +30,7 @@ export class Map2D
     }
 
     generate(ctx)
-    {        
+    {
         let color = COLOR_FLOOR;
         ctx.save();
         ctx.fillStyle = color;
@@ -39,7 +39,7 @@ export class Map2D
         {
             for (let iterX = 0; iterX < COUNT_TILE_X; iterX++)
             {
-                if (this.tileMap[iterY * COUNT_TILE_Y + iterX] == 0)
+                if (this.tileMap[iterY * COUNT_TILE_Y + iterX] === 0)
                 {
                     color = COLOR_FLOOR;
                 }

@@ -83,9 +83,9 @@ export class Sprite
 
     applyToSpriteMovement(ctx, dx, dy, dWidth, dHeight)
     {
-        ctx.drawImage(this.image, this.frames[this.currentFrame].x, this.frames[this.currentFrame].y, 
-                    this.frames[this.currentFrame].width, this.frames[this.currentFrame].height,
-                    dx, dy, dWidth, dHeight);
+        ctx.drawImage(this.image, this.frames[this.currentFrame].x, this.frames[this.currentFrame].y,
+            this.frames[this.currentFrame].width, this.frames[this.currentFrame].height,
+            dx, dy, dWidth, dHeight);
     }
 
     advanceMovement()
@@ -108,7 +108,7 @@ export class Sprite
             this.timeForMovement -= this.delayMovement;
             this.advanceMovement();
         }
-        
+
         if (this.isAnimationPlayed)
         {
             this.currentFrame = this.countFrames - 1;
@@ -120,7 +120,7 @@ export class Sprite
         if (this.isAnimationPlayed) return;
 
         const animate = () => {
-            
+
             if (this.isAnimationPlayed) return;
 
             this.updateFrames(16 / 100000);

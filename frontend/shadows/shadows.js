@@ -1,6 +1,5 @@
 import { camera } from "../camera/camera.js";
 import { canvas, canvasWebgl, gl, state } from "../canvas.js";
-import { enemy1 } from "../enemy/enemy.js";
 import { map } from "../map/map.js";
 import { player } from "../player/player.js";
 import { calculateGeometry } from "./geometry.js";

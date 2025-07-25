@@ -1,4 +1,4 @@
-import {arrEnemy} from "./player/player.js";
+import { arrEnemy } from "./player/player.js";
 
 export let gameIsRun = true;
 let gameTimer;

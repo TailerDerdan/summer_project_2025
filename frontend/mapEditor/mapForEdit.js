@@ -48,7 +48,7 @@ export class MapEditor
                     tileY + TILE_HEIGHT >= y &&
                     tileY <= viewportEndY)
                 {
-                    if (this.tileMap[iterY * COUNT_TILE_Y + iterX] == 0)
+                    if (this.tileMap[iterY * COUNT_TILE_Y + iterX] === 0)
                     {
                         ctx.fillStyle = COLOR_FLOOR;
                         ctx.fillRect(tileX, tileY, TILE_WIDTH, TILE_HEIGHT);
@@ -72,7 +72,7 @@ export class MapEditor
                         this.buldings[iterY * COUNT_TILE_Y + iterX] <= TypeBuilding.Wall1 + CountOfBuildings.Wall - 1)
                     {
                         const wall = this.buldingsObject.find((elem) => {
-                            if (elem.x == iterX && elem.y == iterY) return true;
+                            if (elem.x === iterX && elem.y === iterY) return true;
                         })
                         let rotation = 0;
                         if (wall)
@@ -108,16 +108,16 @@ export class MapEditor
             for (let iterX = 0; iterX < COUNT_TILE_X; iterX++)
             {
                 const wall = this.buldingsObject.find((elem) => {
-                    if (elem.x == iterX && elem.y == iterY) return true;
+                    if (elem.x === iterX && elem.y === iterY) return true;
                 });
         
                 if (wall)
                 {
-                    if (wall.rotation == 90 || wall.rotation == 270)
+                    if (wall.rotation === 90 || wall.rotation === 270)
                     {
                         this.horizontalWalls[iterY * COUNT_TILE_Y + iterX] = 1;
                     }
-                    if (wall.rotation == 0 || wall.rotation == 180)
+                    if (wall.rotation === 0 || wall.rotation === 180)
                     {
                         this.verticalWalls[iterY * COUNT_TILE_Y + iterX] = 1;
                     }
@@ -138,7 +138,7 @@ export class MapEditor
         {
             for (let iterX = 0; iterX < COUNT_TILE_X; iterX++)
             {
-                if (iterX == COUNT_TILE_X - 1)
+                if (iterX === COUNT_TILE_X - 1)
                 {
                     if (horWall)
                     {
@@ -179,7 +179,7 @@ export class MapEditor
         {
             for (let iterY = 0; iterY < COUNT_TILE_Y; iterY++)
             {
-                if (iterY == COUNT_TILE_Y - 1)
+                if (iterY === COUNT_TILE_Y - 1)
                 {
                     if (vertWall)
                     {

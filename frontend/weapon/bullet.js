@@ -2,7 +2,7 @@ import { Container } from "../collisions/collisions.js";
 
 export class Bullet
 {
-    constructor(x, y, speed, dir, distX, distY, fireRange)
+    constructor(x, y, speed, dir, distX, distY, fireRange, owner)
     {
         this.x = x;
         this.y = y;
@@ -15,6 +15,7 @@ export class Bullet
         this.width = 10;
         this.height = 10;
         this.fireRange = fireRange;
+        this.owner = owner;
         this.container = new Container(this.width, this.height, x - this.width, y - this.height, dir);
     }
 
@@ -55,15 +56,13 @@ export class Bullet
 
     getRemainingDist()
     {
-        if (arguments.length == 2)
+        if (arguments.length === 2)
         {
-            return Math.sqrt(((this.x - xObj) * (this.x - xObj)) + 
-                             ((this.y - yObj) * (this.y - yObj)));
+            return Math.hypot((this.x - xObj), (this.y - yObj));
         }
-        if (arguments.length == 1)
+        if (arguments.length === 1)
         {
-            let traveledDist = Math.sqrt(((this.x - this.startX) * (this.x - this.startX)) + 
-                                         ((this.y - this.startY) * (this.y - this.startY)));
+            let traveledDist = Math.hypot((this.x - this.startX), (this.y - this.startY));
             return arguments[0] - traveledDist;
         }
     }

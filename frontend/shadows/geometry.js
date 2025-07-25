@@ -7,7 +7,7 @@ export class Vec2
     }
 }
 
-function substract(v1, v2)
+function subtract(v1, v2)
 {
     return {
         x: v1.x - v2.x,
@@ -44,11 +44,11 @@ function add(vec1, vec2)
 
 export function calculateGeometry(inputs)
 {
-    const wa = substract(inputs.a, inputs.light);
+    const wa = subtract(inputs.a, inputs.light);
     const sa = multiply(unitVector(wa), inputs.lightRadius);
     const ea = add(inputs.light, sa);
 
-    const wb = substract(inputs.b, inputs.light);
+    const wb = subtract(inputs.b, inputs.light);
     const sb = multiply(unitVector(wb), inputs.lightRadius);
     const eb = add(inputs.light, sb);
 
