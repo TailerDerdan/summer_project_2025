@@ -45,6 +45,7 @@
     border: none;
     position: relative;
     left: 174px;
+    display: flex;
     justify-content: center;
     align-items: center;
 }
