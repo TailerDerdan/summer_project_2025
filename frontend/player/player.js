@@ -3,6 +3,7 @@ import { Sprite } from '../spriteScript/spriteScript.js';
 import { InitAssaultRifle, InitShotgun, TYPE_WEAPON, Weapon } from '../weapon/typeWeapons.js';
 import { Character } from "../Infrastructure/Character.js";
 import { bot1 } from "../bot/Bot";
+import {Sound} from "../soundsScript/sound";
 
 const WIDTH_FRAME = 23;
 const HEIGHT_FRAME = 34;
@@ -23,6 +24,8 @@ export class Player extends Character
 
         this.sprite = new Sprite(COUNT_FRAMES, './sprites/playerSprite.png', 0.1, true);
         this.sprite.makeFrames(WIDTH_FRAME, HEIGHT_FRAME, START_X);
+
+        this.soundShoot = new Sound('sounds/Hotline_Miami_2_Wrong_Number/M16.wav');
 
         this.lightPosition = {
             x: this.x,

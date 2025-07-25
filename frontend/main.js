@@ -1,7 +1,6 @@
 import { updateMovementPlayer } from './player/movement.js';
 import {throttle, throttleBotsShoot, updateMovementBullets} from './weapon/shooting.js';
 import { canvas, ctx, gl, state } from './canvas.js';
-import { enemy1 } from './enemy/enemy.js';
 import { map } from './map/map.js';
 import { camera } from './camera/camera.js';
 import { Clock } from './clock/clock.js';
@@ -21,9 +20,9 @@ function gameLoop()
     map.draw(ctx, camera.xView, camera.yView);
 
     arrEnemy.forEach(enemy => {
-        enemy1.drawCharacter(ctx, enemy.x, enemy.y);
-        enemy1.drawBlood(ctx, enemy.x, enemy.y);
-        enemy1.updateCharacter();
+        enemy.drawCharacter(ctx, enemy.x, enemy.y);
+        enemy.drawBlood(ctx, enemy.x, enemy.y);
+        enemy.updateCharacter();
     })
 
     arrBot.forEach(bot => {

@@ -1,7 +1,6 @@
 import { player, arrEnemy, arrBot } from '../player/player.js';
 import { TYPE_WEAPON, InitAssaultRifle, InitShotgun, InitSniperRifle, Weapon } from './typeWeapons.js';
 import { ctx } from  '../canvas.js';
-import { enemy1 } from '../enemy/enemy.js';
 import { bot1 } from '../bot/Bot.js';
 import { Bullet } from './bullet.js';
 import { camera } from '../camera/camera.js';
@@ -34,8 +33,7 @@ const updateBullets = (event) => {
 
     if ((!player.weapon) || (!player.isCharacterLive)) return;
 
-    enemy1.soundShoot.stop();
-    bot1.soundShoot.stop();
+    player.soundShoot.stop();
 
     const objForMovement = {
         dir: 0,
@@ -69,8 +67,7 @@ const updateBullets = (event) => {
         }
     }
 
-    enemy1.soundShoot.play();
-    bot1.soundShoot.play();
+    player.soundShoot.play();
 }
 
 function updateBotShooting() {
