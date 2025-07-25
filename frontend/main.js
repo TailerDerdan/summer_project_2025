@@ -28,7 +28,7 @@ function gameLoop()
     // })
 
     enemy1.drawEnemy(ctx, camera.xView, camera.yView);
-    enemy1.drawBlood(ctx, enemy.x, enemy.y);
+    enemy1.drawBlood(ctx, camera.xView, camera.yView);
     enemy1.updateEnemy();
     updateMovementBullets();
 
