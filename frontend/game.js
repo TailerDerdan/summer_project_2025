@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log("DATA: ", data)
 
     if (!data) {
-        //window.location.href = `/main`
+        window.location.href = `/main`
         return
     }
     sessionStorage.removeItem('gameSession');
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     catch (error) {
         console.error("WebSocket error:", error);
-        //window.location.href = '/main';
+        window.location.href = '/main';
     }
 });
 
@@ -389,12 +389,12 @@ function getCurrentPosition()
 
 function updateEnemyPosition(userId, x, y)
 {
-    const enemy = arrEnemyForWS.find(e => e.userId == userId);
+    const enemy = arrEnemyForWS.find(e => e.userId === userId);
     if (enemy) {
         enemy.x = x;
         enemy.y = y;
 
-        const gameEnemy = arrEnemy.find(e => e.playerId == userId);
+        const gameEnemy = arrEnemy.find(e => e.playerId === userId);
         if (gameEnemy) {
             gameEnemy.x = x;
             gameEnemy.y = y;
