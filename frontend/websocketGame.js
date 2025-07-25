@@ -16,7 +16,7 @@ export async function initGameWebsocket(data) {
     stateForWS.gameId = data.gameId;
     stateForWS.nickname = data.nickname;
 
-    stateForWS.gameSocket = new WebSocket(`ws://87.228.90.3:8080/ws/game/${data.gameId}`);
+    stateForWS.gameSocket = new WebSocket(`ws://mochilovo-avi.ru:8080/ws/game/${data.gameId}`)
 
     return new Promise((resolve, reject) => {
         stateForWS.gameSocket.onopen = (e) => {
