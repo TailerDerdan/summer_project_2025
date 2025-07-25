@@ -1,75 +1,111 @@
-import { arrEnemy } from "./player/player.js";
+import { Enemy, HEIGHT_ENEMY, WIDTH_ENEMY } from "./enemy/enemy.js";
+import { arrEnemy, arrEnemyForWS, player } from "./player/player.js";
+import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
 
-export let gameIsRun = true;
 let gameTimer;
 let remainingTime = 0;
 
 document.addEventListener('DOMContentLoaded', async () => {
     const data = JSON.parse(sessionStorage.getItem('gameSession'))
     console.log("DATA: ", data)
+
     if (!data) {
         window.location.href = `/main`
         return
     }
     sessionStorage.removeItem('gameSession');
-    await connectToWSGame(data)
-})
 
-async function connectToWSGame(data) {
-    const gameSocket = new WebSocket(`ws://mochilovo-avi.ru:8080/ws/game/${data.gameId}`)
-    gameSocket.onopen = (e) => {
-        gameSocket.send(JSON.stringify({
-            type: "game_auth",
-            data: {
-                userId: (data.userId).toString(),
-                nickname: data.nickname,
+    try 
+    {
+        await initGameWebsocket(data);
+        await startTimer();
+
+        setMessageHandler((event) => {
+            const msg = JSON.parse(event.data);
+            console.log("msg: ", msg);
+            
+            switch (msg.type) {
+                case "init_players":
+                    console.log(msg);
+                    handleInitPlayers(msg);
+                    break;
+                case "join_player":
+                    handleJoinPlayer(msg.data);
+                    break;
+                case "player_move":
+                    handlePlayerMove(msg.data);
+                    break;
+                case "time_update":
+                    updateTimer(msg.data.remaining);
+                    break;
+                case "game_end":
+                    endGame();
+                    gameSocket.send(JSON.stringify({
+                        type: "game_ended",
+                        data: { gameId: msg.data.gameId }
+                    }));
+                    gameSocket.close();
+                    break;
             }
-        }))
+        });
+
+        checkAndSendPosition();
     }
-    gameSocket.onmessage = (event) => {
-        const msg = JSON.parse(event.data);
-        console.log("msg: ", msg)
-        switch (msg.type) {
-            case "init_players":
-                Object.values(msg.data.players).forEach(playerData => {
-                    console.log("playerData: ", playerData)
-                    arrEnemy.push({
-                        x: playerData.x,
-                        y: playerData.y,
-                    })
-                })
-                break;
-            case "join_player":
-                console.log("playerData: ", msg.data)
-                arrEnemy.push({
-                    x: msg.data.x,
-                    y: msg.data.y,
-                })
-                break;
-            case "time_update":
-                updateTimer(msg.data.remaining);
-                break;
-            case "game_end":
-                endGame();
-                gameSocket.send(JSON.stringify({
-                    type: "game_ended",
-                    data: { gameId: msg.data.gameId }
-                }));
-                gameSocket.close();
-                break;
-            //
-            // case "player_position":
-            //     console.log("player_position")
-            //     player.updatePlayerPosition(msg.data.id, msg.data.x, msg.data.y);
-            //     break;
-            //
-            // case "player_left":
-            //     console.log("player_left")
-            //     player.removePlayer(msg.data.id);
-            //     break;
+    catch (error) {
+        console.error("WebSocket error:", error);
+        window.location.href = '/main';
+    }
+});
+
+function handleInitPlayers(players)
+{
+    Object.values(players).forEach(playerData => {
+
+        console.log("playerData(init_players): ", playerData)
+
+        const enemy = arrEnemyForWS.find((elem) => {
+            if (elem.playerId == playerData.playerId) return true;
+        });
+
+        if (!enemy)
+        {
+            arrEnemyForWS.push({
+                x: playerData.x,
+                y: playerData.y,
+                userId: playerData.playerId,
+            })
+            const newEnemy = new Enemy(playerData.playerId, playerData.x, playerData.y, WIDTH_ENEMY, HEIGHT_ENEMY);
+            arrEnemy.push(newEnemy);
+            console.log(arrEnemy);
         }
-    };
-    console.log("XXXXXX")
+    })
+}
+
+function handleJoinPlayer(data)
+{
+    console.log("playerData(join room): ", data)
+
+    const enemy = arrEnemyForWS.find((elem) => {
+        if (elem.userId == data.userId) return true;
+    });
+
+    if (!enemy)
+    {
+        arrEnemyForWS.push({
+            x: data.x,
+            y: data.y,
+            userId: data.userId,
+        })
+        const newEnemy = new Enemy(data.userId, data.x, data.y, WIDTH_ENEMY, HEIGHT_ENEMY);
+        arrEnemy.push(newEnemy);
+        console.log(arrEnemy);
+    }
+}
+
+function handlePlayerMove(data)
+{
+    console.log("playerMove: ", data);
+    updateEnemyPosition(data.userId, data.x, data.y);
 }
 
 function endGame() {
@@ -138,13 +174,61 @@ function showResultsAfterBattle() {
     `
     document.body.prepend(resultsBlock)
     const endBtn = document.querySelector(".endBtn")
-    gameIsRun = false;
+    stateForWS.gameIsRun = false;
     endBtn.addEventListener('click', () => {
         window.location.href = "/main"
     })
 }
 
-const statistic = []
-function addKill(userId) {
-    statistic[userId]
+let lastSentPosition = {
+    x: 0,
+    y: 0,
+}
+
+let lastSentTime = 0;
+
+export function checkAndSendPosition()
+{
+    const now = Date.now();
+    const currentPos = getCurrentPosition();
+
+    console.log(now - lastSentTime);
+
+    if (now - lastSentTime > 100 && 
+        (Math.abs(currentPos.x - lastSentPosition.x) > 5 ||
+        Math.abs(currentPos.y - lastSentPosition.y) > 5)
+    )
+    {
+        sendWebSocketMessage(JSON.stringify({
+            type: "player_move",
+            data: {
+                userId: stateForWS.userId.toString(),
+                x: currentPos.x,
+                y: currentPos.y,
+            }
+        }));
+
+        lastSentPosition = {...currentPos};
+        lastSentTime = now;
+    }
+}
+
+function getCurrentPosition()
+{
+    return {x: player.x, y: player.y};
+}
+
+function updateEnemyPosition(userId, x, y)
+{
+    const enemy = arrEnemyForWS.find(e => e.userId == userId);
+    if (enemy) {
+        enemy.x = x;
+        enemy.y = y;
+        
+        const gameEnemy = arrEnemy.find(e => e.playerId == userId);
+        if (gameEnemy) {
+            gameEnemy.x = x;
+            gameEnemy.y = y;
+        }
+    }
 }

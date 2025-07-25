@@ -10,8 +10,9 @@ const HEIGHT_FRAME = 34;
 const START_X = 0;
 const COUNT_FRAMES = 10;
 
-export const arrEnemy = [];
 export const arrBot = [bot1];
+export const arrEnemyForWS = [];
+export const arrEnemy = [];
 
 export class Player extends Character
 {
