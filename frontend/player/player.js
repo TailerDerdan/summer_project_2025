@@ -3,7 +3,7 @@ import { Sprite } from '../spriteScript/spriteScript.js';
 import { InitAssaultRifle, InitShotgun, TYPE_WEAPON, Weapon } from '../weapon/typeWeapons.js';
 import { Character } from "../Infrastructure/Character.js";
 // import { bot1 } from "../bot/Bot";
-import {Sound} from "../soundsScript/sound";
+import {Sound} from "../soundsScript/sound.js";
 
 const WIDTH_FRAME = 23;
 const HEIGHT_FRAME = 34;
