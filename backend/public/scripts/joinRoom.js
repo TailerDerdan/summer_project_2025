@@ -77,12 +77,14 @@ function connectToWSRoom(dataUser)   {
             showNotification(`${data.data.userId}: ${data.data.nickname} вызодит из комнаты...`);
             if (data.type === 'leave_ack') {
                 await deleteUserFromRoom(data.data.roomId)
+                socket.close()
                 window.location.href = '/main';
             }
         }
         if (data.type === 'start_game') {
             handleGameStart(data.data, dataUser.data)
             await deleteRoom(data.data.roomId)
+            socket.close()
         }
         if (data.type === "not_all_ready") {
             showNotification(`Не все игроки нажали кнопку "ГОТОВ"`);
@@ -90,6 +92,7 @@ function connectToWSRoom(dataUser)   {
         if (data.type === "delete_room_l") {
             await deleteUserFromRoom(data.data.roomId)
             await deleteRoom(data.data.roomId)
+            socket.close()
             window.location.href = ("/main")
         }
         if (data.type === "update_ready_state") {

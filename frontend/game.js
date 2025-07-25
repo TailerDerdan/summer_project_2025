@@ -1,6 +1,9 @@
 import {arrEnemy} from "./player/player.js";
 
 export let gameIsRun = true;
+let gameTimer;
+let remainingTime = 0;
+
 document.addEventListener('DOMContentLoaded', async () => {
     const data = JSON.parse(sessionStorage.getItem('gameSession'))
     console.log("DATA: ", data)
@@ -43,6 +46,18 @@ async function connectToWSGame(data) {
                     x: msg.data.x,
                     y: msg.data.y,
                 })
+                break;
+            case "time_update":
+                updateTimer(msg.data.remaining);
+                break;
+            case "game_end":
+                endGame();
+                gameSocket.send(JSON.stringify({
+                    type: "game_ended",
+                    data: { gameId: msg.data.gameId }
+                }));
+                gameSocket.close();
+                break;
             //
             // case "player_position":
             //     console.log("player_position")
@@ -58,23 +73,54 @@ async function connectToWSGame(data) {
     console.log("XXXXXX")
 }
 
-
-async function startTimer() {
-    let countStart = 10
-    const countStartElt = document.createElement("div")
-    countStartElt.setAttribute("style", "position: fixed; padding: 20px; font-size: 20px;")
-    document.body.prepend(countStartElt)
-    const timer = setInterval(() => {
-        countStartElt.textContent = `Игра завершится через: ${countStart}`
-        countStart--
-        if (countStart < 0) {
-            clearInterval(timer)
-            console.log("111")
-            showResultsAfterBattle()
-            console.log("222")
-        }
-    }, 1000)
+function endGame() {
+    if (gameTimer) {
+        clearInterval(gameTimer);
+    }
+    gameIsRun = false;
+    showResultsAfterBattle();
 }
+
+function updateTimer(seconds) {
+    remainingTime = seconds;
+
+    if (!gameTimer) {
+        const timerElement = document.createElement("div");
+        timerElement.setAttribute("style", "position: fixed; top: 10px; right: 10px; font-size: 24px; color: white;");
+        document.body.prepend(timerElement);
+
+        gameTimer = setInterval(() => {
+            remainingTime--;
+
+            const minutes = Math.floor(remainingTime / 60);
+            const seconds = remainingTime % 60;
+
+            timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+            if (remainingTime <= 0) {
+                clearInterval(gameTimer);
+                showResultsAfterBattle();
+            }
+        }, 1000);
+    }
+}
+
+// async function startTimer() {
+//     let countStart = 10
+//     const countStartElt = document.createElement("div")
+//     countStartElt.setAttribute("style", "position: fixed; padding: 20px; font-size: 20px;")
+//     document.body.prepend(countStartElt)
+//     const timer = setInterval(() => {
+//         countStartElt.textContent = `Игра завершится через: ${countStart}`
+//         countStart--
+//         if (countStart < 0) {
+//             clearInterval(timer)
+//             console.log("111")
+//             showResultsAfterBattle()
+//             console.log("222")
+//         }
+//     }, 1000)
+// }
 
 function showResultsAfterBattle() {
     console.log("show results")

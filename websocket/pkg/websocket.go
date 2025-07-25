@@ -10,6 +10,7 @@ import (
 	"math/big"
 	"net/http"
 	"sync"
+	"time"
 )
 
 type WebSocketHandler struct {
@@ -44,12 +45,14 @@ type UserInfo struct {
 }
 
 type Game struct {
-	GameID  string
-	Type    string
-	RoomID  string
-	Players map[*websocket.Conn]*PlayerInfo
-	State   GameState
-	mu      sync.RWMutex
+	GameID    string
+	Type      string
+	RoomID    string
+	Players   map[*websocket.Conn]*PlayerInfo
+	State     GameState
+	StartTime time.Time     // Время начала игры
+	Duration  time.Duration // Продолжительность игры
+	mu        sync.RWMutex
 }
 
 type GameState struct {
@@ -499,6 +502,24 @@ func (h *WebSocketHandler) sendMessageInsideGame(playerConn *websocket.Conn, gam
 	}
 }
 
+func (h *WebSocketHandler) sendMessageInsideGameToAll(gameID string, msg map[string]interface{}) {
+	game, exists := h.activeGames[gameID]
+	if !exists {
+		return
+	}
+	for conn := range game.Players {
+		if err := conn.WriteJSON(msg); err != nil {
+			if err := conn.Close(); err != nil {
+				fmt.Println("Error conn closing to client")
+				return
+			}
+			h.mu.Lock()
+			delete(game.Players, conn)
+			h.mu.Unlock()
+		}
+	}
+}
+
 func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.Request, gameID string) {
 	conn, err := h.upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -575,17 +596,15 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 			return
 		}
 		switch msg.Type {
-		//case "init_players":
-		//
-		//
+		case "player_move":
+			h.removePlayerFromGame(gameID, conn)
+		case "game_ended":
+			return
 		case "update_position":
 			var positionData struct {
 				X float64 `json:"x"`
 				Y float64 `json:"y"`
 			}
-			//if err := json.Unmarshal(msg.Data["positions"], &positionData); err != nil {
-			//	continue
-			//}
 			for otherConn, player := range game.Players {
 				if otherConn != conn {
 					otherConn.WriteJSON(map[string]interface{}{
@@ -610,19 +629,19 @@ func (h *WebSocketHandler) removePlayerFromGame(gameID string, conn *websocket.C
 	if !exists {
 		return
 	}
-
 	player, ok := game.Players[conn]
-	if ok {
-		delete(game.Players, conn)
-		for otherConn := range game.Players {
-			otherConn.WriteJSON(map[string]interface{}{
-				"type": "player_left",
-				"data": map[string]string{
-					"playerId": player.PlayerID,
-				},
-			})
-		}
+	if !ok {
+		return
 	}
+
+	leaveMsg := map[string]interface{}{
+		"type": "player_left",
+		"data": map[string]string{
+			"playerId": player.PlayerID,
+		},
+	}
+	h.sendMessageInsideGame(conn, gameID, leaveMsg)
+	delete(game.Players, conn)
 }
 
 func (h *WebSocketHandler) handleStartGame(conn *websocket.Conn, roomID, userID, gameType string) {
@@ -654,14 +673,45 @@ func (h *WebSocketHandler) handleStartGame(conn *websocket.Conn, roomID, userID,
 			"players":  players,
 		},
 	}
+	h.sendMessageInsideRoomToAll(roomID, startMsg)
 
-	h.activeGames[gameID] = &Game{
-		RoomID:  roomID,
-		Type:    gameType,
-		Players: make(map[*websocket.Conn]*PlayerInfo),
+	game := &Game{
+		GameID:    gameID,
+		RoomID:    roomID,
+		Type:      gameType,
+		Players:   make(map[*websocket.Conn]*PlayerInfo),
+		StartTime: time.Now(),
+		Duration:  5 * time.Minute,
 	}
 
-	h.sendMessageInsideRoomToAll(roomID, startMsg)
+	h.activeGames[gameID] = game
+
+	go func() {
+		ticker := time.NewTicker(1 * time.Second)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ticker.C:
+				elapsed := time.Since(game.StartTime)
+				remaining := game.Duration - elapsed
+
+				if remaining <= 0 {
+					h.endGame(gameID)
+					return
+				}
+
+				msg := map[string]interface{}{
+					"type": "time_update",
+					"data": map[string]interface{}{
+						"remaining": int(remaining.Seconds()),
+					},
+				}
+
+				h.sendMessageInsideGameToAll(gameID, msg)
+			}
+		}
+	}()
 }
 
 func (h *WebSocketHandler) checkUsersReadyToStartGame(conn *websocket.Conn, roomID string) bool {
@@ -708,4 +758,22 @@ func (h *WebSocketHandler) generateGameID(gameType string) string {
 	}
 
 	return fmt.Sprintf("%s-%s", gameType, string(idPart))
+}
+
+func (h *WebSocketHandler) endGame(gameID string) {
+	_, exists := h.activeGames[gameID]
+	if !exists {
+		return
+	}
+
+	endMsg := map[string]interface{}{
+		"type": "game_end",
+		"data": map[string]interface{}{
+			"gameId": gameID,
+		},
+	}
+
+	h.sendMessageInsideGameToAll(gameID, endMsg)
+
+	delete(h.activeGames, gameID)
 }
