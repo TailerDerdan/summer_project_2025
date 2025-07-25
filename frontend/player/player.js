@@ -8,7 +8,8 @@ const HEIGHT_FRAME = 34;
 const START_X = 0;
 const COUNT_FRAMES = 10;
 
-export const arrEnemy = []
+export const arrEnemyForWS = [];
+export const arrEnemy = [];
 
 // const WIDTH_FRAME = 25;
 // const HEIGHT_FRAME = 16;

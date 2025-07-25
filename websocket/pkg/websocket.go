@@ -578,7 +578,7 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 		//case "init_players":
 		//
 		//
-		case "update_position":
+		case "player_move":
 			var positionData struct {
 				X float64 `json:"x"`
 				Y float64 `json:"y"`
@@ -589,9 +589,9 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 			for otherConn, player := range game.Players {
 				if otherConn != conn {
 					otherConn.WriteJSON(map[string]interface{}{
-						"type": "player_position",
+						"type": "player_move",
 						"data": map[string]interface{}{
-							"playerId": player.PlayerID,
+							"userId": player.PlayerID,
 							"x":        positionData.X,
 							"y":        positionData.Y,
 						},

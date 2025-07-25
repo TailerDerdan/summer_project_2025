@@ -9,10 +9,14 @@ const HEIGHT_FRAME = 34;
 const START_X = 0;
 const COUNT_SPRITE = 8;
 
-class Enemy
+export const WIDTH_ENEMY = 40;
+export const HEIGHT_ENEMY = 80;
+
+export class Enemy
 {
-    constructor(x, y, width, height, dir)
+    constructor(id, x, y, width, height, dir)
     {
+        this.id = id;
         this.x = x;
         this.y = y;
         this.width = width;
@@ -122,4 +126,4 @@ class Enemy
     }
 }
 
-export const enemy1 = new Enemy(600, 600, 40, 80, 1);
+export const enemy1 = new Enemy(600, 600, WIDTH_ENEMY, HEIGHT_ENEMY, 1);

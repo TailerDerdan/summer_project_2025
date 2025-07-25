@@ -22,9 +22,9 @@ function gameLoop()
     map.draw(ctx, camera.xView, camera.yView);
 
     arrEnemy.forEach(enemy => {
-        enemy1.drawEnemy(ctx, enemy.x, enemy.y)
-        enemy1.drawBlood(ctx, enemy.x, enemy.y);
-        enemy1.updateEnemy();
+        enemy.drawEnemy(ctx, camera.xView, camera.yView)
+        enemy.drawBlood(ctx, camera.xView, camera.yView);
+        enemy.updateEnemy();
     })
 
     //enemy1.drawEnemy(ctx, camera.xView, camera.yView);
@@ -47,6 +47,9 @@ function gameLoop()
         console.log("game over")
         return
     }
+
+    // console.log(deltaTime);
+
     window.requestAnimationFrame(gameLoop);
 }
 
@@ -60,7 +63,7 @@ const initGame = async () => {
     map.fillWalls(gettedMap.walls);
     setTimeout(() => {
         gameLoop();
-    }, 3000);
+    }, 5000);
 }
 
 initGame();

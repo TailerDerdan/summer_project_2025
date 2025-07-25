@@ -2,6 +2,7 @@ export const getMap = async () => {
 
     try 
     {
+        // const response = await fetch("http://87.228.90.3:82/gameMap/getMap/map1", {
         const response = await fetch("http://localhost:82/gameMap/getMap/map1", {
             method: "GET",
             headers: { "Content-Type": "application/json" },

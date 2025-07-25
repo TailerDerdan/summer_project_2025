@@ -1,4 +1,5 @@
-import {arrEnemy} from "./player/player.js";
+import { Enemy, HEIGHT_ENEMY, WIDTH_ENEMY } from "./enemy/enemy.js";
+import { arrEnemy, arrEnemyForWS } from "./player/player.js";
 
 export let gameIsRun = true;
 document.addEventListener('DOMContentLoaded', async () => {
@@ -23,6 +24,8 @@ async function connectToWSGame(data) {
                 nickname: data.nickname,
             }
         }))
+
+        checkAndSendPosition(gameSocket, data.userId);
     }
     gameSocket.onmessage = (event) => {
         const msg = JSON.parse(event.data);
@@ -30,29 +33,49 @@ async function connectToWSGame(data) {
         switch (msg.type) {
             case "init_players":
                 Object.values(msg.data.players).forEach(playerData => {
-                    console.log("playerData: ", playerData)
-                    arrEnemy.push({
-                        x: playerData.x,
-                        y: playerData.y,
-                    })
+
+                    console.log("playerData(init_players): ", playerData)
+
+                    const enemy = arrEnemyForWS.find((elem) => {
+                        if (elem.playerId == playerData.playerId) return true;
+                    });
+
+                    if (!enemy)
+                    {
+                        arrEnemyForWS.push({
+                            x: playerData.x,
+                            y: playerData.y,
+                            userId: playerData.playerId,
+                        })
+                        const newEnemy = new Enemy(playerData.playerId, playerData.x, playerData.y, WIDTH_ENEMY, HEIGHT_ENEMY);
+                        arrEnemy.push(newEnemy);
+                        console.log(arrEnemy);
+                    }
                 })
                 break;
             case "join_player":
-                console.log("playerData: ", msg.data)
-                arrEnemy.push({
-                    x: msg.data.x,
-                    y: msg.data.y,
-                })
-            //
-            // case "player_position":
-            //     console.log("player_position")
-            //     player.updatePlayerPosition(msg.data.id, msg.data.x, msg.data.y);
-            //     break;
-            //
-            // case "player_left":
-            //     console.log("player_left")
-            //     player.removePlayer(msg.data.id);
-            //     break;
+                console.log("playerData(join room): ", msg.data)
+
+                const enemy = arrEnemyForWS.find((elem) => {
+                    if (elem.userId == msg.data.userId) return true;
+                });
+
+                if (!enemy)
+                {
+                    arrEnemyForWS.push({
+                        x: msg.data.x,
+                        y: msg.data.y,
+                        userId: msg.data.userId,
+                    })
+                    const newEnemy = new Enemy(msg.data.userId, msg.data.x, msg.data.y, WIDTH_ENEMY, HEIGHT_ENEMY);
+                    arrEnemy.push(newEnemy);
+                    console.log(arrEnemy);
+                }
+                break;
+            case "player_move":
+                console.log("playerMove: ", msg.data);
+                updateEnemyPosition(msg.data.userId, msg.data.x, msg.data.y);
+                break;
         }
     };
     console.log("XXXXXX")
@@ -60,7 +83,7 @@ async function connectToWSGame(data) {
 
 
 async function startTimer() {
-    let countStart = 10
+    let countStart = 9999
     const countStartElt = document.createElement("div")
     countStartElt.setAttribute("style", "position: fixed; padding: 20px; font-size: 20px;")
     document.body.prepend(countStartElt)
@@ -97,4 +120,50 @@ function showResultsAfterBattle() {
     endBtn.addEventListener('click', () => {
         window.location.href = "/main"
     })
+}
+
+const lastSentPosition = {
+    x: 0,
+    y: 0,
+}
+
+let lastSentTime = 0;
+
+function checkAndSendPosition(socket, userId)
+{
+    const now = Date.now();
+    const currentPos = getCurrentPosition();
+
+    if (now - lastSentTime > 100 && 
+        (Math.abs(currentPos.x - lastSentPosition.x) > 5 ||
+        Math.abs(currentPos.y - lastSentPosition.y) > 5)
+    )
+    {
+        socket.send(JSON.stringify({
+            type: "player_move",
+            data: {
+                userId: userId,
+                x: currentPos.x,
+                y: currentPos.y,
+            }
+        }));
+
+        lastSentPosition = {...currentPos};
+        lastSentTime = now;
+    }
+}
+
+function updateEnemyPosition(userId, x, y)
+{
+    const enemy = arrEnemyForWS.find(e => e.userId == userId);
+    if (enemy) {
+        enemy.x = x;
+        enemy.y = y;
+        
+        const gameEnemy = arrEnemy.find(e => e.playerId == userId);
+        if (gameEnemy) {
+            gameEnemy.x = x;
+            gameEnemy.y = y;
+        }
+    }
 }
