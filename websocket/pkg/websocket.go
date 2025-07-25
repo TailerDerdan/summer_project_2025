@@ -570,10 +570,12 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 			Data map[string]interface{} `json:"data"`
 		}
 		if err := conn.ReadJSON(&msg); err != nil {
-			h.removePlayerFromGame(gameID, conn)
-			conn.Close()
-			return
+			// fmt.Printf("%+v\n", msg)
+			// h.removePlayerFromGame(gameID, conn)
+			// conn.Close()
+			// return
 		}
+		fmt.Printf("%+v\n", msg)
 		switch msg.Type {
 		//case "init_players":
 		//

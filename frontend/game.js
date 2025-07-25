@@ -1,84 +1,97 @@
 import { Enemy, HEIGHT_ENEMY, WIDTH_ENEMY } from "./enemy/enemy.js";
-import { arrEnemy, arrEnemyForWS } from "./player/player.js";
+import { arrEnemy, arrEnemyForWS, player } from "./player/player.js";
+import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
 
-export let gameIsRun = true;
 document.addEventListener('DOMContentLoaded', async () => {
     const data = JSON.parse(sessionStorage.getItem('gameSession'))
     console.log("DATA: ", data)
+
     if (!data) {
         window.location.href = `/main`
         return
     }
     sessionStorage.removeItem('gameSession');
-    await connectToWSGame(data)
-})
 
-async function connectToWSGame(data) {
-    const gameSocket = new WebSocket(`ws://87.228.90.3:8080/ws/game/${data.gameId}`)
-    await startTimer()
-    gameSocket.onopen = (e) => {
-        gameSocket.send(JSON.stringify({
-            type: "game_auth",
-            data: {
-                userId: (data.userId).toString(),
-                nickname: data.nickname,
+    try 
+    {
+        await initGameWebsocket(data);
+        await startTimer();
+
+        setMessageHandler((event) => {
+            const msg = JSON.parse(event.data);
+            console.log("msg: ", msg);
+            
+            switch (msg.type) {
+                case "init_players":
+                    console.log(msg);
+                    handleInitPlayers(msg);
+                    break;
+                case "join_player":
+                    handleJoinPlayer(msg.data);
+                    break;
+                case "player_move":
+                    handlePlayerMove(msg.data);
+                    break;
             }
-        }))
+        });
 
-        checkAndSendPosition(gameSocket, data.userId);
+        checkAndSendPosition();
     }
-    gameSocket.onmessage = (event) => {
-        const msg = JSON.parse(event.data);
-        console.log("msg: ", msg)
-        switch (msg.type) {
-            case "init_players":
-                Object.values(msg.data.players).forEach(playerData => {
+    catch (error) {
+        console.error("WebSocket error:", error);
+        window.location.href = '/main';
+    }
+});
 
-                    console.log("playerData(init_players): ", playerData)
+function handleInitPlayers(players)
+{
+    Object.values(players).forEach(playerData => {
 
-                    const enemy = arrEnemyForWS.find((elem) => {
-                        if (elem.playerId == playerData.playerId) return true;
-                    });
+        console.log("playerData(init_players): ", playerData)
 
-                    if (!enemy)
-                    {
-                        arrEnemyForWS.push({
-                            x: playerData.x,
-                            y: playerData.y,
-                            userId: playerData.playerId,
-                        })
-                        const newEnemy = new Enemy(playerData.playerId, playerData.x, playerData.y, WIDTH_ENEMY, HEIGHT_ENEMY);
-                        arrEnemy.push(newEnemy);
-                        console.log(arrEnemy);
-                    }
-                })
-                break;
-            case "join_player":
-                console.log("playerData(join room): ", msg.data)
+        const enemy = arrEnemyForWS.find((elem) => {
+            if (elem.playerId == playerData.playerId) return true;
+        });
 
-                const enemy = arrEnemyForWS.find((elem) => {
-                    if (elem.userId == msg.data.userId) return true;
-                });
-
-                if (!enemy)
-                {
-                    arrEnemyForWS.push({
-                        x: msg.data.x,
-                        y: msg.data.y,
-                        userId: msg.data.userId,
-                    })
-                    const newEnemy = new Enemy(msg.data.userId, msg.data.x, msg.data.y, WIDTH_ENEMY, HEIGHT_ENEMY);
-                    arrEnemy.push(newEnemy);
-                    console.log(arrEnemy);
-                }
-                break;
-            case "player_move":
-                console.log("playerMove: ", msg.data);
-                updateEnemyPosition(msg.data.userId, msg.data.x, msg.data.y);
-                break;
+        if (!enemy)
+        {
+            arrEnemyForWS.push({
+                x: playerData.x,
+                y: playerData.y,
+                userId: playerData.playerId,
+            })
+            const newEnemy = new Enemy(playerData.playerId, playerData.x, playerData.y, WIDTH_ENEMY, HEIGHT_ENEMY);
+            arrEnemy.push(newEnemy);
+            console.log(arrEnemy);
         }
-    };
-    console.log("XXXXXX")
+    })
+}
+
+function handleJoinPlayer(data)
+{
+    console.log("playerData(join room): ", data)
+
+    const enemy = arrEnemyForWS.find((elem) => {
+        if (elem.userId == data.userId) return true;
+    });
+
+    if (!enemy)
+    {
+        arrEnemyForWS.push({
+            x: data.x,
+            y: data.y,
+            userId: data.userId,
+        })
+        const newEnemy = new Enemy(data.userId, data.x, data.y, WIDTH_ENEMY, HEIGHT_ENEMY);
+        arrEnemy.push(newEnemy);
+        console.log(arrEnemy);
+    }
+}
+
+function handlePlayerMove(data)
+{
+    console.log("playerMove: ", data);
+    updateEnemyPosition(data.userId, data.x, data.y);
 }
 
 
@@ -116,33 +129,35 @@ function showResultsAfterBattle() {
     `
     document.body.prepend(resultsBlock)
     const endBtn = document.querySelector(".endBtn")
-    gameIsRun = false;
+    stateForWS.gameIsRun = false;
     endBtn.addEventListener('click', () => {
         window.location.href = "/main"
     })
 }
 
-const lastSentPosition = {
+let lastSentPosition = {
     x: 0,
     y: 0,
 }
 
 let lastSentTime = 0;
 
-function checkAndSendPosition(socket, userId)
+export function checkAndSendPosition()
 {
     const now = Date.now();
     const currentPos = getCurrentPosition();
+
+    console.log(now - lastSentTime);
 
     if (now - lastSentTime > 100 && 
         (Math.abs(currentPos.x - lastSentPosition.x) > 5 ||
         Math.abs(currentPos.y - lastSentPosition.y) > 5)
     )
     {
-        socket.send(JSON.stringify({
+        sendWebSocketMessage(JSON.stringify({
             type: "player_move",
             data: {
-                userId: userId,
+                userId: stateForWS.userId.toString(),
                 x: currentPos.x,
                 y: currentPos.y,
             }
@@ -151,6 +166,11 @@ function checkAndSendPosition(socket, userId)
         lastSentPosition = {...currentPos};
         lastSentTime = now;
     }
+}
+
+function getCurrentPosition()
+{
+    return {x: player.x, y: player.y};
 }
 
 function updateEnemyPosition(userId, x, y)

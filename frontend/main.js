@@ -8,8 +8,9 @@ import {} from './player/changeDir.js';
 import { Clock } from './clock/clock.js';
 import { player, arrEnemy } from './player/player.js';
 import { render, texture2D, updateTexture } from './shadows/shadows.js';
-import { gameIsRun } from "./game.js";
 import { getMap } from './requests/requests.js';
+import { stateForWS } from './websocketGame.js';
+import { checkAndSendPosition } from './game.js';
 
 const clock = new Clock();
 
@@ -43,12 +44,10 @@ function gameLoop()
     render(state);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, texture2D);
-    if (!gameIsRun) {
+    if (!stateForWS.gameIsRun) {
         console.log("game over")
         return
     }
-
-    // console.log(deltaTime);
 
     window.requestAnimationFrame(gameLoop);
 }
