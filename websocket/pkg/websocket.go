@@ -685,7 +685,7 @@ func (h *WebSocketHandler) checkGameEndConditions(gameID string) {
 				"gameId": gameID,
 			},
 		}
-
+		fmt.Printf("Game End: %s\n", endMsg)
 		for conn := range game.Players {
 			if err := conn.WriteJSON(endMsg); err != nil {
 				log.Printf("Error sending game end message: %v", err)
