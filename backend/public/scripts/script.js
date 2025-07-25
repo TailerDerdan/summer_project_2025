@@ -6,9 +6,11 @@ function connectWebSocket() {
         if (data.type === 'room_create') {
             addRoomToList(data.room, data.user);
             addUser(data.user)
+            incCounterUsers(data.room.roomId)
         }
         if (data.type === "add_user") {
             addUser(data.data)
+            incCounterUsers(data.data.roomId)
         }
         if (data.type === "user_leaved_g") {
             await deleteUser(data.data)
@@ -24,18 +26,21 @@ function connectWebSocket() {
 }
 
 function addUser(user) {
-    const userList = document.getElementById(`room-list-item__avatar-list-${user['roomId']}`)
+    const userList = document.getElementById(`room-list-item__avatar-list-${user["roomId"]}`)
     if (userList && !document.getElementById(`user-${user["userId"]}`)) {
         console.log('add user to list global')
         const userElt = document.createElement("p")
         userElt.id = `user-${user["userId"]}`
         userElt.textContent = `${user["userId"]}: ${user["nickname"]}`
         userList.appendChild(userElt)
-        const playersCount = document.getElementById(`playersCount-${ user['roomId'] }`)
-        if (parseInt(playersCount.dataset.count) < parseInt(playersCount.dataset.max)) {
-            playersCount.dataset.count++
-            playersCount.textContent = `${playersCount.dataset.count}/${playersCount.dataset.max}`
-        }
+    }
+}
+
+function incCounterUsers(roomId) {
+    const playersCount = document.getElementById(`playersCount-${ roomId }`)
+    if (parseInt(playersCount.dataset.count) < parseInt(playersCount.dataset.max)) {
+        playersCount.dataset.count++
+        playersCount.textContent = `${playersCount.dataset.count}/${playersCount.dataset.max}`
     }
 }
 
