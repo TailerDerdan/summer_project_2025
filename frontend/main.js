@@ -1,5 +1,5 @@
 import { updateMovementPlayer } from './player/movement.js';
-import {throttle, throttleBotsShoot, updateMovementBullets} from './weapon/shooting.js';
+import {throttleBotsShoot, updateMovementBullets} from './weapon/shooting.js';
 import { canvas, ctx, gl, state } from './canvas.js';
 import { map } from './map/map.js';
 import { camera } from './camera/camera.js';
@@ -21,11 +21,11 @@ function gameLoop()
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     map.draw(ctx, camera.xView, camera.yView);
 
-    // arrEnemy.forEach(enemy => {
-    //     enemy.drawEnemy(ctx, camera.xView, camera.yView)
-    //     enemy.drawBlood(ctx, camera.xView, camera.yView);
-    //     enemy.updateEnemy();
-    // })
+    arrEnemy.forEach(enemy => {
+        enemy.drawCharacter(ctx, camera.xView, camera.yView)
+        enemy.drawBlood(ctx, camera.xView, camera.yView);
+        enemy.updateCharacter();
+    })
 
     arrBot.forEach(bot => {
         bot.drawBlood(ctx, camera.xView, camera.yView);
@@ -46,7 +46,7 @@ function gameLoop()
     if (!player.isCharacterLive)
     {
         player.appearanceAfterDeathWidthDelay();
-        recordDeath()
+        recordDeath();
     }
 
     camera.update();
