@@ -790,7 +790,7 @@ func (h *WebSocketHandler) handleStartGame(conn *websocket.Conn, roomID, userID,
 		Players:   make(map[*websocket.Conn]*PlayerInfo),
 		Stats:     make(map[string]*PlayerStats),
 		StartTime: time.Now(),
-		Duration:  35 * time.Second,
+		Duration:  1 * time.Hour,
 	}
 
 	h.activeGames[gameID] = game

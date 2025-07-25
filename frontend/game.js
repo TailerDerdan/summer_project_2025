@@ -121,7 +121,7 @@ function handleJoinPlayer(data)
     console.log("playerData(join room): ", data)
 
     const enemy = arrEnemyForWS.find((elem) => {
-        if (elem.userId == data.userId) return true;
+        if (elem.userId === data.userId) return true;
     });
 
     if (!enemy)
@@ -225,7 +225,7 @@ function updateTimer(seconds) {
 
     if (!gameTimer) {
         const timerElement = document.createElement("div");
-        timerElement.setAttribute("style", "position: fixed; top: 10px; right: 10px; font-size: 24px; color: white;");
+        timerElement.setAttribute("style", "position: fixed; top: 10px; left: 10px; font-size: 24px; color: white;");
         document.body.prepend(timerElement);
 
         gameTimer = setInterval(() => {
