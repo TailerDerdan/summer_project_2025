@@ -6,6 +6,7 @@ import { camera } from './camera/camera.js';
 import { Clock } from './clock/clock.js';
 import { player, arrEnemy, arrBot } from './player/player.js';
 import { render, texture2D, updateTexture } from './shadows/shadows.js';
+import {gameIsRun, recordDeath, recordKill} from "./game.js";
 import { getMap } from './requests/requests.js';
 import { stateForWS } from './websocketGame.js';
 import { checkAndSendPosition } from './game.js';
@@ -42,9 +43,13 @@ function gameLoop()
     updateMovementPlayer(camera.xView, camera.yView, deltaTime);
     player.drawBlood(ctx, camera.xView, camera.yView);
     player.updateCharacter();
+    if (!player.isPlayerLive)
+    {
+        player.appearanceAfterDeathWidthDelay();
+        recordDeath()
+    }
 
     camera.update();
-
     updateTexture();
     render(state);
     gl.activeTexture(gl.TEXTURE0);
@@ -58,7 +63,6 @@ function gameLoop()
 }
 
 const initGame = async () => {
-    
     const gettedMap = await getMap();
     const imgMap = new Image();
     imgMap.src = gettedMap.image;

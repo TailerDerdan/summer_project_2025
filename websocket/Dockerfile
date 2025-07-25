@@ -14,7 +14,6 @@ RUN go build -o /bin/app ./cmd/app/main.go
 FROM alpine:latest
 
 COPY --from=builder /bin/app /app
-COPY --from=builder /app/configs /configs
 
 EXPOSE 80
 

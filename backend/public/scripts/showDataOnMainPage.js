@@ -2,9 +2,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const data = await loadUsersData()
     const users = data["users"]
     users.forEach((user) => {
-        console.log("///")
         if (user["roomId"] !== null) {
-            console.log("tyt")
             addUser(user)
         }
     })
