@@ -137,6 +137,7 @@
     border: none;
     display: flex;
     justify-content: center;
+    align-items: center;
     overflow: hidden;
     margin: 0 0 0 0;
 }
@@ -144,9 +145,11 @@
 #room_leave {
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 #leave-room-btn {
     display: flex;
     justify-content: center;
+    align-items: center;
 }
