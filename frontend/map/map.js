@@ -61,8 +61,8 @@ export class Map2D
 
         ctx.restore();
 
-        this.image = new Image();
-        this.image.src = ctx.canvas.toDataURL("image/png");
+        // this.image = new Image();
+        // this.image.src = ctx.canvas.toDataURL("image/png");
     }
 
     draw(ctx, xView, yView)
@@ -88,6 +88,13 @@ export class Map2D
         let destinationHeight = sourceHeight;
 
         ctx.drawImage(this.image, sourceX, sourceY, sourceWidth, sourceHeight, destinationX, destinationY, destinationWidth, destinationHeight);
+    }
+
+    fillWalls(wallsFromJson)
+    {
+        wallsFromJson.forEach((elem) => {
+            this.generateRectWall(elem.x, elem.y, elem.w, elem.h);
+        })
     }
 }
 

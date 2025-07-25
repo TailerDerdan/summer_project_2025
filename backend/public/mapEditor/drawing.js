@@ -1,4 +1,4 @@
-import { COUNT_TILE_X, TILE_HEIGHT, TILE_WIDTH } from "../sizes.js";
+import { COUNT_TILE_X, TILE_HEIGHT, TILE_WIDTH } from "./sizes.js";
 import { choosenBuilding, CountOfBuildings, TypeBuilding } from "./fillingBuldings.js";
 import { panOffset, scaleData } from "./panning.js";
 import { stateEditor } from "./state.js";
