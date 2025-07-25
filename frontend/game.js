@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log("DATA: ", data)
 
     if (!data) {
-        window.location.href = `/main`
+        //window.location.href = `/main`
         return
     }
     sessionStorage.removeItem('gameSession');
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try
     {
         await initGameWebsocket(data);
-        await startTimer();
+        //await startTimer();
 
         setMessageHandler((event) => {
             const msg = JSON.parse(event.data);
@@ -67,12 +67,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                     updateTimer(msg.data.remaining);
                     break;
                 case "game_end":
-                    endGame();
-                    gameSocket.send(JSON.stringify({
+                    // endGame();
+                    // stateForWS.gameSocket.send(JSON.stringify({
+                    //     type: "game_ended",
+                    //     data: { gameId: msg.data.gameId }
+                    // }));
+                    // stateForWS.gameSocket.close();
+                    // break;
+                    showResultsAfterBattle(msg.data);
+                    stateForWS.gameSocket.send(JSON.stringify({
                         type: "game_ended",
                         data: { gameId: msg.data.gameId }
                     }));
-                    gameSocket.close();
+                    stateForWS.gameSocket.close();
                     break;
             }
         });
@@ -81,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     catch (error) {
         console.error("WebSocket error:", error);
-        window.location.href = '/main';
+        //window.location.href = '/main';
     }
 });
 
@@ -92,7 +99,7 @@ function handleInitPlayers(players)
         console.log("playerData(init_players): ", playerData)
 
         const enemy = arrEnemyForWS.find((elem) => {
-            if (elem.playerId == playerData.playerId) return true;
+            if (elem.playerId === playerData.playerId) return true;
         });
 
         if (!enemy)
@@ -135,83 +142,83 @@ function handlePlayerMove(data)
     console.log("playerMove: ", data);
     updateEnemyPosition(data.userId, data.x, data.y);
 }
-async function connectToWSGame(data) {
-    gameData = data
-    gameSocket = new WebSocket(`ws://mochilovo-avi.ru:8080/ws/game/${data.gameId}`)
-    gameSocket.onopen = (e) => {
-        gameSocket.send(JSON.stringify({
-            type: "game_auth",
-            data: {
-                userId: (data.userId).toString(),
-                nickname: data.nickname,
-            }
-        }))
-    }
-    gameSocket.onmessage = (event) => {
-        const msg = JSON.parse(event.data);
-        switch (msg.type) {
-            case "init_players":
-                Object.values(msg.data.players).forEach(playerData => {
-                    arrEnemy.push({
-                        x: playerData.x,
-                        y: playerData.y,
-                        id: playerData.playerId,
-                    })
-                    playersCache[playerData.playerId] = {
-                        nickname: playerData.nickname
-                    };
-                })
-                break;
-            case "join_player":
-                arrEnemy.push({
-                    x: msg.data.x,
-                    y: msg.data.y,
-                    id: msg.data.userId,
-                })
-                playersCache[msg.data.userId] = {
-                    nickname: msg.data.nickname
-                };
-                break;
-            case "time_update":
-                updateTimer(msg.data.remaining);
-                break;
-            case "game_end":
-                showResultsAfterBattle(msg.data);
-                gameSocket.send(JSON.stringify({
-                    type: "game_ended",
-                    data: { gameId: msg.data.gameId }
-                }));
-                gameSocket.close();
-                break;
-            case "stats_update":
-                Object.keys(msg.data.stats).forEach(playerId => {
-                    if (!playersCache[playerId]) {
-                        playersCache[playerId] = {
-                            nickname: `Player_${playerId.substring(0, 4)}`
-                        };
-                    }
-                });
-
-                gameStats.kills = msg.data.stats[data.userId]?.kills || 0;
-                gameStats.deaths = msg.data.stats[data.userId]?.deaths || 0;
-                gameStats.score = msg.data.stats[data.userId]?.score || 0;
-                gameStats.position = msg.data.stats[data.userId]?.position || 0;
-
-                gameStats.leaderboard = msg.data.leaderboard.map((item, index) => ({
-                    id: item.ID,
-                    nickname: findPlayerNickname(item.ID),
-                    kills: msg.data.stats[item.ID]?.kills || 0,
-                    deaths: msg.data.stats[item.ID]?.deaths || 0,
-                    score: msg.data.stats[item.ID]?.score || 0,
-                    position: index + 1,
-                    isCurrent: item.ID === data.userId
-                }));
-
-                updateStatsUI();
-                break;
-        }
-    };
-}
+// async function connectToWSGame(data) {
+//     gameData = data
+//     gameSocket = new WebSocket(`ws://mochilovo-avi.ru:8080/ws/game/${data.gameId}`)
+//     gameSocket.onopen = (e) => {
+//         gameSocket.send(JSON.stringify({
+//             type: "game_auth",
+//             data: {
+//                 userId: (data.userId).toString(),
+//                 nickname: data.nickname,
+//             }
+//         }))
+//     }
+//     gameSocket.onmessage = (event) => {
+//         const msg = JSON.parse(event.data);
+//         switch (msg.type) {
+//             case "init_players":
+//                 Object.values(msg.data.players).forEach(playerData => {
+//                     arrEnemy.push({
+//                         x: playerData.x,
+//                         y: playerData.y,
+//                         id: playerData.playerId,
+//                     })
+//                     playersCache[playerData.playerId] = {
+//                         nickname: playerData.nickname
+//                     };
+//                 })
+//                 break;
+//             case "join_player":
+//                 arrEnemy.push({
+//                     x: msg.data.x,
+//                     y: msg.data.y,
+//                     id: msg.data.userId,
+//                 })
+//                 playersCache[msg.data.userId] = {
+//                     nickname: msg.data.nickname
+//                 };
+//                 break;
+//             case "time_update":
+//                 updateTimer(msg.data.remaining);
+//                 break;
+//             case "game_end":
+//                 showResultsAfterBattle(msg.data);
+//                 gameSocket.send(JSON.stringify({
+//                     type: "game_ended",
+//                     data: { gameId: msg.data.gameId }
+//                 }));
+//                 gameSocket.close();
+//                 break;
+//             case "stats_update":
+//                 Object.keys(msg.data.stats).forEach(playerId => {
+//                     if (!playersCache[playerId]) {
+//                         playersCache[playerId] = {
+//                             nickname: `Player_${playerId.substring(0, 4)}`
+//                         };
+//                     }
+//                 });
+//
+//                 gameStats.kills = msg.data.stats[data.userId]?.kills || 0;
+//                 gameStats.deaths = msg.data.stats[data.userId]?.deaths || 0;
+//                 gameStats.score = msg.data.stats[data.userId]?.score || 0;
+//                 gameStats.position = msg.data.stats[data.userId]?.position || 0;
+//
+//                 gameStats.leaderboard = msg.data.leaderboard.map((item, index) => ({
+//                     id: item.ID,
+//                     nickname: findPlayerNickname(item.ID),
+//                     kills: msg.data.stats[item.ID]?.kills || 0,
+//                     deaths: msg.data.stats[item.ID]?.deaths || 0,
+//                     score: msg.data.stats[item.ID]?.score || 0,
+//                     position: index + 1,
+//                     isCurrent: item.ID === data.userId
+//                 }));
+//
+//                 updateStatsUI();
+//                 break;
+//         }
+//     };
+// }
 
 function updateTimer(seconds) {
     remainingTime = seconds;

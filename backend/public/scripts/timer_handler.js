@@ -4,14 +4,14 @@ eventSource.onmessage = event => {
     document.getElementById('time').textContent = data.time;
 };
 
-function startTimer() {
-    fetch('/timer/start');
-}
-
-function stopTimer() {
-    fetch('/timer/stop');
-}
-
-function resetTimer() {
-    fetch('/timer/reset');
-}
+// function startTimer() {
+//     fetch('/timer/start');
+// }
+//
+// function stopTimer() {
+//     fetch('/timer/stop');
+// }
+//
+// function resetTimer() {
+//     fetch('/timer/reset');
+// }
