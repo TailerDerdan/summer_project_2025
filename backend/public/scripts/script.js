@@ -27,7 +27,6 @@ function connectWebSocket() {
 function addUser(user) {
     const userList = document.getElementById(`room-list-item__avatar-list-${user["roomId"]}`)
     if (userList && !document.getElementById(`user-${user["userId"]}`)) {
-        console.log('add user to list global')
         const userElt = document.createElement("p")
         userElt.id = `user-${user["userId"]}`
         userElt.textContent = `${user["userId"]}: ${user["nickname"]}`
@@ -38,7 +37,6 @@ function addUser(user) {
 function incCounterUsers(roomId) {
     const playersCount = document.getElementById(`playersCount-${ roomId }`)
     if (parseInt(playersCount.dataset.count) < parseInt(playersCount.dataset.max)) {
-        console.log("+++")
         playersCount.dataset.count++
         playersCount.textContent = `${playersCount.dataset.count}/${playersCount.dataset.max}`
     }

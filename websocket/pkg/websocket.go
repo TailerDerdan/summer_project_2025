@@ -611,6 +611,18 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 				}
 			}
 			break
+		case "player_kill":
+			killerID, ok1 := msg.Data["killerId"].(string)
+			victimID, ok2 := msg.Data["victimId"].(string)
+			if ok1 && ok2 {
+				h.handlePlayerKill(gameID, killerID, victimID)
+			}
+
+		case "player_death":
+			playerID, ok := msg.Data["playerId"].(string)
+			if ok {
+				h.handlePlayerDeath(gameID, playerID)
+			}
 		case "update_players":
 			break
 		}
@@ -760,6 +772,7 @@ func (h *WebSocketHandler) endGame(gameID string) {
 	}
 
 	var winnerID string
+	winnerID = "12345"
 	var maxScore int
 	for id, stats := range game.Stats {
 		if stats.Score > maxScore {
@@ -840,4 +853,20 @@ func (h *WebSocketHandler) sendGameStatsUpdate(gameID string) {
 	}
 
 	h.sendMessageInsideGameToAll(gameID, msg)
+}
+
+func (h *WebSocketHandler) handlePlayerDeath(gameID, playerID string) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	game, exists := h.activeGames[gameID]
+	if !exists {
+		return
+	}
+
+	if stats, ok := game.Stats[playerID]; ok {
+		stats.Deaths++
+	}
+
+	h.sendGameStatsUpdate(gameID)
 }

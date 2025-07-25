@@ -4,6 +4,9 @@ export let gameIsRun = true;
 let gameTimer;
 let playersCache = {};
 let remainingTime = 0;
+let gameSocket;
+let gameData;
+
 export let gameStats = {
     kills: 0,
     deaths: 0,
@@ -40,7 +43,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 })
 
 async function connectToWSGame(data) {
-    const gameSocket = new WebSocket(`ws://mochilovo-avi.ru:8080/ws/game/${data.gameId}`)
+    gameData = data
+    gameSocket = new WebSocket(`ws://mochilovo-avi.ru:8080/ws/game/${data.gameId}`)
     gameSocket.onopen = (e) => {
         gameSocket.send(JSON.stringify({
             type: "game_auth",
@@ -227,9 +231,9 @@ export function recordKill(victimId) {
     gameSocket.send(JSON.stringify({
         type: "player_kill",
         data: {
-            killerId: data.userId,
+            killerId: gameData.userId,
             victimId: victimId,
-            gameId: data.gameId
+            gameId: gameData.gameId
         }
     }))
 }
@@ -240,8 +244,8 @@ export function recordDeath() {
     gameSocket.send(JSON.stringify({
         type: "player_death",
         data: {
-            playerId: data.userId,
-            gameId: data.gameId
+            playerId: gameData.userId,
+            gameId: gameData.gameId
         }
     }))
 }
@@ -251,8 +255,8 @@ function findPlayerNickname(playerId) {
         return playersCache[playerId].nickname
     }
 
-    if (data && data.userId === playerId) {
-        return data.nickname
+    if (gameData && gameData.userId === playerId) {
+        return gameData.nickname
     }
 
     return `Player_${playerId}`

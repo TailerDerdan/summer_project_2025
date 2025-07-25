@@ -63,7 +63,6 @@ function connectToWSRoom(dataUser)   {
 
     socket.onmessage = async (event) => {
         const data = JSON.parse(event.data);
-        console.log("data: ", data)
         if (data.type === 'user_joined') {
             addUserToList(data.data);
             showNotification(` присоединился к комнате`);
