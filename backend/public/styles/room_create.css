@@ -154,6 +154,8 @@
     color: #FFFFFF;
     border-radius: 25px;
     border: none;
+    display: flex;
+    justify-content: center;
     overflow: hidden;
     margin: 0 0 0 0;
 }
