@@ -2,17 +2,13 @@ import { updateMovementPlayer } from './player/movement.js';
 import { throttleBotShoot, updateMovementBullets } from './weapon/shooting.js';
 import { canvas, ctx, gl, state } from './canvas.js';
 import { enemy1 } from './enemy/enemy.js';
-import { bot1 } from './bot/Bot.js';
 import { map } from './map/map.js';
 import { camera } from './camera/camera.js';
 import { Clock } from './clock/clock.js';
-import { player } from './player/player.js';
+import { player, arrEnemy, arrBot } from './player/player.js';
 import { render, texture2D, updateTexture } from './shadows/shadows.js';
 import { gameIsRun } from "./game.js";
 import { getMap } from './requests/requests.js';
-
-export const arrEnemy = [enemy1];
-export const arrBot = [bot1];
 
 const clock = new Clock();
 

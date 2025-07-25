@@ -29,6 +29,6 @@ function setFullscreen() {
 
     gl.canvas.width = WIDTH_MAP;
     gl.canvas.height = HEIGHT_MAP;
-};
+}
 
 setFullscreen();

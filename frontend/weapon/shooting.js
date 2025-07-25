@@ -1,4 +1,4 @@
-import { player } from '../player/player.js';
+import { player, arrEnemy, arrBot } from '../player/player.js';
 import { TYPE_WEAPON, InitAssaultRifle, InitShotgun, InitSniperRifle, Weapon } from './typeWeapons.js';
 import { ctx } from  '../canvas.js';
 import { enemy1 } from '../enemy/enemy.js';
@@ -175,17 +175,22 @@ export function updateMovementBullets()
         {
             bullets.splice(index, 1);
         }
-        if (enemy1.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) && enemy1.isCharacterLive)
-        {
-            bullets.splice(index, 1);
-            enemy1.wasCharacterWounded = true;
+
+        for (const enemy of arrEnemy) {
+            if (enemy.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) && enemy.isCharacterLive && (elem.owner !== enemy))
+            {
+                bullets.splice(index, 1);
+                enemy.wasCharacterWounded = true;
+            }
         }
 
-        if (bot1.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) && bot1.isCharacterLive && (elem.owner !== bot1))
-        {
-            bullets.splice(index, 1);
-            bot1.wasCharacterWounded = true;
+        for (const bot of arrBot) {
+            if (bot.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) && bot.isCharacterLive && (elem.owner !== bot)) {
+                bullets.splice(index, 1);
+                bot.wasCharacterWounded = true;
+            }
         }
+
         if (player.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) && player.isCharacterLive && (elem.owner !== player))
         {
             bullets.splice(index, 1);
