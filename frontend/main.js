@@ -8,7 +8,7 @@ import {} from './player/changeDir.js';
 import { Clock } from './clock/clock.js';
 import { player, arrEnemy } from './player/player.js';
 import { render, texture2D, updateTexture } from './shadows/shadows.js';
-import {gameIsRun, recordKill} from "./game.js";
+import {gameIsRun, recordDeath, recordKill} from "./game.js";
 import { getMap } from './requests/requests.js';
 
 const clock = new Clock();
@@ -39,7 +39,6 @@ function gameLoop()
     }
 
     camera.update();
-    recordKill()
     updateTexture();
     render(state);
     gl.activeTexture(gl.TEXTURE0);
