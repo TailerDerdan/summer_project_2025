@@ -589,7 +589,7 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 			return
 		}
 		switch msg.Type {
-		case "player_move":
+		case "player_left":
 			h.removePlayerFromGame(gameID, conn)
 		case "game_ended":
 			return
@@ -775,7 +775,6 @@ func (h *WebSocketHandler) endGame(gameID string) {
 	var winnerID string
 	var maxScore = -1
 
-	// Находим игрока с максимальным score
 	for id, stats := range game.Stats {
 		if stats.Score > maxScore {
 			maxScore = stats.Score
@@ -783,9 +782,7 @@ func (h *WebSocketHandler) endGame(gameID string) {
 		}
 	}
 
-	// Если все игроки имеют 0 очков (например, никто не убил никого)
 	if maxScore <= 0 {
-		// Выбираем случайного игрока или оставляем пустым
 		if len(game.Players) > 0 {
 			for conn := range game.Players {
 				winnerID = game.Players[conn].PlayerID
