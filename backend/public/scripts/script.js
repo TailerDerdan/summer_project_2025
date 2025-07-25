@@ -1,5 +1,5 @@
 function connectWebSocket() {
-    const socket = new WebSocket('ws://87.228.90.3:8080/ws/global-updates');
+    const socket = new WebSocket('ws://mochilovo-avi.ru:8080/ws/global-updates');
 
     socket.onmessage = async (event) => {
         const data = JSON.parse(event.data);
@@ -78,8 +78,7 @@ function addRoomToList(room) {
     }
     roomElt.innerHTML += `
                 </div>
-                <div class="room-list-item__avatar-list" id="room-list-item__avatar-list-{{ room.id }}">
-                </div>
+                <div class="room-list-item__avatar-list" id="room-list-item__avatar-list-{{ room.id }}"></div>
             </div>
             <div class="room-list-item__extra">
     `

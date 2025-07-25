@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
 })
 function connectToWSRoom(dataUser)   {
     console.log(typeof dataUser.roomId)
-    const socket = new WebSocket(`ws://87.228.90.3:8080/ws/room/${dataUser.roomId}`);
+    const socket = new WebSocket(`ws://mochilovo-avi.ru:8080/ws/room/${dataUser.roomId}`);
     socket.onopen = () => {
         console.log('dataUser: ', dataUser)
         socket.send(JSON.stringify({

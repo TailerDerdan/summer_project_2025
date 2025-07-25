@@ -1,5 +1,5 @@
 function connectWebSocket() {
-    const socket = new WebSocket('ws://87.228.90.3:8080/ws/global-updates');
+    const socket = new WebSocket('ws://mochilovo-avi.ru:8080/ws/global-updates');
     socket.onopen = () => {
         console.log("connect to global ws")
     }
