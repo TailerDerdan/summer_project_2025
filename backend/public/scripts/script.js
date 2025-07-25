@@ -73,12 +73,12 @@ function addRoomToList(room) {
                 <p class="room-list-item__name">${room.name}</p>
                 ${!room.isOpen ? '<img class="room-list-item__status-indicator" src="/images/lock.png" alt="">' : ''}
             </div>
-            <div class="room-list-item__avatar-list" id="room-list-item__avatar-list-${room.id}"></div>
+            <div class="room-list-item__avatar-list" id="room-list-item__avatar-list-${room.roomId}"></div>
         </div>
         <div class="room-list-item__extra">
             ${room.playersCount < room.maxPlayers ?
-            `<p class="room-list-item__fill-indicator" id="playersCount-${room.id}" data-count="0" data-max="${room.maxPlayers}">0/${room.maxPlayers}</p>` :
-            `<p class="room-list-item__fill-indicator-full" id="playersCount-${room.id}" data-count="0" data-max="${room.maxPlayers}">0/${room.maxPlayers}</p>`
+            `<p class="room-list-item__fill-indicator" id="playersCount-${room.roomId}" data-count="0" data-max="${room.maxPlayers}">0/${room.maxPlayers}</p>` :
+            `<p class="room-list-item__fill-indicator-full" id="playersCount-${room.roomId}" data-count="0" data-max="${room.maxPlayers}">0/${room.maxPlayers}</p>`
         }
             <p class="room-list-item__gamemode">${room.gamemode}</p>
         </div>
