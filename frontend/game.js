@@ -120,13 +120,13 @@ async function connectToWSGame(data) {
     };
 }
 
-function endGame() {
-    if (gameTimer) {
-        clearInterval(gameTimer);
-    }
-    gameIsRun = false;
-    showResultsAfterBattle();
-}
+// function endGame() {
+//     if (gameTimer) {
+//         clearInterval(gameTimer);
+//     }
+//     gameIsRun = false;
+//     showResultsAfterBattle();
+// }
 
 function updateTimer(seconds) {
     remainingTime = seconds;
@@ -146,7 +146,7 @@ function updateTimer(seconds) {
 
             if (remainingTime <= 0) {
                 clearInterval(gameTimer);
-                showResultsAfterBattle();
+                //showResultsAfterBattle();
             }
         }, 1000);
     }

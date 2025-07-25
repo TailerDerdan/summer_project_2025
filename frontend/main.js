@@ -36,6 +36,7 @@ function gameLoop()
     if (!player.isPlayerLive)
     {
         player.appearanceAfterDeathWidthDelay();
+        recordDeath()
     }
 
     camera.update();

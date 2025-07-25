@@ -50,10 +50,10 @@ type Game struct {
 	Type      string
 	RoomID    string
 	Players   map[*websocket.Conn]*PlayerInfo
-	Stats     map[string]*PlayerStats // key: playerID
+	Stats     map[string]*PlayerStats
 	State     GameState
-	StartTime time.Time     // Время начала игры
-	Duration  time.Duration // Продолжительность игры
+	StartTime time.Time
+	Duration  time.Duration
 	mu        sync.RWMutex
 }
 
@@ -61,7 +61,7 @@ type PlayerStats struct {
 	Kills    int `json:"kills"`
 	Deaths   int `json:"deaths"`
 	Score    int `json:"score"`
-	Position int `json:"position"` // Позиция в рейтинге
+	Position int `json:"position"`
 }
 
 type GameState struct {
@@ -773,12 +773,24 @@ func (h *WebSocketHandler) endGame(gameID string) {
 	}
 
 	var winnerID string
-	winnerID = "12345"
-	var maxScore int
+	var maxScore = -1
+
+	// Находим игрока с максимальным score
 	for id, stats := range game.Stats {
 		if stats.Score > maxScore {
 			maxScore = stats.Score
 			winnerID = id
+		}
+	}
+
+	// Если все игроки имеют 0 очков (например, никто не убил никого)
+	if maxScore <= 0 {
+		// Выбираем случайного игрока или оставляем пустым
+		if len(game.Players) > 0 {
+			for conn := range game.Players {
+				winnerID = game.Players[conn].PlayerID
+				break
+			}
 		}
 	}
 
