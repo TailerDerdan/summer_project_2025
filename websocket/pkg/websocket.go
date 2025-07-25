@@ -685,7 +685,7 @@ func (h *WebSocketHandler) checkGameEndConditions(gameID string) {
 				"gameId": gameID,
 			},
 		}
-
+		fmt.Printf("Game End: %s\n", endMsg)
 		for conn := range game.Players {
 			if err := conn.WriteJSON(endMsg); err != nil {
 				log.Printf("Error sending game end message: %v", err)
@@ -790,7 +790,7 @@ func (h *WebSocketHandler) handleStartGame(conn *websocket.Conn, roomID, userID,
 		Players:   make(map[*websocket.Conn]*PlayerInfo),
 		Stats:     make(map[string]*PlayerStats),
 		StartTime: time.Now(),
-		Duration:  35 * time.Second,
+		Duration:  1 * time.Hour,
 	}
 
 	h.activeGames[gameID] = game
@@ -798,13 +798,13 @@ func (h *WebSocketHandler) handleStartGame(conn *websocket.Conn, roomID, userID,
 	go func() {
 		ticker := time.NewTicker(1 * time.Second)
 		defer ticker.Stop()
-
+		fmt.Println("3333333")
 		for {
 			select {
 			case <-ticker.C:
 				elapsed := time.Since(game.StartTime)
 				remaining := game.Duration - elapsed
-
+				fmt.Println("4444444444")
 				if remaining <= 0 {
 					h.endGame(gameID)
 					return
@@ -874,7 +874,7 @@ func (h *WebSocketHandler) endGame(gameID string) {
 	if !exists {
 		return
 	}
-
+	fmt.Println("88888888888")
 	var winnerID string
 	var maxScore = -1
 
@@ -884,7 +884,7 @@ func (h *WebSocketHandler) endGame(gameID string) {
 			winnerID = id
 		}
 	}
-
+	fmt.Println("00000000")
 	if maxScore <= 0 {
 		if len(game.Players) > 0 {
 			for conn := range game.Players {
@@ -905,7 +905,7 @@ func (h *WebSocketHandler) endGame(gameID string) {
 			"players": game.Players,
 		},
 	}
-
+	fmt.Printf("ENDDDDDDDD: %s\n", endMsg)
 	h.sendMessageInsideGameToAll(gameID, endMsg)
 
 	delete(h.activeGames, gameID)
