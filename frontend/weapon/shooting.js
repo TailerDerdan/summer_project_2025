@@ -1,7 +1,6 @@
 import { player, arrEnemy, arrBot } from '../player/player.js';
 import { TYPE_WEAPON, InitAssaultRifle, InitShotgun, InitSniperRifle, Weapon } from './typeWeapons.js';
 import { ctx } from  '../canvas.js';
-import { bot1 } from '../bot/Bot.js';
 import { Bullet } from './bullet.js';
 import { camera } from '../camera/camera.js';
 import { getDir, inverseDir } from '../player/changeDir.js';
@@ -70,8 +69,8 @@ const updateBullets = (event) => {
     player.soundShoot.play();
 }
 
-function updateBotShooting() {
-    if (!bot1.isCharacterLive || !bot1.weapon || !bot1.canStrike) return;
+export function updateBotShooting(bot) {
+    if (!bot.isCharacterLive || !bot.weapon || !bot.canStrike) return;
 
     const objForMovement = {
         dir: 0,
@@ -79,58 +78,57 @@ function updateBotShooting() {
         distY: 0
     };
 
-    if (bot1.weapon.type === TYPE_WEAPON.SHOTGUN)
+    if (bot.weapon.type === TYPE_WEAPON.SHOTGUN)
     {
         for (let iter = 0; iter < 6; iter++)
         {
-            objForMovement.dir = randomMinMax(bot1.dir - 6, bot1.dir + 6);
+            objForMovement.dir = randomMinMax(bot.dir - 6, bot.dir + 6);
 
             getNormalizeShootingVect(objForMovement);
 
             inverseDir(objForMovement);
 
-            let speedBullet = randomMinMax(bot1.weapon.speedBullet + 3, bot1.weapon.speedBullet + 7);
+            let speedBullet = randomMinMax(bot.weapon.speedBullet + 3, bot.weapon.speedBullet + 7);
 
             changeDistXYBySpeedBullet(objForMovement, speedBullet);
 
             const bullet = new Bullet(
-                bot1.x, bot1.y,
+                bot.x, bot.y,
                 speedBullet,
                 objForMovement.dir,
                 objForMovement.distX, objForMovement.distY,
-                bot1.weapon.fireRange,
-                bot1
+                bot.weapon.fireRange,
+                bot
             );
             bullets.push(bullet);
         }
     }
     else
     {
-        objForMovement.dir = bot1.dir;
+        objForMovement.dir = bot.dir;
 
         getNormalizeShootingVect(objForMovement);
 
         inverseDir(objForMovement);
 
-        changeDistXYBySpeedBullet(objForMovement, bot1.weapon.speedBullet);
+        changeDistXYBySpeedBullet(objForMovement, bot.weapon.speedBullet);
 
         const bullet = new Bullet(
-            bot1.x,
-            bot1.y,
-            bot1.weapon.speedBullet,
+            bot.x, bot.y,
+            bot.weapon.speedBullet,
             objForMovement.dir,
             objForMovement.distX,
             objForMovement.distY,
-            bot1.weapon.fireRange,
-            bot1
+            bot.weapon.fireRange,
+            bot
         );
 
         bullets.push(bullet);
     }
-    bot1.soundShoot.play();
+    bot.soundShoot.play();
 }
 
-export function throttle(func, delay)
+function throttle(func, delay)
 {
     let isThrottled = false;
     let waitingArgs;
@@ -205,7 +203,7 @@ let throttleUpd = throttle(updateBullets, player.weapon.timeBetweenBul * 1000);
 
 export let throttleBotsShoot = [];
 for (const bot of arrBot) {
-    const throttleBotShoot = throttle(updateBotShooting, bot.weapon.timeBetweenBul * 1000);
+    const throttleBotShoot = throttle(updateBotShooting(bot), bot.weapon.timeBetweenBul * 1000);
     throttleBotsShoot.push(throttleBotShoot);
 }
 
