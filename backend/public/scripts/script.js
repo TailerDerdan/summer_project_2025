@@ -10,7 +10,7 @@ function connectWebSocket() {
             addUser(data.data)
         }
         if (data.type === "user_leaved_g") {
-            deleteUser(data.data)
+            await deleteUser(data.data)
         }
         if (data.type === "delete_room_g") {
             await deleteRoom()
@@ -31,8 +31,10 @@ function addUser(user) {
         userElt.textContent = `${user["userId"]}: ${user["nickname"]}`
         userList.appendChild(userElt)
         const playersCount = document.getElementById(`playersCount-${ user['roomId'] }`)
-        playersCount.dataset.count++
-        playersCount.textContent = `${playersCount.dataset.count}/${playersCount.dataset.max}`
+        if (parseInt(playersCount.dataset.count) < parseInt(playersCount.dataset.max)) {
+            playersCount.dataset.count++
+            playersCount.textContent = `${playersCount.dataset.count}/${playersCount.dataset.max}`
+        }
     }
 }
 
@@ -41,8 +43,10 @@ async function deleteUser(user) {
     if (userElt) {
         userElt.remove()
         const playersCount = document.getElementById(`playersCount-${ user["roomId"] }`)
-        playersCount.dataset.count--
-        playersCount.textContent = `${playersCount.dataset.count}/${playersCount.dataset.max}`
+        if (parseInt(playersCount.dataset.count) > 0) {
+            playersCount.dataset.count--
+            playersCount.textContent = `${playersCount.dataset.count}/${playersCount.dataset.max}`
+        }
         if (parseInt(playersCount.dataset.count) <= 0) {
             await deleteRoom()
             const room = document.getElementById(`room-menu__room-list-item-${user["roomId"]}`)

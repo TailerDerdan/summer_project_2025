@@ -98,3 +98,8 @@ function showResultsAfterBattle() {
         window.location.href = "/main"
     })
 }
+
+const statistic = []
+function addKill(userId) {
+    statistic[userId]
+}
