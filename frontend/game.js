@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function connectToWSGame(data) {
     const gameSocket = new WebSocket(`ws://87.228.90.3:8080/ws/game/${data.gameId}`)
-    await startTimer()
     gameSocket.onopen = (e) => {
         gameSocket.send(JSON.stringify({
             type: "game_auth",
