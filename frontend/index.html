@@ -7,6 +7,38 @@
     <script type="module" src="./game.js"></script>
 </head>
 <body>
+    <div id="stats-panel" style="
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        z-index: 100;
+    ">
+        <h3>Статистика</h3>
+        <p>Убийства: <span id="kills-count">0</span></p>
+        <p>Смерти: <span id="deaths-count">0</span></p>
+        <p>Очки: <span id="score-count">0</span></p>
+        <p>Место: <span id="position-count">0</span></p>
+
+        <h3>Таблица лидеров</h3>
+        <table id="leaderboard" style="width: 100%; border-collapse: collapse;">
+            <thead>
+            <tr>
+                <th style="text-align: left;">Игрок</th>
+                <th style="text-align: left;">Убийства</th>
+                <th style="text-align: left;">Смерти</th>
+                <th style="text-align: left;">Очки</th>
+            </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+            <!-- Заполняется динамически -->
+            </tbody>
+        </table>
+    </div>
     <canvas id="webgl-display"></canvas>
     <script src="./shadows/twgl.min.js"></script>
     <script type="module" src="./main.js"></script>
