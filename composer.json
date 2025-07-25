@@ -1,0 +1,6 @@
+{
+    "require": {
+        "symfony/mercure": "^0.6.5",
+        "symfony/webpack-encore-bundle": "^2.2"
+    }
+}
