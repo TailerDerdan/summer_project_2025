@@ -177,7 +177,11 @@ class Bot extends Character
     }
 }
 
-const weaponBot = new Weapon(InitShotgun, TYPE_WEAPON.ASSAULT_RIFLE);
+const weaponBot1 = new Weapon(InitShotgun, TYPE_WEAPON.ASSAULT_RIFLE);
+const weaponBot2 = new Weapon(InitShotgun, TYPE_WEAPON.SHOTGUN);
+const weaponBot3 = new Weapon(InitShotgun, TYPE_WEAPON.SNIPER_RIFLE);
 
 //for commit
-export const bot1 = new Bot(800, 400, 80, 51.2, 0, BOT_SPEED, weaponBot);
+export const bot1 = new Bot(800, 400, 80, 51.2, 0, BOT_SPEED, weaponBot1);
+export const bot2 = new Bot(300, 800, 80, 51.2, 0, BOT_SPEED, weaponBot2);
+export const bot3 = new Bot(1500, 100, 80, 51.2, 0, BOT_SPEED, weaponBot3);
