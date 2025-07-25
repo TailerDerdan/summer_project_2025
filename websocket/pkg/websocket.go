@@ -427,23 +427,6 @@ func (h *WebSocketHandler) sendMessageGlobal(msg map[string]interface{}) {
 			h.mu.Unlock()
 		}
 	}
-	//h.mu.Lock()
-	//defer h.mu.Unlock()
-	//for conn := range h.globalSubscribers {
-	//	if err := conn.WriteJSON(msg); err != nil {
-	//		log.Printf("Error sending global message: %v", err)
-	//		conn.Close()
-	//		delete(h.globalSubscribers, conn)
-	//
-	//		// Также удаляем из всех комнат
-	//		for _, room := range h.rooms {
-	//			if _, exists := room.Clients[conn]; exists {
-	//				delete(room.Clients, conn)
-	//				room.PlayersCount--
-	//			}
-	//		}
-	//	}
-	//}
 }
 
 func (h *WebSocketHandler) sendMessageInsideRoomToAll(roomID string, msg map[string]interface{}) {
@@ -681,7 +664,7 @@ func (h *WebSocketHandler) handleStartGame(conn *websocket.Conn, roomID, userID,
 		Type:      gameType,
 		Players:   make(map[*websocket.Conn]*PlayerInfo),
 		StartTime: time.Now(),
-		Duration:  20 * time.Second,
+		Duration:  35 * time.Second,
 	}
 
 	h.activeGames[gameID] = game
