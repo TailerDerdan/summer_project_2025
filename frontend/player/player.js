@@ -2,7 +2,7 @@ import { Container } from '../collisions/collisions.js';
 import { Sprite } from '../spriteScript/spriteScript.js';
 import { InitAssaultRifle, InitShotgun, TYPE_WEAPON, Weapon } from '../weapon/typeWeapons.js';
 import { Character } from "../Infrastructure/Character.js";
-import { bot1 } from "../bot/Bot";
+import { bot1 } from "../bot/Bot.js";
 import {Sound} from "../soundsScript/sound.js";
 
 const WIDTH_FRAME = 23;
