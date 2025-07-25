@@ -1,19 +1,21 @@
 function connectWebSocket() {
-    const socket = new WebSocket('ws://87.228.90.3:8080/ws/global-updates');
+    const socket = new WebSocket('ws://mochilovo-avi.ru:8080/ws/global-updates');
 
     socket.onmessage = async (event) => {
         const data = JSON.parse(event.data);
         if (data.type === 'room_create') {
             addRoomToList(data.room, data.user);
+            addUser(data.user)
         }
         if (data.type === "add_user") {
             addUser(data.data)
+            incCounterUsers(data.data.roomId)
         }
         if (data.type === "user_leaved_g") {
-            deleteUser(data.data)
+            await deleteUser(data.data)
         }
         if (data.type === "delete_room_g") {
-            await deleteRoom()
+            await deleteRoom(data.data.roomId)
             const room = document.getElementById(`room-menu__room-list-item-${data.data.roomId}`)
             if (room) {
                 room.remove()
@@ -23,14 +25,18 @@ function connectWebSocket() {
 }
 
 function addUser(user) {
-    const userList = document.getElementById(`room-list-item__avatar-list-${user['roomId']}`)
+    const userList = document.getElementById(`room-list-item__avatar-list-${user["roomId"]}`)
     if (userList && !document.getElementById(`user-${user["userId"]}`)) {
-        console.log('add user to list global')
         const userElt = document.createElement("p")
         userElt.id = `user-${user["userId"]}`
         userElt.textContent = `${user["userId"]}: ${user["nickname"]}`
         userList.appendChild(userElt)
-        const playersCount = document.getElementById(`playersCount-${ user['roomId'] }`)
+    }
+}
+
+function incCounterUsers(roomId) {
+    const playersCount = document.getElementById(`playersCount-${ roomId }`)
+    if (parseInt(playersCount.dataset.count) < parseInt(playersCount.dataset.max)) {
         playersCount.dataset.count++
         playersCount.textContent = `${playersCount.dataset.count}/${playersCount.dataset.max}`
     }
@@ -41,15 +47,17 @@ async function deleteUser(user) {
     if (userElt) {
         userElt.remove()
         const playersCount = document.getElementById(`playersCount-${ user["roomId"] }`)
-        playersCount.dataset.count--
-        playersCount.textContent = `${playersCount.dataset.count}/${playersCount.dataset.max}`
-        if (parseInt(playersCount.dataset.count) <= 0) {
-            await deleteRoom()
-            const room = document.getElementById(`room-menu__room-list-item-${user["roomId"]}`)
-            if (room) {
-                room.remove()
-            }
+        if (parseInt(playersCount.dataset.count) > 0) {
+            playersCount.dataset.count--
+            playersCount.textContent = `${playersCount.dataset.count}/${playersCount.dataset.max}`
         }
+        // if (parseInt(playersCount.dataset.count) <= 0) {
+        //     await deleteRoom(user["roomId"])
+        //     const room = document.getElementById(`room-menu__room-list-item-${user["roomId"]}`)
+        //     if (room) {
+        //         room.remove()
+        //     }
+        // }
     }
 }
 
@@ -63,35 +71,21 @@ function addRoomToList(room) {
     roomElt.id = `room-menu__room-list-item-${room.roomId}`
     roomElt.setAttribute('onclick', `joinRoom('${room.roomId}')`);
     roomElt.innerHTML = `
-            <div class="room-list-item__main">
-                <div class="room-list-item__header">
-                    <p class="room-list-item__name">${ room.name }</p>
-    `
-    if (!room.isOpen) {
-        roomElt.innerHTML += `
-                    <img class="room-list-item__status-indicator" src="/images/lock.png" alt="">
-        `
-    }
-    roomElt.innerHTML += `
-                </div>
-                <div class="room-list-item__avatar-list" id="room-list-item__avatar-list-{{ room.id }}">
-                </div>
+        <div class="room-list-item__main">
+            <div class="room-list-item__header">
+                <p class="room-list-item__name">${room.name}</p>
+                ${!room.isOpen ? '<img class="room-list-item__status-indicator" src="/images/lock.png" alt="">' : ''}
             </div>
-            <div class="room-list-item__extra">
-    `
-    if (room.playersCount < room.maxPlayers) {
-        roomElt.innerHTML += `
-                <p class="room-list-item__fill-indicator">${room.playersCount}/${room.maxPlayers}</p>
-        `
-    } else {
-        roomElt.innerHTML += `
-                <p class="room-list-item__fill-indicator-full">${room.maxPlayers}/${room.maxPlayers}</p>
-        `
-    }
-    roomElt.innerHTML += `
-                <p class="room-list-item__gamemode">${room.gamemode}</p>
-            </div>
-    `
+            <div class="room-list-item__avatar-list" id="room-list-item__avatar-list-${room.roomId}"></div>
+        </div>
+        <div class="room-list-item__extra">
+            ${room.playersCount < room.maxPlayers ?
+            `<p class="room-list-item__fill-indicator" id="playersCount-${room.roomId}" data-count="0" data-max="${room.maxPlayers}">0/${room.maxPlayers}</p>` :
+            `<p class="room-list-item__fill-indicator-full" id="playersCount-${room.roomId}" data-count="0" data-max="${room.maxPlayers}">0/${room.maxPlayers}</p>`
+        }
+            <p class="room-list-item__gamemode">${room.gamemode}</p>
+        </div>
+    `;
     container.appendChild(roomElt)
 }
 async function joinRoom(roomId) {

@@ -1,18 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const roomSet = JSON.parse(sessionStorage.getItem('roomSettings'));
-    // if (roomSet) {
-    //     if (roomSet.hostId) {
-    //         const startBtn = document.createElement("button")
-    //         startBtn.className = ("start-btn")
-    //         startBtn.textContent = "Играть"
-    //         startBtn.type = "submit"
-    //         const roomElt = document.querySelector(".room-window__buttons")
-    //         roomElt.appendChild(startBtn)
-    //     }
-    //     //addReadyButton(roomSet.userId)
-    // }
-    //sessionStorage.removeItem('roomSettings');
-
     const response = await fetch('/room/getUsers', {
         method: "GET",
         headers: {
@@ -42,13 +29,3 @@ function addUserLocal(user) {
         userList.appendChild(userElt)
     }
 }
-
-// function addReadyButton(userId) {
-//     const btn = document.createElement("button")
-//     btn.value = "not ready"
-//     btn.type = "button"
-//     btn.className = "room-window__button"
-//     btn.id = `room_ready-${ userId }`
-//     btn.textContent = "ГОТОВ"
-//     document.querySelector(".room").appendChild(btn)
-// }

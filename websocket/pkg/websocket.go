@@ -9,7 +9,9 @@ import (
 	"log"
 	"math/big"
 	"net/http"
+	"sort"
 	"sync"
+	"time"
 )
 
 type WebSocketHandler struct {
@@ -60,6 +62,15 @@ type BulletInfo struct {
 }
 
 type Game struct {
+	GameID    string
+	Type      string
+	RoomID    string
+	Players   map[*websocket.Conn]*PlayerInfo
+	Stats     map[string]*PlayerStats
+	State     GameState
+	StartTime time.Time
+	Duration  time.Duration
+	mu        sync.RWMutex
 	GameID  string
 	Type    string
 	RoomID  string
@@ -68,6 +79,13 @@ type Game struct {
 	Deaths  []PlayerDeathEvent
 	Bullets map[string]*BulletInfo
 	mu      sync.RWMutex
+}
+
+type PlayerStats struct {
+	Kills    int `json:"kills"`
+	Deaths   int `json:"deaths"`
+	Score    int `json:"score"`
+	Position int `json:"position"`
 }
 
 type GameState struct {
@@ -249,6 +267,7 @@ func (h *WebSocketHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Reque
 			"playersCount": room.PlayersCount,
 		},
 		"user": map[string]interface{}{
+			"roomId":   room.RoomID,
 			"userId":   request.HostID,
 			"nickname": request.Nickname,
 		},
@@ -259,7 +278,6 @@ func (h *WebSocketHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Reque
 	w.WriteHeader(http.StatusOK)
 	resp := map[string]interface{}{
 		"roomId": request.RoomID,
-		//"ws_url": "ws://87.228.90.3:8080/ws/room_" + request.RoomID,
 	}
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("WebSocket error: %v", err)
@@ -442,23 +460,6 @@ func (h *WebSocketHandler) sendMessageGlobal(msg map[string]interface{}) {
 			h.mu.Unlock()
 		}
 	}
-	//h.mu.Lock()
-	//defer h.mu.Unlock()
-	//for conn := range h.globalSubscribers {
-	//	if err := conn.WriteJSON(msg); err != nil {
-	//		log.Printf("Error sending global message: %v", err)
-	//		conn.Close()
-	//		delete(h.globalSubscribers, conn)
-	//
-	//		// Также удаляем из всех комнат
-	//		for _, room := range h.rooms {
-	//			if _, exists := room.Clients[conn]; exists {
-	//				delete(room.Clients, conn)
-	//				room.PlayersCount--
-	//			}
-	//		}
-	//	}
-	//}
 }
 
 func (h *WebSocketHandler) sendMessageInsideRoomToAll(roomID string, msg map[string]interface{}) {
@@ -517,6 +518,24 @@ func (h *WebSocketHandler) sendMessageInsideGame(playerConn *websocket.Conn, gam
 	}
 }
 
+func (h *WebSocketHandler) sendMessageInsideGameToAll(gameID string, msg map[string]interface{}) {
+	game, exists := h.activeGames[gameID]
+	if !exists {
+		return
+	}
+	for conn := range game.Players {
+		if err := conn.WriteJSON(msg); err != nil {
+			if err := conn.Close(); err != nil {
+				fmt.Println("Error conn closing to client")
+				return
+			}
+			h.mu.Lock()
+			delete(game.Players, conn)
+			h.mu.Unlock()
+		}
+	}
+}
+
 func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.Request, gameID string) {
 	conn, err := h.upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -548,6 +567,7 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 		PlayerID: auth.Data["userId"],
 		Nickname: auth.Data["nickname"],
 	}
+	game.Stats[auth.Data["userId"]] = &PlayerStats{}
 	h.mu.Unlock()
 	fmt.Printf("Connect: %s + %s + len: %d\n", auth.Data["userId"], auth.Data["nickname"], len(game.Players))
 
@@ -588,28 +608,28 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 			Data map[string]interface{} `json:"data"`
 		}
 		if err := conn.ReadJSON(&msg); err != nil {
-			h.removePlayerFromGame(gameID, conn)
-			conn.Close()
-			return
+			// fmt.Printf("%+v\n", msg)
+			// h.removePlayerFromGame(gameID, conn)
+			// conn.Close()
+			// return
 		}
+		fmt.Printf("%+v\n", msg)
 		switch msg.Type {
-		//case "init_players":
-		//
-		//
-		case "update_position":
+		case "player_left":
+			h.removePlayerFromGame(gameID, conn)
+		case "game_ended":
+			return
+		case "player_move":
 			var positionData struct {
 				X float64 `json:"x"`
 				Y float64 `json:"y"`
 			}
-			//if err := json.Unmarshal(msg.Data["positions"], &positionData); err != nil {
-			//	continue
-			//}
 			for otherConn, player := range game.Players {
 				if otherConn != conn {
 					otherConn.WriteJSON(map[string]interface{}{
-						"type": "player_position",
+						"type": "player_move",
 						"data": map[string]interface{}{
-							"playerId": player.PlayerID,
+							"userId": player.PlayerID,
 							"x":        positionData.X,
 							"y":        positionData.Y,
 						},
@@ -617,6 +637,18 @@ func (h *WebSocketHandler) HandleGameConnection(w http.ResponseWriter, r *http.R
 				}
 			}
 			break
+		case "player_kill":
+			killerID, ok1 := msg.Data["killerId"].(string)
+			victimID, ok2 := msg.Data["victimId"].(string)
+			if ok1 && ok2 {
+				h.handlePlayerKill(gameID, killerID, victimID)
+			}
+
+		case "player_death":
+			playerID, ok := msg.Data["playerId"].(string)
+			if ok {
+				h.handlePlayerDeath(gameID, playerID)
+			}
 		case "update_players":
 			break
 		}
@@ -768,19 +800,19 @@ func (h *WebSocketHandler) removePlayerFromGame(gameID string, conn *websocket.C
 	if !exists {
 		return
 	}
-
 	player, ok := game.Players[conn]
-	if ok {
-		delete(game.Players, conn)
-		for otherConn := range game.Players {
-			otherConn.WriteJSON(map[string]interface{}{
-				"type": "player_left",
-				"data": map[string]string{
-					"playerId": player.PlayerID,
-				},
-			})
-		}
+	if !ok {
+		return
 	}
+
+	leaveMsg := map[string]interface{}{
+		"type": "player_left",
+		"data": map[string]string{
+			"playerId": player.PlayerID,
+		},
+	}
+	h.sendMessageInsideGame(conn, gameID, leaveMsg)
+	delete(game.Players, conn)
 }
 
 func (h *WebSocketHandler) handleStartGame(conn *websocket.Conn, roomID, userID, gameType string) {
@@ -812,14 +844,46 @@ func (h *WebSocketHandler) handleStartGame(conn *websocket.Conn, roomID, userID,
 			"players":  players,
 		},
 	}
+	h.sendMessageInsideRoomToAll(roomID, startMsg)
 
-	h.activeGames[gameID] = &Game{
-		RoomID:  roomID,
-		Type:    gameType,
-		Players: make(map[*websocket.Conn]*PlayerInfo),
+	game := &Game{
+		GameID:    gameID,
+		RoomID:    roomID,
+		Type:      gameType,
+		Players:   make(map[*websocket.Conn]*PlayerInfo),
+		Stats:     make(map[string]*PlayerStats),
+		StartTime: time.Now(),
+		Duration:  35 * time.Second,
 	}
 
-	h.sendMessageInsideRoomToAll(roomID, startMsg)
+	h.activeGames[gameID] = game
+
+	go func() {
+		ticker := time.NewTicker(1 * time.Second)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ticker.C:
+				elapsed := time.Since(game.StartTime)
+				remaining := game.Duration - elapsed
+
+				if remaining <= 0 {
+					h.endGame(gameID)
+					return
+				}
+
+				msg := map[string]interface{}{
+					"type": "time_update",
+					"data": map[string]interface{}{
+						"remaining": int(remaining.Seconds()),
+					},
+				}
+
+				h.sendMessageInsideGameToAll(gameID, msg)
+			}
+		}
+	}()
 }
 
 func (h *WebSocketHandler) checkUsersReadyToStartGame(conn *websocket.Conn, roomID string) bool {
@@ -866,4 +930,119 @@ func (h *WebSocketHandler) generateGameID(gameType string) string {
 	}
 
 	return fmt.Sprintf("%s-%s", gameType, string(idPart))
+}
+
+func (h *WebSocketHandler) endGame(gameID string) {
+	game, exists := h.activeGames[gameID]
+	if !exists {
+		return
+	}
+
+	var winnerID string
+	var maxScore = -1
+
+	for id, stats := range game.Stats {
+		if stats.Score > maxScore {
+			maxScore = stats.Score
+			winnerID = id
+		}
+	}
+
+	if maxScore <= 0 {
+		if len(game.Players) > 0 {
+			for conn := range game.Players {
+				winnerID = game.Players[conn].PlayerID
+				break
+			}
+		}
+	}
+
+	game.State.Winner = winnerID
+
+	endMsg := map[string]interface{}{
+		"type": "game_end",
+		"data": map[string]interface{}{
+			"gameId":  gameID,
+			"winner":  winnerID,
+			"stats":   game.Stats,
+			"players": game.Players,
+		},
+	}
+
+	h.sendMessageInsideGameToAll(gameID, endMsg)
+
+	delete(h.activeGames, gameID)
+}
+
+func (h *WebSocketHandler) handlePlayerKill(gameID, killerID, victimID string) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	game, exists := h.activeGames[gameID]
+	if !exists {
+		return
+	}
+
+	if stats, ok := game.Stats[killerID]; ok {
+		stats.Kills++
+		stats.Score += 100
+	}
+
+	if stats, ok := game.Stats[victimID]; ok {
+		stats.Deaths++
+	}
+
+	h.sendGameStatsUpdate(gameID)
+}
+
+func (h *WebSocketHandler) sendGameStatsUpdate(gameID string) {
+	game, exists := h.activeGames[gameID]
+	if !exists {
+		return
+	}
+
+	type playerScore struct {
+		ID    string
+		Score int
+	}
+
+	var rankings []playerScore
+	for id, stats := range game.Stats {
+		rankings = append(rankings, playerScore{ID: id, Score: stats.Score})
+	}
+
+	sort.Slice(rankings, func(i, j int) bool {
+		return rankings[i].Score > rankings[j].Score
+	})
+
+	for i, rank := range rankings {
+		game.Stats[rank.ID].Position = i + 1
+	}
+
+	msg := map[string]interface{}{
+		"type": "stats_update",
+		"data": map[string]interface{}{
+			"stats":       game.Stats,
+			"gameId":      gameID,
+			"leaderboard": rankings,
+		},
+	}
+
+	h.sendMessageInsideGameToAll(gameID, msg)
+}
+
+func (h *WebSocketHandler) handlePlayerDeath(gameID, playerID string) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	game, exists := h.activeGames[gameID]
+	if !exists {
+		return
+	}
+
+	if stats, ok := game.Stats[playerID]; ok {
+		stats.Deaths++
+	}
+
+	h.sendGameStatsUpdate(gameID)
 }

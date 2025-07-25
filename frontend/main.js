@@ -6,8 +6,10 @@ import { camera } from './camera/camera.js';
 import { Clock } from './clock/clock.js';
 import { player, arrEnemy, arrBot } from './player/player.js';
 import { render, texture2D, updateTexture } from './shadows/shadows.js';
-import { gameIsRun } from "./game.js";
+import {gameIsRun, recordDeath, recordKill} from "./game.js";
 import { getMap } from './requests/requests.js';
+import { stateForWS } from './websocketGame.js';
+import { checkAndSendPosition } from './game.js';
 
 const clock = new Clock();
 
@@ -20,9 +22,9 @@ function gameLoop()
     map.draw(ctx, camera.xView, camera.yView);
 
     arrEnemy.forEach(enemy => {
-        enemy.drawCharacter(ctx, enemy.x, enemy.y);
-        enemy.drawBlood(ctx, enemy.x, enemy.y);
-        enemy.updateCharacter();
+        enemy.drawEnemy(ctx, camera.xView, camera.yView)
+        enemy.drawBlood(ctx, camera.xView, camera.yView);
+        enemy.updateEnemy();
     })
 
     arrBot.forEach(bot => {
@@ -41,22 +43,26 @@ function gameLoop()
     updateMovementPlayer(camera.xView, camera.yView, deltaTime);
     player.drawBlood(ctx, camera.xView, camera.yView);
     player.updateCharacter();
+    if (!player.isPlayerLive)
+    {
+        player.appearanceAfterDeathWidthDelay();
+        recordDeath()
+    }
 
     camera.update();
-
     updateTexture();
     render(state);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, texture2D);
-    if (!gameIsRun) {
+    if (!stateForWS.gameIsRun) {
         console.log("game over")
         return
     }
+
     window.requestAnimationFrame(gameLoop);
 }
 
 const initGame = async () => {
-    
     const gettedMap = await getMap();
     const imgMap = new Image();
     imgMap.src = gettedMap.image;
@@ -65,7 +71,7 @@ const initGame = async () => {
     map.fillWalls(gettedMap.walls);
     setTimeout(() => {
         gameLoop();
-    }, 3000);
+    }, 5000);
 }
 
 initGame();

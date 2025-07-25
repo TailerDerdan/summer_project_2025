@@ -10,7 +10,6 @@
     <script src="/scripts/script.js"></script>
     <script src="/scripts/showDataOnMainPage.js"></script>
     <script src="/scripts/parameters_handler.js"></script>
-    <script src="/scripts/volume_controller.js"></script>
 {% endblock %}
 
 {% block body %}
@@ -30,9 +29,6 @@
                             {% endif %}
                         </div>
                         <div class="room-list-item__avatar-list" id="room-list-item__avatar-list-{{ room.id }}">
-{#                            {% for player in room.players %}#}
-{#                                <img class="room-list-item__avatar-list-item" src="" alt="Аватар">#}
-{#                            {% endfor %}#}
                         </div>
                     </div>
                     <div class="room-list-item__extra">

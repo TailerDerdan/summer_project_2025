@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
 })
 function connectToWSRoom(dataUser)   {
     console.log(typeof dataUser.roomId)
-    const socket = new WebSocket(`ws://87.228.90.3:8080/ws/room/${dataUser.roomId}`);
+    const socket = new WebSocket(`ws://mochilovo-avi.ru:8080/ws/room/${dataUser.roomId}`);
     socket.onopen = () => {
         socket.send(JSON.stringify({
             type: "auth",
@@ -63,7 +63,6 @@ function connectToWSRoom(dataUser)   {
 
     socket.onmessage = async (event) => {
         const data = JSON.parse(event.data);
-        console.log("data: ", data)
         if (data.type === 'user_joined') {
             addUserToList(data.data);
             showNotification(` присоединился к комнате`);
@@ -77,12 +76,14 @@ function connectToWSRoom(dataUser)   {
             showNotification(`${data.data.userId}: ${data.data.nickname} вызодит из комнаты...`);
             if (data.type === 'leave_ack') {
                 await deleteUserFromRoom(data.data.roomId)
+                socket.close()
                 window.location.href = '/main';
             }
         }
         if (data.type === 'start_game') {
             handleGameStart(data.data, dataUser.data)
             await deleteRoom(data.data.roomId)
+            socket.close()
         }
         if (data.type === "not_all_ready") {
             showNotification(`Не все игроки нажали кнопку "ГОТОВ"`);
@@ -90,6 +91,7 @@ function connectToWSRoom(dataUser)   {
         if (data.type === "delete_room_l") {
             await deleteUserFromRoom(data.data.roomId)
             await deleteRoom(data.data.roomId)
+            socket.close()
             window.location.href = ("/main")
         }
         if (data.type === "update_ready_state") {
