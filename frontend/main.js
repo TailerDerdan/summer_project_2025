@@ -6,7 +6,7 @@ import { camera } from './camera/camera.js';
 import { Clock } from './clock/clock.js';
 import { player, arrEnemy, arrBot } from './player/player.js';
 import { render, texture2D, updateTexture } from './shadows/shadows.js';
-import {gameIsRun, recordDeath, recordKill} from "./game.js";
+import {recordDeath, recordKill} from "./game.js";
 import { getMap } from './requests/requests.js';
 import { stateForWS } from './websocketGame.js';
 import { checkAndSendPosition } from './game.js';
@@ -21,11 +21,11 @@ function gameLoop()
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     map.draw(ctx, camera.xView, camera.yView);
 
-    arrEnemy.forEach(enemy => {
-        enemy.drawEnemy(ctx, camera.xView, camera.yView)
-        enemy.drawBlood(ctx, camera.xView, camera.yView);
-        enemy.updateEnemy();
-    })
+    // arrEnemy.forEach(enemy => {
+    //     enemy.drawEnemy(ctx, camera.xView, camera.yView)
+    //     enemy.drawBlood(ctx, camera.xView, camera.yView);
+    //     enemy.updateEnemy();
+    // })
 
     arrBot.forEach(bot => {
         bot.drawBlood(ctx, camera.xView, camera.yView);
@@ -43,7 +43,7 @@ function gameLoop()
     updateMovementPlayer(camera.xView, camera.yView, deltaTime);
     player.drawBlood(ctx, camera.xView, camera.yView);
     player.updateCharacter();
-    if (!player.isPlayerLive)
+    if (!player.isCharacterLive)
     {
         player.appearanceAfterDeathWidthDelay();
         recordDeath()
