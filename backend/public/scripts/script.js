@@ -82,8 +82,8 @@ function addRoomToList(room) {
         </div>
         <div class="room-list-item__extra">
             ${room.playersCount < room.maxPlayers ?
-            `<p class="room-list-item__fill-indicator" id="playersCount-${room.roomId}" data-count="${room.playersCount}" data-max="${room.maxPlayers}">${room.playersCount}/${room.maxPlayers}</p>` :
-            `<p class="room-list-item__fill-indicator-full" id="playersCount-${room.roomId}" data-count="${room.playersCount}" data-max="${room.maxPlayers}">${room.playersCount}/${room.maxPlayers}</p>`
+            `<p class="room-list-item__fill-indicator" id="playersCount-${room.roomId}" data-count="0" data-max="${room.maxPlayers}">0/${room.maxPlayers}</p>` :
+            `<p class="room-list-item__fill-indicator-full" id="playersCount-${room.roomId}" data-count="0" data-max="${room.maxPlayers}">0/${room.maxPlayers}</p>`
         }
             <p class="room-list-item__gamemode">${room.gamemode}</p>
         </div>
