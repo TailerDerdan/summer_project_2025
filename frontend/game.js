@@ -258,7 +258,7 @@ function showResultsAfterBattle(endData) {
     if (gameTimer) {
         clearInterval(gameTimer);
     }
-    gameIsRun = false;
+    stateForWS.gameIsRun = false;
 
     const resultsBlock = document.createElement("div")
     resultsBlock.className = "resultsBlock"
@@ -341,6 +341,7 @@ function findPlayerNickname(playerId) {
     }
 
     return `Player_${playerId}`
+}
 let lastSentPosition = {
     x: 0,
     y: 0,
