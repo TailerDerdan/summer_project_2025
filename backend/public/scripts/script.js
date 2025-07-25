@@ -6,7 +6,6 @@ function connectWebSocket() {
         if (data.type === 'room_create') {
             addRoomToList(data.room, data.user);
             addUser(data.user)
-            incCounterUsers(data.room.roomId)
         }
         if (data.type === "add_user") {
             addUser(data.data)
@@ -39,6 +38,7 @@ function addUser(user) {
 function incCounterUsers(roomId) {
     const playersCount = document.getElementById(`playersCount-${ roomId }`)
     if (parseInt(playersCount.dataset.count) < parseInt(playersCount.dataset.max)) {
+        console.log("+++")
         playersCount.dataset.count++
         playersCount.textContent = `${playersCount.dataset.count}/${playersCount.dataset.max}`
     }
@@ -54,7 +54,7 @@ async function deleteUser(user) {
             playersCount.textContent = `${playersCount.dataset.count}/${playersCount.dataset.max}`
         }
         if (parseInt(playersCount.dataset.count) <= 0) {
-            await deleteRoom()
+            await deleteRoom(user["roomId"])
             const room = document.getElementById(`room-menu__room-list-item-${user["roomId"]}`)
             if (room) {
                 room.remove()
@@ -82,8 +82,8 @@ function addRoomToList(room) {
         </div>
         <div class="room-list-item__extra">
             ${room.playersCount < room.maxPlayers ?
-            `<p class="room-list-item__fill-indicator" id="playersCount-${room.roomId}" data-count="0" data-max="${room.maxPlayers}">0/${room.maxPlayers}</p>` :
-            `<p class="room-list-item__fill-indicator-full" id="playersCount-${room.roomId}" data-count="0" data-max="${room.maxPlayers}">0/${room.maxPlayers}</p>`
+            `<p class="room-list-item__fill-indicator" id="playersCount-${room.roomId}" data-count="${room.playersCount}" data-max="${room.maxPlayers}">${room.playersCount}/${room.maxPlayers}</p>` :
+            `<p class="room-list-item__fill-indicator-full" id="playersCount-${room.roomId}" data-count="${room.playersCount}" data-max="${room.maxPlayers}">${room.playersCount}/${room.maxPlayers}</p>`
         }
             <p class="room-list-item__gamemode">${room.gamemode}</p>
         </div>
