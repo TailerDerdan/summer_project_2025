@@ -53,13 +53,13 @@ async function deleteUser(user) {
             playersCount.dataset.count--
             playersCount.textContent = `${playersCount.dataset.count}/${playersCount.dataset.max}`
         }
-        if (parseInt(playersCount.dataset.count) <= 0) {
-            await deleteRoom(user["roomId"])
-            const room = document.getElementById(`room-menu__room-list-item-${user["roomId"]}`)
-            if (room) {
-                room.remove()
-            }
-        }
+        // if (parseInt(playersCount.dataset.count) <= 0) {
+        //     await deleteRoom(user["roomId"])
+        //     const room = document.getElementById(`room-menu__room-list-item-${user["roomId"]}`)
+        //     if (room) {
+        //         room.remove()
+        //     }
+        // }
     }
 }
 

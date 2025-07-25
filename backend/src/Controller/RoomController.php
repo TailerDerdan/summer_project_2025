@@ -31,7 +31,7 @@ class RoomController extends AbstractController {
         }
         $data = json_decode($request->getContent(), true);
         $roomData = [
-            "playersCount" => 0,
+            "playersCount" => 1,
             "maxPlayers" => 5,
             "nickname" => $user->getNickname(),
             "userId" => $user->getUserId() ?? null,
