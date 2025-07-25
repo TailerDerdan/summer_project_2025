@@ -1,5 +1,5 @@
 import { updateMovementPlayer } from './player/movement.js';
-import { throttleBotShoot, updateMovementBullets } from './weapon/shooting.js';
+import {throttle, throttleBotsShoot, updateMovementBullets} from './weapon/shooting.js';
 import { canvas, ctx, gl, state } from './canvas.js';
 import { enemy1 } from './enemy/enemy.js';
 import { map } from './map/map.js';
@@ -32,7 +32,11 @@ function gameLoop()
         bot.updateCharacter();
     })
 
-    throttleBotShoot();
+    arrBot.forEach((bot, index) => {
+        if (bot.isCharacterLive && bot.weapon) {
+            throttleBotsShoot[index]();
+        }
+    });
     updateMovementBullets();
 
     updateMovementPlayer(camera.xView, camera.yView, deltaTime);

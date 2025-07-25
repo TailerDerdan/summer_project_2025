@@ -205,7 +205,12 @@ export function updateMovementBullets()
 }
 
 let throttleUpd = throttle(updateBullets, player.weapon.timeBetweenBul * 1000);
-export let throttleBotShoot = throttle(updateBotShooting, bot1.weapon.timeBetweenBul * 1000);
+
+export let throttleBotsShoot = [];
+for (const bot of arrBot) {
+    const throttleBotShoot = throttle(updateBotShooting, bot.weapon.timeBetweenBul * 1000);
+    throttleBotsShoot.push(throttleBotShoot);
+}
 
 function throttleUpdateBullets(event)
 {
