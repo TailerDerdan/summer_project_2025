@@ -35,7 +35,7 @@ function gameLoop()
 
     arrBot.forEach((bot, index) => {
         if (bot.isCharacterLive && bot.weapon) {
-            throttleBotsShoot[index]();
+            // throttleBotsShoot[index]();
         }
     });
     updateMovementBullets();
