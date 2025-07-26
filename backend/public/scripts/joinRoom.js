@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     document.getElementById('leave-room-btn').addEventListener('click', () => {
         if (socket && socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify({
-                type: "leave_room",
+                type: "user_leave",
                 data: {
                     userId: (dataJson.data.userId).toString(),
                     nickname: dataJson.data.nickname,
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
         readyBtn.addEventListener('click', () => {
             if (socket && socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({
-                    type: "ready_state",
+                    type: "user_ready",
                     data: {
                         userId: (dataJson.data.userId).toString(),
                         roomId: dataJson.roomId,

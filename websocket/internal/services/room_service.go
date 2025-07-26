@@ -283,6 +283,19 @@ func (rs *RoomService) UserReady(conn *websocket.Conn, roomID string) error {
 	room := rs.rooms[roomID]
 	user := room.Clients[conn]
 	user.IsReady = !user.IsReady
+
+	msg := map[string]interface{}{
+		"type": "update_ready_state",
+		"data": map[string]interface{}{
+			"isReady": user.IsReady,
+			"userId":  user.UserID,
+		},
+	}
+	if err := conn.WriteJSON(msg); err != nil {
+		if err := conn.Close(); err != nil {
+			return fmt.Errorf("error closing to client")
+		}
+	}
 	return nil
 }
 
