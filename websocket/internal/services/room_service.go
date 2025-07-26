@@ -335,8 +335,8 @@ func (rs *RoomService) StartGame(conn *websocket.Conn, roomID, userID, gameType 
 	msg := map[string]interface{}{
 		"type": "start_game",
 		"data": map[string]interface{}{
-			"gameID": game.GameID,
-			"roomID": roomID,
+			"gameId": game.GameID,
+			"roomId": roomID,
 		},
 	}
 	if err := rs.SendMessageInsideRoomToAll(roomID, msg); err != nil {
