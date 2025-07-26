@@ -300,11 +300,11 @@ func (rh *RoomHandler) handleRoomMessage(conn *websocket.Conn, roomID, userID st
 	for {
 		var msg models.Msg
 		if err := conn.ReadJSON(&msg); err != nil {
-			log.Printf("WebSocket error: %v", err)
+			log.Printf("Error json parse: %v", err)
 			break
 		}
 		if err := rh.processRoomMessage(conn, roomID, userID, msg); err != nil {
-			log.Printf("WebSocket error: %v", err)
+			log.Printf("Error reading message: %v", err)
 			break
 		}
 	}

@@ -220,14 +220,16 @@ func (gh *GameHandler) HandleGameConnection2(w http.ResponseWriter, r *http.Requ
 
 func (gh *GameHandler) authenticatePlayer(conn *websocket.Conn) (*models.PlayerInfo, error) {
 	var msg models.Msg
+	fmt.Println("@-000-@")
 	if err := conn.ReadJSON(&msg); err != nil {
 		return nil, err
 	}
 	if msg.Type != "game_auth" {
 		return nil, fmt.Errorf("not a game_auth")
 	}
+	fmt.Println("@-111-@")
 	return &models.PlayerInfo{
-		PlayerID: msg.Data["playerId"].(string),
+		PlayerID: msg.Data["userId"].(string),
 		Nickname: msg.Data["nickname"].(string),
 		X:        internal.GeneratePosition(),
 		Y:        internal.GeneratePosition(),
