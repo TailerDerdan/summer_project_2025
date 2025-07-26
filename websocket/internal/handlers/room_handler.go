@@ -268,8 +268,10 @@ func (rh *RoomHandler) authenticateUser(conn *websocket.Conn) (*models.UserInfo,
 	if err := conn.ReadJSON(&msg); err != nil {
 		return nil, err
 	}
+	fmt.Printf("%v\n", msg)
 	if msg.Type != "user_auth" {
-		return nil, errors.New("Invalid user type")
+		fmt.Printf("Msg-Type: %s\n", msg.Type)
+		return nil, errors.New("invalid user type")
 	}
 	fmt.Println("#-999-#")
 	return &models.UserInfo{

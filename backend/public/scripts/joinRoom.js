@@ -53,7 +53,7 @@ function connectToWSRoom(dataUser)   {
     const socket = new WebSocket(`ws://mochilovo-avi.ru:8080/ws/room/${dataUser.roomId}`);
     socket.onopen = () => {
         socket.send(JSON.stringify({
-            type: "auth",
+            type: "user_auth",
             data: {
                 userId: (dataUser.data.userId).toString(),
                 nickname: dataUser.data.nickname,
