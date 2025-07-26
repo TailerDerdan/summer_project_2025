@@ -6,7 +6,6 @@ import (
 
 	//"errors"
 	"fmt"
-	"github.com/TailerDerdan/summer_project_2025/websocket/internal/infrastructure"
 	"github.com/TailerDerdan/summer_project_2025/websocket/internal/models"
 	"github.com/gorilla/websocket"
 	//"log"
@@ -17,14 +16,12 @@ import (
 
 type GameService struct {
 	activeGames map[string]*models.Game
-	roomService infrastructure.IRoomService
 	mu          sync.Mutex
 }
 
-func NewGameService(roomService infrastructure.IRoomService) *GameService {
+func NewGameService() *GameService {
 	return &GameService{
 		activeGames: make(map[string]*models.Game),
-		roomService: roomService,
 	}
 }
 

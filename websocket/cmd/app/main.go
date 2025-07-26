@@ -10,8 +10,8 @@ import (
 
 func main() {
 	wsService := services.NewWebSocketService()
-	roomService := services.NewRoomService(wsService)
-	gameService := services.NewGameService(roomService)
+	gameService := services.NewGameService()
+	roomService := services.NewRoomService(gameService, wsService)
 
 	roomHandler := handlers.NewRoomHandler(roomService, gameService, wsService)
 	gameHandler := handlers.NewGameHandler(gameService, wsService)
