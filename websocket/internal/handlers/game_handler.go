@@ -215,6 +215,7 @@ func (gh *GameHandler) HandleGameConnection2(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	fmt.Println("/-444-/")
+	gh.gameService.StartTimer(gameID)
 	gh.handleGameMessage(conn, gameID, player.PlayerID)
 }
 

@@ -398,3 +398,31 @@ func (gs *GameService) GetGameState(gameID string) ([]models.PlayerInfo, error) 
 
 	return players, nil
 }
+
+func (gs *GameService) StartTimer(gameID string) {
+	game := gs.activeGames[gameID]
+	go func() {
+		ticker := time.NewTicker(1 * time.Second)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				elapsed := time.Since(game.StartTime)
+				remaining := game.Duration - elapsed
+				if remaining <= 0 {
+					gs.EndGame(game.GameID)
+					return
+				}
+
+				msg := map[string]interface{}{
+					"type": "time_update",
+					"data": map[string]interface{}{
+						"remaining": int(remaining.Seconds()),
+					},
+				}
+
+				gs.SendMessageInsideGameToAll(game.GameID, msg)
+			}
+		}
+	}()
+}
