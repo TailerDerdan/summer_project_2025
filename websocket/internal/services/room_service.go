@@ -264,9 +264,9 @@ func (rs *RoomService) GetRoomState(roomID string) ([]models.UserInfo, error) {
 	return users, nil
 }
 
-//func (rs *RoomService) UserJoin() error {
-//	return nil
-//}
+//	func (rs *RoomService) UserJoin() error {
+//		return nil
+//	}
 func (rs *RoomService) UserLeave(conn *websocket.Conn, roomID, userID string) error {
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
@@ -286,9 +286,9 @@ func (rs *RoomService) UserReady(conn *websocket.Conn, roomID string) error {
 	return nil
 }
 
-//func (rs *RoomService) DeleteRoom() error {
-//	return nil
-//}
+//	func (rs *RoomService) DeleteRoom() error {
+//		return nil
+//	}
 func (rs *RoomService) StartGame(roomID, userID string) error {
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
