@@ -28,81 +28,82 @@ func NewGameService(roomService infrastructure.IRoomService) *GameService {
 	}
 }
 
-func (gs *GameService) StartGame(conn *websocket.Conn, roomID, userID, gameType string) {
-	//if ok := gs.roomService.CheckAuthToStartGame(conn, roomID, userID); !ok {
-	//	return
-	//}
-	//
-	//if ok := gs.roomService.CheckUsersReadyToStartGame(conn, roomID); !ok {
-	//	return
-	//}
-	//
-	//gameID := gs.generateGameID(gameType)
-	//
-	//players := make(map[string]*models.PlayerInfo)
-	//for _, user := range gs.rooms[roomID].Clients {
-	//	players[user.UserID] = &models.PlayerInfo{
-	//		PlayerID: user.UserID,
-	//		Nickname: user.Nickname,
-	//	}
-	//}
-	//
-	//startMsg := map[string]interface{}{
-	//	"type": "start_game",
-	//	"data": map[string]interface{}{
-	//		"userId":   userID,
-	//		"roomId":   roomID,
-	//		"gameId":   gameID,
-	//		"gameType": gameType,
-	//		"players":  players,
-	//	},
-	//}
-	//gs.roomService.SendMessageInsideRoomToAll(roomID, startMsg)
-	//
-	//game := &models.Game{
-	//	GameID:    gameID,
-	//	RoomID:    roomID,
-	//	Type:      gameType,
-	//	Players:   make(map[*websocket.Conn]*models.PlayerInfo),
-	//	Stats:     make(map[string]*models.PlayerStats),
-	//	StartTime: time.Now(),
-	//	Duration:  1 * time.Hour,
-	//}
-	//
-	//gs.activeGames[gameID] = game
-	//
-	//go func() {
-	//	ticker := time.NewTicker(1 * time.Second)
-	//	defer ticker.Stop()
-	//	fmt.Println("3333333")
-	//	for {
-	//		select {
-	//		case <-ticker.C:
-	//			elapsed := time.Since(game.StartTime)
-	//			remaining := game.Duration - elapsed
-	//			fmt.Println("4444444444")
-	//			if remaining <= 0 {
-	//				gs.EndGame(gameID)
-	//				return
-	//			}
-	//
-	//			msg := map[string]interface{}{
-	//				"type": "time_update",
-	//				"data": map[string]interface{}{
-	//					"remaining": int(remaining.Seconds()),
-	//				},
-	//			}
-	//
-	//			gs.SendMessageInsideGameToAll(gameID, msg)
-	//		}
-	//	}
-	//}()
-}
+//func (gs *GameService) StartGame(conn *websocket.Conn, roomID, userID, gameType string) {
+//if ok := gs.roomService.CheckAuthToStartGame(conn, roomID, userID); !ok {
+//	return
+//}
+//
+//if ok := gs.roomService.CheckUsersReadyToStartGame(conn, roomID); !ok {
+//	return
+//}
+//
+//gameID := gs.generateGameID(gameType)
+//
+//players := make(map[string]*models.PlayerInfo)
+//for _, user := range gs.rooms[roomID].Clients {
+//	players[user.UserID] = &models.PlayerInfo{
+//		PlayerID: user.UserID,
+//		Nickname: user.Nickname,
+//	}
+//}
+//
+//startMsg := map[string]interface{}{
+//	"type": "start_game",
+//	"data": map[string]interface{}{
+//		"userId":   userID,
+//		"roomId":   roomID,
+//		"gameId":   gameID,
+//		"gameType": gameType,
+//		"players":  players,
+//	},
+//}
+//gs.roomService.SendMessageInsideRoomToAll(roomID, startMsg)
+//
+//game := &models.Game{
+//	GameID:    gameID,
+//	RoomID:    roomID,
+//	Type:      gameType,
+//	Players:   make(map[*websocket.Conn]*models.PlayerInfo),
+//	Stats:     make(map[string]*models.PlayerStats),
+//	StartTime: time.Now(),
+//	Duration:  1 * time.Hour,
+//}
+//
+//gs.activeGames[gameID] = game
+//
+//go func() {
+//	ticker := time.NewTicker(1 * time.Second)
+//	defer ticker.Stop()
+//	fmt.Println("3333333")
+//	for {
+//		select {
+//		case <-ticker.C:
+//			elapsed := time.Since(game.StartTime)
+//			remaining := game.Duration - elapsed
+//			fmt.Println("4444444444")
+//			if remaining <= 0 {
+//				gs.EndGame(gameID)
+//				return
+//			}
+//
+//			msg := map[string]interface{}{
+//				"type": "time_update",
+//				"data": map[string]interface{}{
+//					"remaining": int(remaining.Seconds()),
+//				},
+//			}
+//
+//			gs.SendMessageInsideGameToAll(gameID, msg)
+//		}
+//	}
+//}()
+//}
 
-func (gs *GameService) CreateGame(gameID, roomID, gameType string, duration time.Duration) *models.Game {
+func (gs *GameService) CreateGame(roomID, gameType string) *models.Game {
 	gs.mu.Lock()
 	defer gs.mu.Unlock()
 
+	gameID := gs.generateGameID(gameType)
 	game := &models.Game{
 		GameID:    gameID,
 		RoomID:    roomID,
@@ -110,7 +111,7 @@ func (gs *GameService) CreateGame(gameID, roomID, gameType string, duration time
 		Players:   make(map[*websocket.Conn]*models.PlayerInfo),
 		Stats:     make(map[string]*models.PlayerStats),
 		StartTime: time.Now(),
-		Duration:  duration,
+		Duration:  1 * time.Minute,
 	}
 
 	gs.activeGames[gameID] = game

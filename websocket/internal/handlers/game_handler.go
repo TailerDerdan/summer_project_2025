@@ -188,32 +188,33 @@ func NewGameHandler(gs infrastructure.IGameService, ws infrastructure.IWebSocket
 //}
 
 func (gh *GameHandler) HandleGameConnection2(w http.ResponseWriter, r *http.Request, gameID string) {
+	fmt.Println("/-000-/")
 	conn, err := gh.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("Game WS upgrade failed: %v", err)
 		return
 	}
 	defer conn.Close()
-
+	fmt.Println("/-111-/")
 	player, err := gh.authenticatePlayer(conn)
 	if err != nil {
 		log.Printf("Game WS authenticate failed: %v", err)
 		gh.sendError(conn, "Game WS authenticate failed")
 		return
 	}
-
+	fmt.Println("/-222-/")
 	if err := gh.gameService.RegisterPlayer(conn, gameID, player); err != nil {
 		log.Printf("Game WS register failed: %v", err)
 		gh.sendError(conn, "Game WS register failed")
 		return
 	}
-
+	fmt.Println("/-333-/")
 	if err := gh.sendInitialGameState(conn, gameID); err != nil {
 		log.Printf("Game WS send initial game state failed: %v", err)
 		gh.sendError(conn, "Game WS send initial game state failed")
 		return
 	}
-
+	fmt.Println("/-444-/")
 	gh.handleGameMessage(conn, gameID, player.PlayerID)
 }
 
@@ -254,6 +255,7 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 			log.Printf("Game WS read message failed: %v", err)
 			break
 		}
+		fmt.Println("/-555-/")
 		if err := gh.processGameMessage(conn, gameID, playerID, msg); err != nil {
 			log.Printf("Game WS process message failed: %v", err)
 			break
@@ -265,9 +267,12 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID string, msg models.Msg) error {
 	switch msg.Type {
 	case "player_join":
+
+		fmt.Println("/-666-/")
 		return nil
 		//return gh.gameService.PLayerJoin(gameID, playerID, msgJoin.Data["x"], msgJoin.Data["y"], msgJoin.Data["angle"])
 	case "update_position":
+		fmt.Println("/-777-/")
 		return nil
 		//return gh.gameService.UpdatePosition(gameID, playerID, msgUpdatePos.Data["x"], msgUpdatePos.Data["Y"], msgUpdatePos.Data["angle"])
 	}

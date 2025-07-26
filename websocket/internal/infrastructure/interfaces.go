@@ -4,12 +4,11 @@ import (
 	"github.com/TailerDerdan/summer_project_2025/websocket/internal/models"
 	"github.com/gorilla/websocket"
 	"net/http"
-	"time"
 )
 
 type IGameService interface {
-	CreateGame(gameID, roomID, gameType string, duration time.Duration) *models.Game
-	StartGame(conn *websocket.Conn, roomID, userID, gameType string)
+	CreateGame(roomID, gameType string) *models.Game
+	//StartGame(conn *websocket.Conn, roomID, userID, gameType string)
 	SendMessageInsideGame(playerConn *websocket.Conn, gameID string, msg map[string]interface{})
 	SendMessageInsideGameToAll(gameID string, msg map[string]interface{})
 	CheckGameEndConditions(gameID string)
@@ -36,7 +35,7 @@ type IRoomService interface {
 
 	RegisterUser(conn *websocket.Conn, roomID string, user *models.UserInfo) error
 	GetRoomState(roomID string) ([]models.UserInfo, error)
-	StartGame(conn *websocket.Conn, roomID, userID string) error
+	StartGame(conn *websocket.Conn, roomID, userID, gameType string) error
 	UserReady(conn *websocket.Conn, roomID string) error
 	UserLeave(conn *websocket.Conn, roomID, userID string) error
 	//UserJoin() error

@@ -10,15 +10,17 @@ import (
 )
 
 type RoomService struct {
-	rooms     map[string]*models.Room
-	wsService infrastructure.IWebSocketService
-	mu        sync.Mutex
+	rooms       map[string]*models.Room
+	gameService infrastructure.IGameService
+	wsService   infrastructure.IWebSocketService
+	mu          sync.Mutex
 }
 
-func NewRoomService(wsService infrastructure.IWebSocketService) *RoomService {
+func NewRoomService(gameService infrastructure.IGameService, wsService infrastructure.IWebSocketService) *RoomService {
 	return &RoomService{
-		rooms:     make(map[string]*models.Room),
-		wsService: wsService,
+		rooms:       make(map[string]*models.Room),
+		gameService: gameService,
+		wsService:   wsService,
 	}
 }
 
@@ -304,7 +306,7 @@ func (rs *RoomService) UserReady(conn *websocket.Conn, roomID string) error {
 //	func (rs *RoomService) DeleteRoom() error {
 //		return nil
 //	}
-func (rs *RoomService) StartGame(conn *websocket.Conn, roomID, userID string) error {
+func (rs *RoomService) StartGame(conn *websocket.Conn, roomID, userID, gameType string) error {
 	fmt.Println("$-666-$")
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
@@ -329,6 +331,16 @@ func (rs *RoomService) StartGame(conn *websocket.Conn, roomID, userID string) er
 			}
 		}
 	}
-
+	game := rs.gameService.CreateGame(roomID, gameType)
+	msg := map[string]interface{}{
+		"type": "start_game",
+		"data": map[string]interface{}{
+			"gameID": game.GameID,
+			"roomID": roomID,
+		},
+	}
+	if err := rs.SendMessageInsideRoomToAll(roomID, msg); err != nil {
+		return err
+	}
 	return nil
 }

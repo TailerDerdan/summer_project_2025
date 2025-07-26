@@ -282,7 +282,7 @@ func (rh *RoomHandler) authenticateUser(conn *websocket.Conn) (*models.UserInfo,
 }
 
 func (rh *RoomHandler) sendInitialRoomState(conn *websocket.Conn, roomID string) error {
-	roomInfo, err := rh.roomService.GetRoomState(roomID)
+	users, err := rh.roomService.GetRoomState(roomID)
 	if err != nil {
 		return err
 	}
@@ -290,7 +290,7 @@ func (rh *RoomHandler) sendInitialRoomState(conn *websocket.Conn, roomID string)
 	return conn.WriteJSON(map[string]interface{}{
 		"type": "init_users",
 		"data": map[string]interface{}{
-			"room": roomInfo,
+			"users": users,
 		},
 	})
 }
@@ -330,7 +330,7 @@ func (rh *RoomHandler) processRoomMessage(conn *websocket.Conn, roomID, userID s
 	//	return err
 	case "start_game":
 		fmt.Println("$-555-$")
-		err := rh.roomService.StartGame(conn, roomID, userID)
+		err := rh.roomService.StartGame(conn, roomID, userID, msg.Data.gameType)
 		return err
 	}
 	return nil
