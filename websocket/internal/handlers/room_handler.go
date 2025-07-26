@@ -318,16 +318,19 @@ func (rh *RoomHandler) processRoomMessage(conn *websocket.Conn, roomID, userID s
 	//	err := rh.roomService.UserJoin()
 	//	return err
 	case "user_leave":
+		fmt.Println("$-333-$")
 		err := rh.roomService.UserLeave(conn, roomID, userID)
 		return err
 	case "user_ready":
+		fmt.Println("$-444-$")
 		err := rh.roomService.UserReady(conn, roomID)
 		return err
 	//case "delete_room":
 	//	err := rh.roomService.DeleteRoom()
 	//	return err
 	case "start_game":
-		err := rh.roomService.StartGame(roomID, userID)
+		fmt.Println("$-555-$")
+		err := rh.roomService.StartGame(conn, roomID, userID)
 		return err
 	}
 	return nil

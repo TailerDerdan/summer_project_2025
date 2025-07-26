@@ -66,7 +66,7 @@ function connectToWSRoom(dataUser)   {
         if (data.type === 'user_joined') {
             addUserToList(data.data);
             showNotification(` присоединился к комнате`);
-        } else if (data.type === 'room_info') {
+        } else if (data.type === 'init_users') {
             data.users.forEach(user => {
                 addUserToList(user);
             });

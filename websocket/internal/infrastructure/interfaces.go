@@ -36,7 +36,7 @@ type IRoomService interface {
 
 	RegisterUser(conn *websocket.Conn, roomID string, user *models.UserInfo) error
 	GetRoomState(roomID string) ([]models.UserInfo, error)
-	StartGame(roomID, userID string) error
+	StartGame(conn *websocket.Conn, roomID, userID string) error
 	UserReady(conn *websocket.Conn, roomID string) error
 	UserLeave(conn *websocket.Conn, roomID, userID string) error
 	//UserJoin() error

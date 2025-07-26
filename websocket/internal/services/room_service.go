@@ -274,6 +274,7 @@ func (rs *RoomService) UserLeave(conn *websocket.Conn, roomID, userID string) er
 	if !exists {
 		return fmt.Errorf("Room not found")
 	}
+	fmt.Println("&-111-&")
 	rs.UnregisterConnection(conn, roomID, userID)
 	return nil
 }
@@ -283,7 +284,7 @@ func (rs *RoomService) UserReady(conn *websocket.Conn, roomID string) error {
 	room := rs.rooms[roomID]
 	user := room.Clients[conn]
 	user.IsReady = !user.IsReady
-
+	fmt.Println("$-999-$")
 	msg := map[string]interface{}{
 		"type": "update_ready_state",
 		"data": map[string]interface{}{
@@ -291,6 +292,7 @@ func (rs *RoomService) UserReady(conn *websocket.Conn, roomID string) error {
 			"userId":  user.UserID,
 		},
 	}
+	fmt.Println("&-000-&")
 	if err := conn.WriteJSON(msg); err != nil {
 		if err := conn.Close(); err != nil {
 			return fmt.Errorf("error closing to client")
@@ -302,19 +304,29 @@ func (rs *RoomService) UserReady(conn *websocket.Conn, roomID string) error {
 //	func (rs *RoomService) DeleteRoom() error {
 //		return nil
 //	}
-func (rs *RoomService) StartGame(roomID, userID string) error {
+func (rs *RoomService) StartGame(conn *websocket.Conn, roomID, userID string) error {
+	fmt.Println("$-666-$")
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
 	room, exists := rs.rooms[roomID]
 	if !exists {
-		return fmt.Errorf("Room not found")
+		return fmt.Errorf("room not found")
 	}
 	if room.HostID != userID {
-		return fmt.Errorf("Only HOST user can start game")
+		return fmt.Errorf("only HOST user can start game")
 	}
+	fmt.Println("$-777-$")
 	for _, client := range room.Clients {
 		if !client.IsReady {
-			return fmt.Errorf("Client not ready to start game")
+			msg := map[string]interface{}{
+				"type": "not_all_ready",
+			}
+			fmt.Println("$-888-$")
+			if err := conn.WriteJSON(msg); err != nil {
+				if err := conn.Close(); err != nil {
+					return fmt.Errorf("error closing to client")
+				}
+			}
 		}
 	}
 
