@@ -129,9 +129,9 @@ func (gs *GameService) SendMessageInsideGame(playerConn *websocket.Conn, gameID 
 					return fmt.Errorf("error conn closing to client")
 				}
 				fmt.Println("FFFFFFF")
-				gs.mu.Lock()
+				//gs.mu.Lock()
 				delete(game.Players, conn)
-				gs.mu.Unlock()
+				//gs.mu.Unlock()
 			}
 		}
 	}
@@ -150,9 +150,9 @@ func (gs *GameService) SendMessageInsideGameToAll(gameID string, msg map[string]
 			if err := conn.Close(); err != nil {
 				return fmt.Errorf("error conn closing to client")
 			}
-			gs.mu.Lock()
+			//gs.mu.Lock()
 			delete(game.Players, conn)
-			gs.mu.Unlock()
+			//gs.mu.Unlock()
 		}
 	}
 	fmt.Println("End sending message to all players")
@@ -210,8 +210,8 @@ func (gs *GameService) CheckGameEndConditions(gameID string) {
 	//}
 }
 func (gs *GameService) RemovePlayerFromGame(gameID string, conn *websocket.Conn) {
-	gs.mu.Lock()
-	defer gs.mu.Unlock()
+	//gs.mu.Lock()
+	//defer gs.mu.Unlock()
 
 	game, exists := gs.activeGames[gameID]
 	if !exists {
@@ -257,8 +257,8 @@ func (gs *GameService) generateGameID(gameType string) string {
 }
 
 func (gs *GameService) EndGame(gameID string) error {
-	gs.mu.Lock()
-	defer gs.mu.Unlock()
+	//gs.mu.Lock()
+	//defer gs.mu.Unlock()
 
 	game, exists := gs.activeGames[gameID]
 	if !exists {
@@ -427,9 +427,9 @@ func (gs *GameService) GetGameState(gameID string) ([]models.PlayerInfo, error) 
 }
 
 func (gs *GameService) StartTimer(gameID string) error {
-	gs.mu.Lock()
+	//gs.mu.Lock()
 	game, exists := gs.activeGames[gameID]
-	gs.mu.Unlock()
+	//gs.mu.Unlock()
 
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
