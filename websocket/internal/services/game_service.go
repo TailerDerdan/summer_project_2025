@@ -257,8 +257,8 @@ func (gs *GameService) generateGameID(gameType string) string {
 }
 
 func (gs *GameService) EndGame(gameID string) error {
-	//gs.mu.Lock()
-	//defer gs.mu.Unlock()
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
 
 	game, exists := gs.activeGames[gameID]
 	if !exists {
