@@ -195,7 +195,7 @@ func (gh *GameHandler) HandleGameConnection2(w http.ResponseWriter, r *http.Requ
 		log.Printf("Game WS upgrade failed: %v", err)
 		return
 	}
-	defer conn.Close()
+	//defer conn.Close()
 	fmt.Println("/-111-/")
 	player, err := gh.authenticatePlayer(conn)
 	if err != nil {
@@ -255,14 +255,14 @@ func (gh *GameHandler) sendInitialGameState(conn *websocket.Conn, gameID string)
 }
 
 func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID string) {
-	defer gh.gameService.RemovePlayerFromGame(gameID, conn)
+	//defer gh.gameService.RemovePlayerFromGame(gameID, conn)
 	for {
 		var msg models.Msg
 		_, messageBytes, err := conn.ReadMessage()
 		if err != nil {
 			log.Printf("G WebSocket read error: %v", err)
 			//gh.gameService.RemovePlayerFromGame(gameID, conn)
-			break
+			//break
 		}
 		log.Printf("G Raw message: %s", string(messageBytes))
 		if err := json.Unmarshal(messageBytes, &msg); err != nil {
@@ -273,6 +273,7 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 		fmt.Println("/-555-/")
 		if err := gh.processGameMessage(conn, gameID, playerID, msg); err != nil {
 			log.Printf("$$ Game WS process message failed: %v", err)
+			//gh.gameService.RemovePlayerFromGame(gameID, conn)
 			break
 		}
 	}
@@ -289,6 +290,7 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 		return nil
 		//return gh.gameService.UpdatePosition(gameID, playerID, msgUpdatePos.Data["x"], msgUpdatePos.Data["Y"], msgUpdatePos.Data["angle"])
 	}
+
 	return nil
 }
 
