@@ -446,10 +446,10 @@ func (gs *GameService) StartTimer(gameID string) error {
 				if remaining <= 0 {
 					fmt.Printf("game %s has finished\n", gameID)
 					if err := gs.EndGame(gameID); err != nil {
-						return
+						break
 					}
 					fmt.Println("&)*(&)*&)*")
-					return
+					break
 				}
 
 				msg := map[string]interface{}{
@@ -460,7 +460,7 @@ func (gs *GameService) StartTimer(gameID string) error {
 				}
 
 				if err := gs.SendMessageInsideGameToAll(gameID, msg); err != nil {
-					return
+					break
 				}
 			}
 		}

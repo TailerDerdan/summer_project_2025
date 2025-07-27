@@ -370,14 +370,14 @@ export function checkAndSendPosition()
         Math.abs(currentPos.y - lastSentPosition.y) > 5)
     )
     {
-        // sendWebSocketMessage({
-        //     type: "player_move",
-        //     data: {
-        //         userId: stateForWS.userId.toString(),
-        //         x: currentPos.x,
-        //         y: currentPos.y,
-        //     }
-        // });
+        sendWebSocketMessage({
+            type: "player_move",
+            data: {
+                userId: stateForWS.userId.toString(),
+                x: currentPos.x,
+                y: currentPos.y,
+            }
+        });
 
         lastSentPosition = {...currentPos};
         lastSentTime = now;
