@@ -255,6 +255,9 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 	for {
 		var msg models.Msg
 		if err := conn.ReadJSON(&msg); err != nil {
+			fmt.Printf("&&&& %+v", msg)
+			fmt.Printf("&&& msg.Type: %+v\n", msg.Type)
+			fmt.Printf("&&& msg.Data: %+v\n", msg.Data)
 			log.Printf("$$ Game WS read message failed: %v", err)
 			break
 		}
