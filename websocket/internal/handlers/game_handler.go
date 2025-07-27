@@ -255,6 +255,7 @@ func (gh *GameHandler) sendInitialGameState(conn *websocket.Conn, gameID string)
 }
 
 func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID string) {
+	defer gh.gameService.RemovePlayerFromGame(gameID, conn)
 	for {
 		var msg models.Msg
 		_, messageBytes, err := conn.ReadMessage()
@@ -275,7 +276,6 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 			break
 		}
 	}
-	gh.gameService.RemovePlayerFromGame(gameID, conn)
 }
 
 func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID string, msg models.Msg) error {
