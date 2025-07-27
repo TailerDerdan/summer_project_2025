@@ -302,13 +302,13 @@ func (rh *RoomHandler) handleRoomMessage(conn *websocket.Conn, roomID, userID st
 		_, messageBytes, err := conn.ReadMessage()
 		if err != nil {
 			log.Printf("WebSocket read error: %v", err)
-			rh.roomService.UnregisterConnection(conn, roomID, userID)
+			//rh.roomService.UnregisterConnection(conn, roomID, userID)
 			break
 		}
 		log.Printf("Raw message: %s", string(messageBytes))
 		if err := json.Unmarshal(messageBytes, &msg); err != nil {
 			log.Printf("Failed to parse JSON: %v\nRaw data: %s", err, string(messageBytes))
-			rh.roomService.UnregisterConnection(conn, roomID, userID)
+			//rh.roomService.UnregisterConnection(conn, roomID, userID)
 			break
 		}
 		//if err := conn.ReadJSON(&msg); err != nil {
@@ -319,11 +319,11 @@ func (rh *RoomHandler) handleRoomMessage(conn *websocket.Conn, roomID, userID st
 		//}
 		if err := rh.processRoomMessage(conn, roomID, userID, msg); err != nil {
 			log.Printf("Error reading message: %v", err)
-			rh.roomService.UnregisterConnection(conn, roomID, userID)
 			break
 		}
 	}
 	fmt.Println("#-789-#")
+	rh.roomService.UnregisterConnection(conn, roomID, userID)
 }
 
 func (rh *RoomHandler) processRoomMessage(conn *websocket.Conn, roomID, userID string, msg models.Msg) error {

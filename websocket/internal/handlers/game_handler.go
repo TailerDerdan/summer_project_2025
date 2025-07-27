@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/TailerDerdan/summer_project_2025/websocket/internal"
 	"github.com/TailerDerdan/summer_project_2025/websocket/internal/infrastructure"
@@ -256,11 +257,16 @@ func (gh *GameHandler) sendInitialGameState(conn *websocket.Conn, gameID string)
 func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID string) {
 	for {
 		var msg models.Msg
-		if err := conn.ReadJSON(&msg); err != nil {
-			fmt.Printf("&&&& %+v\n", msg)
-			fmt.Printf("&&& msg.Type: %+v\n", msg.Type)
-			fmt.Printf("&&& msg.Data: %+v\n", msg.Data)
-			log.Printf("$$ Game WS read message failed: %v", err)
+		_, messageBytes, err := conn.ReadMessage()
+		if err != nil {
+			log.Printf("G WebSocket read error: %v", err)
+			//gh.gameService.RemovePlayerFromGame(gameID, conn)
+			break
+		}
+		log.Printf("G Raw message: %s", string(messageBytes))
+		if err := json.Unmarshal(messageBytes, &msg); err != nil {
+			log.Printf("G Failed to parse JSON: %v\nRaw data: %s", err, string(messageBytes))
+			//gh.gameService.RemovePlayerFromGame(gameID, conn)
 			break
 		}
 		fmt.Println("/-555-/")
