@@ -140,6 +140,7 @@ func (gs *GameService) SendMessageInsideGameToAll(gameID string, msg map[string]
 	if !exists {
 		return fmt.Errorf("game not exists")
 	}
+	fmt.Println("Sending message to all players")
 	for conn := range game.Players {
 		if err := conn.WriteJSON(msg); err != nil {
 			if err := conn.Close(); err != nil {
@@ -150,6 +151,7 @@ func (gs *GameService) SendMessageInsideGameToAll(gameID string, msg map[string]
 			gs.mu.Unlock()
 		}
 	}
+	fmt.Println("End sending message to all players")
 	return nil
 }
 
@@ -274,7 +276,9 @@ func (gs *GameService) EndGame(gameID string) error {
 		},
 	}
 	fmt.Println("<-222->")
-	gs.SendMessageInsideGameToAll(gameID, endMsg)
+	if err := gs.SendMessageInsideGameToAll(gameID, endMsg); err != nil {
+		return err
+	}
 	delete(gs.activeGames, gameID)
 	return nil
 }

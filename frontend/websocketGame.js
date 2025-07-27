@@ -27,7 +27,7 @@ export async function initGameWebsocket(data) {
                     nickname: data.nickname,
                 }
             }));
-            resolve();
+            //resolve();
         }
 
         // stateForWS.gameSocket.onclose = (event) => {
