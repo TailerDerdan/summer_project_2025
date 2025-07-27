@@ -445,9 +445,9 @@ func (gs *GameService) StartTimer(gameID string) {
 				remaining := game.Duration - elapsed
 				if remaining <= 0 {
 					fmt.Printf("game %s has finished\n", gameID)
-					if err := gs.EndGame(gameID); err != nil {
-						return
-					}
+					//if err := gs.EndGame(gameID); err != nil {
+					//	return
+					//}
 					fmt.Println("&)*(&)*&)*")
 					return
 				}
