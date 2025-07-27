@@ -300,7 +300,7 @@ func (rh *RoomHandler) handleRoomMessage(conn *websocket.Conn, roomID, userID st
 	for {
 		var msg models.Msg
 		if err := conn.ReadJSON(&msg); err != nil {
-			fmt.Printf("--> msg: %v\n", msg)
+			fmt.Printf("--> msg: %+v\n", msg)
 			log.Printf("Error json parse: %v", err)
 			rh.roomService.UnregisterConnection(conn, roomID, userID)
 			break
