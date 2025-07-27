@@ -300,23 +300,23 @@ func (rh *RoomHandler) handleRoomMessage(conn *websocket.Conn, roomID, userID st
 	for {
 		var msg models.Msg
 		if err := conn.ReadJSON(&msg); err != nil {
+			fmt.Printf("--> msg: %v\n", msg)
 			log.Printf("Error json parse: %v", err)
+			rh.roomService.UnregisterConnection(conn, roomID, userID)
 			break
 		}
 		if err := rh.processRoomMessage(conn, roomID, userID, msg); err != nil {
 			log.Printf("Error reading message: %v", err)
+			rh.roomService.UnregisterConnection(conn, roomID, userID)
 			break
 		}
 	}
-	rh.roomService.UnregisterConnection(conn, roomID, userID)
+	fmt.Println("#-789-#")
 }
 
 func (rh *RoomHandler) processRoomMessage(conn *websocket.Conn, roomID, userID string, msg models.Msg) error {
 	fmt.Println("$-222-$")
 	switch msg.Type {
-	//case "user_join":
-	//	err := rh.roomService.UserJoin()
-	//	return err
 	case "user_leave":
 		fmt.Println("$-333-$")
 		err := rh.roomService.UserLeave(conn, roomID, userID)

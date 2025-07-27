@@ -266,15 +266,12 @@ func (rs *RoomService) GetRoomState(roomID string) ([]models.UserInfo, error) {
 	return users, nil
 }
 
-//	func (rs *RoomService) UserJoin() error {
-//		return nil
-//	}
 func (rs *RoomService) UserLeave(conn *websocket.Conn, roomID, userID string) error {
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
 	_, exists := rs.rooms[roomID]
 	if !exists {
-		return fmt.Errorf("Room not found")
+		return fmt.Errorf("room not found")
 	}
 	fmt.Println("&-111-&")
 	rs.UnregisterConnection(conn, roomID, userID)
@@ -295,10 +292,8 @@ func (rs *RoomService) UserReady(conn *websocket.Conn, roomID string) error {
 		},
 	}
 	fmt.Println("&-000-&")
-	if err := conn.WriteJSON(msg); err != nil {
-		if err := conn.Close(); err != nil {
-			return fmt.Errorf("error closing to client")
-		}
+	if err := rs.SendMessageInsideRoomToAll(roomID, msg); err != nil {
+		return err
 	}
 	return nil
 }

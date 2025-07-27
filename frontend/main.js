@@ -6,7 +6,7 @@ import { camera } from './camera/camera.js';
 import { Clock } from './clock/clock.js';
 import { player, arrEnemy, arrBot } from './player/player.js';
 import { render, texture2D, updateTexture } from './shadows/shadows.js';
-import {recordDeath, recordKill} from "./game.js";
+//import {recordDeath, recordKill} from "./game.js";
 import { getMap } from './requests/requests.js';
 import { stateForWS } from './websocketGame.js';
 import { checkAndSendPosition } from './game.js';
@@ -46,7 +46,7 @@ function gameLoop()
     if (!player.isCharacterLive)
     {
         player.appearanceAfterDeathWidthDelay();
-        recordDeath();
+        //recordDeath();
     }
 
     camera.update();

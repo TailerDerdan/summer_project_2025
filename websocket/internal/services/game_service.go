@@ -108,7 +108,7 @@ func (gs *GameService) CreateGame(roomID, gameType string) *models.Game {
 		Players:   make(map[*websocket.Conn]*models.PlayerInfo),
 		Stats:     make(map[string]*models.PlayerStats),
 		StartTime: time.Now(),
-		Duration:  1 * time.Minute,
+		Duration:  20 * time.Second,
 	}
 
 	gs.activeGames[gameID] = game
@@ -408,7 +408,9 @@ func (gs *GameService) StartTimer(gameID string) {
 				elapsed := time.Since(game.StartTime)
 				remaining := game.Duration - elapsed
 				if remaining <= 0 {
-					gs.EndGame(game.GameID)
+					if err := gs.EndGame(game.GameID); err != nil {
+						fmt.Println("error end game from timer: ", err)
+					}
 					return
 				}
 

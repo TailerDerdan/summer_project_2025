@@ -255,12 +255,12 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 	for {
 		var msg models.Msg
 		if err := conn.ReadJSON(&msg); err != nil {
-			log.Printf("Game WS read message failed: %v", err)
+			log.Printf("$$ Game WS read message failed: %v", err)
 			break
 		}
 		fmt.Println("/-555-/")
 		if err := gh.processGameMessage(conn, gameID, playerID, msg); err != nil {
-			log.Printf("Game WS process message failed: %v", err)
+			log.Printf("$$ Game WS process message failed: %v", err)
 			break
 		}
 	}

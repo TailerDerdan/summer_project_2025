@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     //     type: "game_end",
                     //     data: { gameId: msg.data.gameId }
                     // }));
-                    stateForWS.gameSocket.close();
+                    //stateForWS.gameSocket.close();
                     break;
             }
         });
@@ -314,30 +314,30 @@ function showResultsAfterBattle(endData) {
     })
 }
 
-export function recordKill(victimId) {
-    if (!gameSocket || gameSocket.readyState !== WebSocket.OPEN) return;
+// export function recordKill(victimId) {
+//     if (!gameSocket || gameSocket.readyState !== WebSocket.OPEN) return;
+//
+//     gameSocket.send(JSON.stringify({
+//         type: "player_kill",
+//         data: {
+//             killerId: gameData.userId,
+//             victimId: victimId,
+//             gameId: gameData.gameId
+//         }
+//     }))
+// }
 
-    gameSocket.send(JSON.stringify({
-        type: "player_kill",
-        data: {
-            killerId: gameData.userId,
-            victimId: victimId,
-            gameId: gameData.gameId
-        }
-    }))
-}
-
-export function recordDeath() {
-    if (!gameSocket || gameSocket.readyState !== WebSocket.OPEN) return;
-
-    gameSocket.send(JSON.stringify({
-        type: "player_death",
-        data: {
-            playerId: gameData.userId,
-            gameId: gameData.gameId
-        }
-    }))
-}
+// export function recordDeath() {
+//     if (!gameSocket || gameSocket.readyState !== WebSocket.OPEN) return;
+//
+//     gameSocket.send(JSON.stringify({
+//         type: "player_death",
+//         data: {
+//             playerId: gameData.userId,
+//             gameId: gameData.gameId
+//         }
+//     }))
+// }
 
 function findPlayerNickname(playerId) {
     if (playersCache[playerId]) {
