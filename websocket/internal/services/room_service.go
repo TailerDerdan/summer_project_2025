@@ -26,7 +26,7 @@ func NewRoomService(gameService infrastructure.IGameService, wsService infrastru
 
 func (rs *RoomService) CreateRoom(msgCreateRoom models.MsgCreateRoom) (*models.Room, error) {
 	if _, exists := rs.rooms[msgCreateRoom.RoomID]; exists {
-		return nil, fmt.Errorf("Room already exists")
+		return nil, fmt.Errorf("room already exists")
 	}
 	fmt.Printf("MaxPlayers: %d, PlayersCount: %d\n", msgCreateRoom.MaxPlayers, msgCreateRoom.PlayersCount)
 	room := &models.Room{
@@ -114,7 +114,9 @@ func (rs *RoomService) UnregisterConnection(conn *websocket.Conn, roomID, userID
 	if room.PlayersCount > 0 {
 		room.PlayersCount--
 	}
-	conn.Close()
+	if err := conn.Close(); err != nil {
+		log.Printf("Error closing connection: %v", err)
+	}
 	delete(room.Clients, conn)
 
 	if room.PlayersCount == 0 || room.HostID == userID {
@@ -136,13 +138,13 @@ func (rs *RoomService) UnregisterConnection(conn *websocket.Conn, roomID, userID
 		}
 
 		for conn := range room.Clients {
-			conn.Close()
+			if err := conn.Close(); err != nil {
+				log.Println(err)
+			}
 			delete(room.Clients, conn)
 		}
 		delete(rs.rooms, roomID)
-	}
-
-	if err := conn.Close(); err != nil {
+	} else if err := conn.Close(); err != nil {
 		log.Printf("Error closing websocket connection: %v", err)
 	}
 }
@@ -161,10 +163,12 @@ func (rs *RoomService) SendRoomInfo(conn *websocket.Conn, roomID string) {
 		})
 	}
 
-	conn.WriteJSON(map[string]interface{}{
+	if err := conn.WriteJSON(map[string]interface{}{
 		"type":  "room_info",
 		"users": users,
-	})
+	}); err != nil {
+		log.Printf("Error sending room info: %v", err)
+	}
 }
 
 func (rs *RoomService) SendMessageInsideRoomToAll(roomID string, msg map[string]interface{}) error {
@@ -240,10 +244,10 @@ func (rs *RoomService) RegisterUser(conn *websocket.Conn, roomID string, user *m
 	defer rs.mu.Unlock()
 	room, exists := rs.rooms[roomID]
 	if !exists {
-		return fmt.Errorf("Room not found")
+		return fmt.Errorf("room not found")
 	}
 	if room.PlayersCount >= room.MaxPlayers {
-		return fmt.Errorf("Max players reached")
+		return fmt.Errorf("max players reached")
 	}
 	room.PlayersCount++
 	room.Clients[conn] = &models.UserInfo{
@@ -259,7 +263,7 @@ func (rs *RoomService) GetRoomState(roomID string) ([]models.UserInfo, error) {
 	defer rs.mu.Unlock()
 	room, exists := rs.rooms[roomID]
 	if !exists {
-		return nil, fmt.Errorf("Room not found")
+		return nil, fmt.Errorf("room not found")
 	}
 	users := make([]models.UserInfo, 0, len(room.Clients))
 	for _, client := range room.Clients {
@@ -333,6 +337,7 @@ func (rs *RoomService) StartGame(conn *websocket.Conn, roomID, userID, gameType 
 			return nil
 		}
 	}
+	fmt.Println("q 0000000 q")
 	game := rs.gameService.CreateGame(roomID, gameType)
 	msg := map[string]interface{}{
 		"type": "start_game",
@@ -341,6 +346,7 @@ func (rs *RoomService) StartGame(conn *websocket.Conn, roomID, userID, gameType 
 			"roomId": roomID,
 		},
 	}
+	fmt.Println("q 11111111 q")
 	if err := rs.SendMessageInsideRoomToAll(roomID, msg); err != nil {
 		return err
 	}

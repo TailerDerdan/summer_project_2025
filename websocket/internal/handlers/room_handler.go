@@ -299,14 +299,24 @@ func (rh *RoomHandler) handleRoomMessage(conn *websocket.Conn, roomID, userID st
 	fmt.Println("$-111-$")
 	for {
 		var msg models.Msg
-		if err := conn.ReadJSON(&msg); err != nil {
-			fmt.Printf("--> msg: %+v\n", msg)
-			fmt.Printf("--> msg.Type: %+v\n", msg.Type)
-			fmt.Printf("--> msg.Data: %+v\n", msg.Data)
-			log.Printf("Error json parse: %v", err)
+		_, messageBytes, err := conn.ReadMessage()
+		if err != nil {
+			log.Printf("WebSocket read error: %v", err)
 			rh.roomService.UnregisterConnection(conn, roomID, userID)
 			break
 		}
+		log.Printf("Raw message: %s", string(messageBytes))
+		if err := json.Unmarshal(messageBytes, &msg); err != nil {
+			log.Printf("Failed to parse JSON: %v\nRaw data: %s", err, string(messageBytes))
+			rh.roomService.UnregisterConnection(conn, roomID, userID)
+			break
+		}
+		//if err := conn.ReadJSON(&msg); err != nil {
+		//	fmt.Printf("Raw JSON data: %s\n", string(msg))
+		//	log.Printf("Error parsing JSON: %v", err)
+		//	rh.roomService.UnregisterConnection(conn, roomID, userID)
+		//	break
+		//}
 		if err := rh.processRoomMessage(conn, roomID, userID, msg); err != nil {
 			log.Printf("Error reading message: %v", err)
 			rh.roomService.UnregisterConnection(conn, roomID, userID)

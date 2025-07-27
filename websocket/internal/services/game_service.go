@@ -221,7 +221,10 @@ func (gs *GameService) RemovePlayerFromGame(gameID string, conn *websocket.Conn)
 			"playerId": player.PlayerID,
 		},
 	}
-	gs.SendMessageInsideGame(conn, gameID, leaveMsg)
+	if err := gs.SendMessageInsideGame(conn, gameID, leaveMsg); err != nil {
+		fmt.Println("error sending leave message")
+		return
+	}
 	delete(game.Players, conn)
 }
 
