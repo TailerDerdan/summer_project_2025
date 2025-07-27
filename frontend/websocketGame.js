@@ -27,19 +27,19 @@ export async function initGameWebsocket(data) {
                     nickname: data.nickname,
                 }
             }));
-            //resolve();
+            resolve();
         }
 
-        // stateForWS.gameSocket.onclose = (event) => {
-        //     console.log('WebSocket closed:', event.code, event.reason);
-        //     if (event.code !== 1000) {
-        //         console.error('Connection closed unexpectedly');
-        //     }
-        // };
-        //
-        // stateForWS.gameSocket.onerror = (error) => {
-        //     reject(error);
-        // };
+        stateForWS.gameSocket.onclose = (event) => {
+            console.log('WebSocket closed:', event.code, event.reason);
+            if (event.code !== 1000) {
+                console.error('Connection closed unexpectedly');
+            }
+        };
+
+        stateForWS.gameSocket.onerror = (error) => {
+            reject(error);
+        };
     })
 }
 
