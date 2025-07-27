@@ -271,29 +271,30 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 			continue
 		}
 		fmt.Println("/-555-/")
-		if err := gh.processGameMessage(conn, gameID, playerID, msg); err != nil {
-			log.Printf("$$ Game WS process message failed: %v", err)
-			//gh.gameService.RemovePlayerFromGame(gameID, conn)
-			break
-		}
+		gh.processGameMessage(conn, gameID, playerID, msg)
+		//if err := gh.processGameMessage(conn, gameID, playerID, msg); err != nil {
+		//	log.Printf("$$ Game WS process message failed: %v", err)
+		//	gh.gameService.RemovePlayerFromGame(gameID, conn)
+		//	break
+		//}
 	}
 }
 
-func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID string, msg models.Msg) error {
+func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID string, msg models.Msg) {
 	switch msg.Type {
 	case "player_join":
 		fmt.Println("/-666-/")
-		return nil
+		//return nil
 		//return gh.gameService.PLayerJoin(gameID, playerID, msgJoin.Data["x"], msgJoin.Data["y"], msgJoin.Data["angle"])
 	case "player_move":
 		fmt.Println("/-777777-/")
-		return nil
+		//return nil
 		//return gh.gameService.UpdatePosition(gameID, playerID, msgUpdatePos.Data["x"], msgUpdatePos.Data["Y"], msgUpdatePos.Data["angle"])
 	case "game_end":
 		fmt.Println("/-876786986-/")
-		return nil
+		//return nil
 	}
-	return nil
+	//return nil
 }
 
 func (gh *GameHandler) sendError(conn *websocket.Conn, msg string) {
