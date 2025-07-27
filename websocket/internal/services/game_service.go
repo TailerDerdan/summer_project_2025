@@ -296,6 +296,7 @@ func (gs *GameService) EndGame(gameID string) error {
 	}
 	fmt.Printf("<-222-> endMsg: %v\n", endMsg)
 	if err := gs.SendMessageInsideGameToAll(gameID, endMsg); err != nil {
+		fmt.Println("error sending end message")
 		return err
 	}
 	//for conn := range game.Players {
@@ -446,9 +447,10 @@ func (gs *GameService) StartTimer(gameID string) {
 				remaining := game.Duration - elapsed
 				if remaining <= 0 {
 					fmt.Printf("game %s has finished\n", gameID)
-					if err := gs.EndGame(gameID); err != nil {
-						return
-					}
+					//if err := gs.EndGame(gameID); err != nil {
+					//	return
+					//}
+					gs.EndGame(gameID)
 					fmt.Println("&)*(&)*&)*")
 					return
 				}
