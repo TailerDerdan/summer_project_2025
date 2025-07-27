@@ -91,6 +91,7 @@ func (rs *RoomService) UnregisterConnection(conn *websocket.Conn, roomID, userID
 	if !ok {
 		return
 	}
+
 	leaveMsg := map[string]interface{}{
 		"type": "user_leaved_g",
 		"data": map[string]interface{}{
@@ -279,11 +280,21 @@ func (rs *RoomService) GetRoomState(roomID string) ([]models.UserInfo, error) {
 func (rs *RoomService) UserLeave(conn *websocket.Conn, roomID, userID string) error {
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
-	_, exists := rs.rooms[roomID]
+	room, exists := rs.rooms[roomID]
 	if !exists {
 		return fmt.Errorf("room not found")
 	}
+	clientInfo := room.Clients[conn]
 	fmt.Println("&-111-&")
+	leaveMsg := map[string]interface{}{
+		"type": "leave_ack",
+		"data": map[string]interface{}{
+			"roomId":   roomID,
+			"userId":   userID,
+			"nickname": clientInfo.Nickname,
+		},
+	}
+	conn.WriteJSON(leaveMsg)
 	rs.UnregisterConnection(conn, roomID, userID)
 	return nil
 }
