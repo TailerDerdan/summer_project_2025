@@ -140,7 +140,7 @@ func (gs *GameService) SendMessageInsideGameToAll(gameID string, msg map[string]
 	if !exists {
 		return fmt.Errorf("game not exists")
 	}
-	fmt.Println("Sending message to all players")
+	fmt.Printf("Sending message to all players: %v\n", msg)
 	for conn := range game.Players {
 		if err := conn.WriteJSON(msg); err != nil {
 			if err := conn.Close(); err != nil {
@@ -275,7 +275,7 @@ func (gs *GameService) EndGame(gameID string) error {
 			"players": game.Players,
 		},
 	}
-	fmt.Println("<-222->")
+	fmt.Printf("<-222-> endMsg: %v\n", endMsg)
 	if err := gs.SendMessageInsideGameToAll(gameID, endMsg); err != nil {
 		return err
 	}
@@ -419,9 +419,11 @@ func (gs *GameService) StartTimer(gameID string) error {
 				elapsed := time.Since(game.StartTime)
 				remaining := game.Duration - elapsed
 				if remaining <= 0 {
+					fmt.Printf("game %s has finished\n", gameID)
 					if err := gs.EndGame(gameID); err != nil {
 						return
 					}
+					fmt.Println("&)*(&)*&)*")
 					return
 				}
 
