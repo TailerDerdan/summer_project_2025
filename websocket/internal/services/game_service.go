@@ -207,6 +207,9 @@ func (gs *GameService) CheckGameEndConditions(gameID string) {
 	//}
 }
 func (gs *GameService) RemovePlayerFromGame(gameID string, conn *websocket.Conn) {
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
+
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return
@@ -224,6 +227,10 @@ func (gs *GameService) RemovePlayerFromGame(gameID string, conn *websocket.Conn)
 	}
 	if err := gs.SendMessageInsideGame(conn, gameID, leaveMsg); err != nil {
 		fmt.Println("error sending leave message")
+		return
+	}
+	if err := conn.Close(); err != nil {
+		fmt.Println("TYT error closing to client")
 		return
 	}
 	delete(game.Players, conn)
@@ -246,6 +253,9 @@ func (gs *GameService) generateGameID(gameType string) string {
 }
 
 func (gs *GameService) EndGame(gameID string) error {
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
+
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
