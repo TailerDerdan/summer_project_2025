@@ -268,7 +268,7 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 		if err := json.Unmarshal(messageBytes, &msg); err != nil {
 			log.Printf("G Failed to parse JSON: %v\nRaw data: %s", err, string(messageBytes))
 			//gh.gameService.RemovePlayerFromGame(gameID, conn)
-			break
+			//break
 		}
 		fmt.Println("/-555-/")
 		if err := gh.processGameMessage(conn, gameID, playerID, msg); err != nil {
@@ -289,8 +289,10 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 		fmt.Println("/-777-/")
 		return nil
 		//return gh.gameService.UpdatePosition(gameID, playerID, msgUpdatePos.Data["x"], msgUpdatePos.Data["Y"], msgUpdatePos.Data["angle"])
+	case "game_end":
+		fmt.Println("/-876786986-/")
+		return nil
 	}
-
 	return nil
 }
 

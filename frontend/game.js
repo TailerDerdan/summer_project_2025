@@ -77,11 +77,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     // break;
                     console.log("end game, show results: ")
                     showResultsAfterBattle(msg.data);
-                    // stateForWS.gameSocket.send(JSON.stringify({
-                    //     type: "game_end",
-                    //     data: { gameId: msg.data.gameId }
-                    // }));
-                    //stateForWS.gameSocket.close();
+                    stateForWS.gameSocket.send(JSON.stringify({
+                        type: "game_end",
+                        data: { gameId: msg.data.gameId }
+                    }));
+                    stateForWS.gameSocket.close();
                     break;
             }
         });
