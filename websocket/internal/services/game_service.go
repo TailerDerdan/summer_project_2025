@@ -273,7 +273,6 @@ func (gs *GameService) EndGame(gameID string) error {
 			"players": game.Players,
 		},
 	}
-	fmt.Printf("ENDDDDDDDD: %s\n", endMsg)
 	gs.SendMessageInsideGameToAll(gameID, endMsg)
 	delete(gs.activeGames, gameID)
 	return nil

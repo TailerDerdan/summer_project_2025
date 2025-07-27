@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     // }));
                     // stateForWS.gameSocket.close();
                     // break;
+                    console.log("end game, show results: ")
                     showResultsAfterBattle(msg.data);
                     // stateForWS.gameSocket.send(JSON.stringify({
                     //     type: "game_end",
@@ -284,7 +285,7 @@ function showResultsAfterBattle(endData) {
 
     const winnerNickname = findPlayerNickname(endData.winner);
     const isWinner = endData.winner === data.userId;
-
+    console.log("results tyt")
     resultsBlock.innerHTML = `
         <h2>${isWinner ? 'ПОБЕДА!' : 'КОНЕЦ БОЯ'}</h2>
         <p>Победитель: ${winnerNickname}</p>

@@ -329,7 +329,7 @@ func (rs *RoomService) StartGame(conn *websocket.Conn, roomID, userID, gameType 
 					return fmt.Errorf("error closing to client")
 				}
 			}
-			return fmt.Errorf("not all clients are ready")
+			return nil
 		}
 	}
 	game := rs.gameService.CreateGame(roomID, gameType)
