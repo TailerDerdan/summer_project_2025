@@ -143,6 +143,7 @@ func (gs *GameService) SendMessageInsideGameToAll(gameID string, msg map[string]
 	fmt.Printf("Sending message to all players: %v\n", msg)
 	for conn := range game.Players {
 		if err := conn.WriteJSON(msg); err != nil {
+			fmt.Printf("EEEEEEE")
 			if err := conn.Close(); err != nil {
 				return fmt.Errorf("error conn closing to client")
 			}
@@ -281,6 +282,12 @@ func (gs *GameService) EndGame(gameID string) error {
 	fmt.Printf("<-222-> endMsg: %v\n", endMsg)
 	if err := gs.SendMessageInsideGameToAll(gameID, endMsg); err != nil {
 		return err
+	}
+	for conn := range game.Players {
+		if err := conn.Close(); err != nil {
+			return fmt.Errorf("error conn closing to client")
+		}
+		delete(game.Players, conn)
 	}
 	delete(gs.activeGames, gameID)
 	return nil
