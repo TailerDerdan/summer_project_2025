@@ -284,15 +284,15 @@ func (gs *GameService) EndGame(gameID string) error {
 		}
 	}
 	game.State.Winner = winnerID
-	endMsg := map[string]interface{}{
-		"type": "game_end",
-		"data": map[string]interface{}{
-			"gameId":  gameID,
-			"winner":  winnerID,
-			"stats":   game.Stats,
-			"players": game.Players,
-		},
-	}
+	//endMsg := map[string]interface{}{
+	//	"type": "game_end",
+	//	"data": map[string]interface{}{
+	//		"gameId":  gameID,
+	//		"winner":  winnerID,
+	//		"stats":   game.Stats,
+	//		"players": game.Players,
+	//	},
+	//}
 	//fmt.Printf("<-222-> endMsg: %v\n", endMsg)
 	//if err := gs.SendMessageInsideGameToAll(gameID, endMsg); err != nil {
 	//	return err
