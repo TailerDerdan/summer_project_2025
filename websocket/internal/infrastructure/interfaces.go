@@ -17,7 +17,7 @@ type IGameService interface {
 	SendGameStatsUpdate(gameID string)
 	PlayerKill(gameID, killerID, victimID string)
 	PlayerDeath(gameID, playerID string)
-	StartTimer(gameID string) error
+	StartTimer(gameID string)
 	RegisterPlayer(conn *websocket.Conn, gameID string, player *models.PlayerInfo) error
 	GetGameState(gameID string) ([]models.PlayerInfo, error)
 }

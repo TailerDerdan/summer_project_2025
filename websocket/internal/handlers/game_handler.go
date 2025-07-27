@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/TailerDerdan/summer_project_2025/websocket/internal"
 	"github.com/TailerDerdan/summer_project_2025/websocket/internal/infrastructure"
@@ -216,9 +215,10 @@ func (gh *GameHandler) HandleGameConnection2(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	fmt.Println("/-444-/")
-	if err := gh.gameService.StartTimer(gameID); err != nil {
-		log.Printf("Game WS start timer failed: %v", err)
-	}
+	//gh.gameService.StartTimer(gameID)
+	//if err := gh.gameService.StartTimer(gameID); err != nil {
+	//	log.Printf("Game WS start timer failed: %v", err)
+	//}
 	gh.handleGameMessage(conn, gameID, player.PlayerID)
 }
 
@@ -258,18 +258,21 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 	//defer gh.gameService.RemovePlayerFromGame(gameID, conn)
 	for {
 		var msg models.Msg
-		_, messageBytes, err := conn.ReadMessage()
-		if err != nil {
-			log.Printf("G WebSocket read error: %v", err)
-			//gh.gameService.RemovePlayerFromGame(gameID, conn)
-			continue
+		if err := conn.ReadJSON(&msg); err != nil {
+			log.Printf("Game WS read message failed: %v", err)
 		}
-		log.Printf("G Raw message: %s", string(messageBytes))
-		if err := json.Unmarshal(messageBytes, &msg); err != nil {
-			log.Printf("G Failed to parse JSON: %v\nRaw data: %s", err, string(messageBytes))
-			//gh.gameService.RemovePlayerFromGame(gameID, conn)
-			continue
-		}
+		//_, messageBytes, err := conn.ReadMessage()
+		//if err != nil {
+		//	log.Printf("G WebSocket read error: %v", err)
+		//	//gh.gameService.RemovePlayerFromGame(gameID, conn)
+		//	continue
+		//}
+		//log.Printf("G Raw message: %s", string(messageBytes))
+		//if err := json.Unmarshal(messageBytes, &msg); err != nil {
+		//	log.Printf("G Failed to parse JSON: %v\nRaw data: %s", err, string(messageBytes))
+		//	//gh.gameService.RemovePlayerFromGame(gameID, conn)
+		//	continue
+		//}
 		fmt.Println("/-555-/")
 		gh.processGameMessage(conn, gameID, playerID, msg)
 		//if err := gh.processGameMessage(conn, gameID, playerID, msg); err != nil {
@@ -288,6 +291,7 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 		//return gh.gameService.PLayerJoin(gameID, playerID, msgJoin.Data["x"], msgJoin.Data["y"], msgJoin.Data["angle"])
 	case "player_move":
 		fmt.Println("/-777777-/")
+		gh.gameService.EndGame(gameID)
 		//return nil
 		//return gh.gameService.UpdatePosition(gameID, playerID, msgUpdatePos.Data["x"], msgUpdatePos.Data["Y"], msgUpdatePos.Data["angle"])
 	case "game_end":
