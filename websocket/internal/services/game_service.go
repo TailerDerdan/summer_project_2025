@@ -210,8 +210,8 @@ func (gs *GameService) CheckGameEndConditions(gameID string) {
 	//}
 }
 func (gs *GameService) RemovePlayerFromGame(gameID string, conn *websocket.Conn) {
-	//gs.mu.Lock()
-	//defer gs.mu.Unlock()
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
 
 	game, exists := gs.activeGames[gameID]
 	if !exists {
@@ -257,17 +257,17 @@ func (gs *GameService) generateGameID(gameType string) string {
 }
 
 func (gs *GameService) EndGame(gameID string) error {
-	//gs.mu.Lock()
-	//defer gs.mu.Unlock()
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
 
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
+
 	fmt.Println("88888888888")
 	var winnerID string
 	var maxScore = -1
-
 	for id, stats := range game.Stats {
 		if stats.Score > maxScore {
 			maxScore = stats.Score
@@ -302,7 +302,7 @@ func (gs *GameService) EndGame(gameID string) error {
 		//	return fmt.Errorf("error conn closing to client")
 		//}
 		conn.Close()
-		delete(game.Players, conn)
+		//delete(game.Players, conn)
 	}
 	delete(gs.activeGames, gameID)
 	return nil
@@ -446,10 +446,10 @@ func (gs *GameService) StartTimer(gameID string) error {
 				if remaining <= 0 {
 					fmt.Printf("game %s has finished\n", gameID)
 					if err := gs.EndGame(gameID); err != nil {
-						break
+						return
 					}
 					fmt.Println("&)*(&)*&)*")
-					break
+					return
 				}
 
 				msg := map[string]interface{}{
@@ -460,7 +460,7 @@ func (gs *GameService) StartTimer(gameID string) error {
 				}
 
 				if err := gs.SendMessageInsideGameToAll(gameID, msg); err != nil {
-					break
+					return
 				}
 			}
 		}
