@@ -239,46 +239,44 @@ func (gs *GameService) generateGameID(gameType string) string {
 	return fmt.Sprintf("%s-%s", gameType, string(idPart))
 }
 
-func (gs *GameService) EndGame(gameID string) {
-	//game, exists := gs.activeGames[gameID]
-	//if !exists {
-	//	return
-	//}
-	//fmt.Println("88888888888")
-	//var winnerID string
-	//var maxScore = -1
-	//
-	//for id, stats := range game.Stats {
-	//	if stats.Score > maxScore {
-	//		maxScore = stats.Score
-	//		winnerID = id
-	//	}
-	//}
-	//fmt.Println("00000000")
-	//if maxScore <= 0 {
-	//	if len(game.Players) > 0 {
-	//		for conn := range game.Players {
-	//			winnerID = game.Players[conn].PlayerID
-	//			break
-	//		}
-	//	}
-	//}
-	//
-	//game.State.Winner = winnerID
-	//
-	//endMsg := map[string]interface{}{
-	//	"type": "game_end",
-	//	"data": map[string]interface{}{
-	//		"gameId":  gameID,
-	//		"winner":  winnerID,
-	//		"stats":   game.Stats,
-	//		"players": game.Players,
-	//	},
-	//}
-	//fmt.Printf("ENDDDDDDDD: %s\n", endMsg)
-	//gs.SendMessageInsideGameToAll(gameID, endMsg)
-	//
-	//delete(gs.activeGames, gameID)
+func (gs *GameService) EndGame(gameID string) error {
+	game, exists := gs.activeGames[gameID]
+	if !exists {
+		return fmt.Errorf("game %s does not exist", gameID)
+	}
+	fmt.Println("88888888888")
+	var winnerID string
+	var maxScore = -1
+
+	for id, stats := range game.Stats {
+		if stats.Score > maxScore {
+			maxScore = stats.Score
+			winnerID = id
+		}
+	}
+	fmt.Println("00000000")
+	if maxScore <= 0 {
+		if len(game.Players) > 0 {
+			for conn := range game.Players {
+				winnerID = game.Players[conn].PlayerID
+				break
+			}
+		}
+	}
+	game.State.Winner = winnerID
+	endMsg := map[string]interface{}{
+		"type": "game_end",
+		"data": map[string]interface{}{
+			"gameId":  gameID,
+			"winner":  winnerID,
+			"stats":   game.Stats,
+			"players": game.Players,
+		},
+	}
+	fmt.Printf("ENDDDDDDDD: %s\n", endMsg)
+	gs.SendMessageInsideGameToAll(gameID, endMsg)
+	delete(gs.activeGames, gameID)
+	return nil
 }
 
 func (gs *GameService) SendGameStatsUpdate(gameID string) {

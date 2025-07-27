@@ -13,7 +13,7 @@ type IGameService interface {
 	SendMessageInsideGameToAll(gameID string, msg map[string]interface{})
 	CheckGameEndConditions(gameID string)
 	RemovePlayerFromGame(gameID string, conn *websocket.Conn)
-	EndGame(gameID string)
+	EndGame(gameID string) error
 	SendGameStatsUpdate(gameID string)
 	PlayerKill(gameID, killerID, victimID string)
 	PlayerDeath(gameID, playerID string)

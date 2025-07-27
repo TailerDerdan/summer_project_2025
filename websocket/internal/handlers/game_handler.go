@@ -270,7 +270,6 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID string, msg models.Msg) error {
 	switch msg.Type {
 	case "player_join":
-
 		fmt.Println("/-666-/")
 		return nil
 		//return gh.gameService.PLayerJoin(gameID, playerID, msgJoin.Data["x"], msgJoin.Data["y"], msgJoin.Data["angle"])

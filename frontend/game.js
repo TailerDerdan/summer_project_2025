@@ -75,10 +75,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     // stateForWS.gameSocket.close();
                     // break;
                     showResultsAfterBattle(msg.data);
-                    stateForWS.gameSocket.send(JSON.stringify({
-                        type: "game_ended",
-                        data: { gameId: msg.data.gameId }
-                    }));
+                    // stateForWS.gameSocket.send(JSON.stringify({
+                    //     type: "game_end",
+                    //     data: { gameId: msg.data.gameId }
+                    // }));
                     stateForWS.gameSocket.close();
                     break;
             }
@@ -225,7 +225,7 @@ function updateTimer(seconds) {
 
     if (!gameTimer) {
         const timerElement = document.createElement("div");
-        timerElement.setAttribute("style", "position: fixed; top: 10px; left: 10px; font-size: 24px; color: white;");
+        timerElement.setAttribute("style", "position: fixed; top: 10px; left: 10px; font-size: 50px; color: white;");
         document.body.prepend(timerElement);
 
         gameTimer = setInterval(() => {
