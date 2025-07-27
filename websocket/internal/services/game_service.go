@@ -284,26 +284,26 @@ func (gs *GameService) EndGame(gameID string) error {
 		}
 	}
 	game.State.Winner = winnerID
-	//endMsg := map[string]interface{}{
-	//	"type": "game_end",
-	//	"data": map[string]interface{}{
-	//		"gameId":  gameID,
-	//		"winner":  winnerID,
-	//		"stats":   game.Stats,
-	//		"players": game.Players,
-	//	},
-	//}
-	//fmt.Printf("<-222-> endMsg: %v\n", endMsg)
-	//if err := gs.SendMessageInsideGameToAll(gameID, endMsg); err != nil {
-	//	return err
-	//}
-	for conn := range game.Players {
-		//if err := conn.Close(); err != nil {
-		//	return fmt.Errorf("error conn closing to client")
-		//}
-		conn.Close()
-		//delete(game.Players, conn)
+	endMsg := map[string]interface{}{
+		"type": "game_end",
+		"data": map[string]interface{}{
+			"gameId":  gameID,
+			"winner":  winnerID,
+			"stats":   game.Stats,
+			"players": game.Players,
+		},
 	}
+	fmt.Printf("<-222-> endMsg: %v\n", endMsg)
+	if err := gs.SendMessageInsideGameToAll(gameID, endMsg); err != nil {
+		return err
+	}
+	//for conn := range game.Players {
+	//	//if err := conn.Close(); err != nil {
+	//	//	return fmt.Errorf("error conn closing to client")
+	//	//}
+	//	conn.Close()
+	//	//delete(game.Players, conn)
+	//}
 	delete(gs.activeGames, gameID)
 	return nil
 }
