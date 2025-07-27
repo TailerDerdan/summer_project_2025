@@ -412,8 +412,8 @@ func (gs *GameService) StartTimer(gameID string) error {
 		for {
 			select {
 			case <-ticker.C:
-				//elapsed := time.Since(game.StartTime)
-				remaining := game.Duration // - elapsed
+				elapsed := time.Since(game.StartTime)
+				remaining := game.Duration - elapsed
 				if remaining <= 0 {
 					if err := gs.EndGame(gameID); err != nil {
 						return
@@ -428,7 +428,9 @@ func (gs *GameService) StartTimer(gameID string) error {
 					},
 				}
 
-				gs.SendMessageInsideGameToAll(gameID, msg)
+				if err := gs.SendMessageInsideGameToAll(gameID, msg); err != nil {
+					return
+				}
 			}
 		}
 	}()
