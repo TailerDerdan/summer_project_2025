@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/TailerDerdan/summer_project_2025/websocket/internal"
 	"github.com/TailerDerdan/summer_project_2025/websocket/internal/infrastructure"
@@ -258,47 +259,47 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 	//defer gh.gameService.RemovePlayerFromGame(gameID, conn)
 	for {
 		var msg models.Msg
-		if err := conn.ReadJSON(&msg); err != nil {
-			log.Printf("Game WS read message failed: %v", err)
+		//if err := conn.ReadJSON(&msg); err != nil {
+		//	log.Printf("Game WS read message failed: %v", err)
+		//}
+		_, messageBytes, err := conn.ReadMessage()
+		if err != nil {
+			log.Printf("G WebSocket read error: %v", err)
+			//gh.gameService.RemovePlayerFromGame(gameID, conn)
+			break
 		}
-		//_, messageBytes, err := conn.ReadMessage()
-		//if err != nil {
-		//	log.Printf("G WebSocket read error: %v", err)
-		//	//gh.gameService.RemovePlayerFromGame(gameID, conn)
-		//	continue
-		//}
-		//log.Printf("G Raw message: %s", string(messageBytes))
-		//if err := json.Unmarshal(messageBytes, &msg); err != nil {
-		//	log.Printf("G Failed to parse JSON: %v\nRaw data: %s", err, string(messageBytes))
-		//	//gh.gameService.RemovePlayerFromGame(gameID, conn)
-		//	continue
-		//}
+		log.Printf("G Raw message: %s", string(messageBytes))
+		if err := json.Unmarshal(messageBytes, &msg); err != nil {
+			log.Printf("G Failed to parse JSON: %v\nRaw data: %s", err, string(messageBytes))
+			//gh.gameService.RemovePlayerFromGame(gameID, conn)
+			break
+		}
 		fmt.Println("/-555-/")
-		gh.processGameMessage(conn, gameID, playerID, msg)
-		//if err := gh.processGameMessage(conn, gameID, playerID, msg); err != nil {
-		//	log.Printf("$$ Game WS process message failed: %v", err)
-		//	gh.gameService.RemovePlayerFromGame(gameID, conn)
-		//	break
-		//}
+		//gh.processGameMessage(conn, gameID, playerID, msg)
+		if err := gh.processGameMessage(conn, gameID, playerID, msg); err != nil {
+			log.Printf("$$ Game WS process message failed: %v", err)
+			break
+		}
 	}
+	gh.gameService.RemovePlayerFromGame(gameID, conn)
 }
 
-func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID string, msg models.Msg) {
+func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID string, msg models.Msg) error {
 	switch msg.Type {
 	case "player_join":
 		fmt.Println("/-666-/")
-		//return nil
+		return nil
 		//return gh.gameService.PLayerJoin(gameID, playerID, msgJoin.Data["x"], msgJoin.Data["y"], msgJoin.Data["angle"])
 	case "player_move":
 		fmt.Println("/-777777-/")
 		gh.gameService.EndGame(gameID)
-		//return nil
+		return nil
 		//return gh.gameService.UpdatePosition(gameID, playerID, msgUpdatePos.Data["x"], msgUpdatePos.Data["Y"], msgUpdatePos.Data["angle"])
 	case "game_end":
 		fmt.Println("/-876786986-/")
-		//return nil
+		return nil
 	}
-	//return nil
+	return nil
 }
 
 func (gh *GameHandler) sendError(conn *websocket.Conn, msg string) {
