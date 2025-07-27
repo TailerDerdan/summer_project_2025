@@ -30,16 +30,16 @@ export async function initGameWebsocket(data) {
             resolve();
         }
 
-        stateForWS.gameSocket.onclose = (event) => {
-            console.log('WebSocket closed:', event.code, event.reason);
-            if (event.code !== 1000) {
-                console.error('Connection closed unexpectedly');
-            }
-        };
-
-        stateForWS.gameSocket.onerror = (error) => {
-            reject(error);
-        };
+        // stateForWS.gameSocket.onclose = (event) => {
+        //     console.log('WebSocket closed:', event.code, event.reason);
+        //     if (event.code !== 1000) {
+        //         console.error('Connection closed unexpectedly');
+        //     }
+        // };
+        //
+        // stateForWS.gameSocket.onerror = (error) => {
+        //     reject(error);
+        // };
     })
 }
 
@@ -51,7 +51,7 @@ export function setMessageHandler(handler)
     }
 }
 
-export function sendWebSocketMessage(message) 
+export function sendWebSocketMessage(message)
 {
     console.log(stateForWS.gameSocket.readyState)
     if (stateForWS.gameSocket && stateForWS.gameSocket.readyState === WebSocket.OPEN) 

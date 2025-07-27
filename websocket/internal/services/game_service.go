@@ -212,7 +212,7 @@ func (gs *GameService) RemovePlayerFromGame(gameID string, conn *websocket.Conn)
 	if !ok {
 		return
 	}
-
+	fmt.Println("<-123->")
 	leaveMsg := map[string]interface{}{
 		"type": "player_left",
 		"data": map[string]string{
@@ -273,6 +273,7 @@ func (gs *GameService) EndGame(gameID string) error {
 			"players": game.Players,
 		},
 	}
+	fmt.Println("<-222->")
 	gs.SendMessageInsideGameToAll(gameID, endMsg)
 	delete(gs.activeGames, gameID)
 	return nil
