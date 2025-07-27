@@ -115,17 +115,16 @@ func (gs *GameService) CreateGame(roomID, gameType string) *models.Game {
 	return game
 }
 
-func (gs *GameService) SendMessageInsideGame(playerConn *websocket.Conn, gameID string, msg map[string]interface{}) {
+func (gs *GameService) SendMessageInsideGame(playerConn *websocket.Conn, gameID string, msg map[string]interface{}) error {
 	game, exists := gs.activeGames[gameID]
 	if !exists {
-		return
+		return fmt.Errorf("game not exists")
 	}
 	for conn := range game.Players {
 		if conn != playerConn {
 			if err := conn.WriteJSON(msg); err != nil {
 				if err := conn.Close(); err != nil {
-					fmt.Println("Error conn closing to client")
-					return
+					return fmt.Errorf("error conn closing to client")
 				}
 				gs.mu.Lock()
 				delete(game.Players, conn)
@@ -133,24 +132,25 @@ func (gs *GameService) SendMessageInsideGame(playerConn *websocket.Conn, gameID 
 			}
 		}
 	}
+	return nil
 }
 
-func (gs *GameService) SendMessageInsideGameToAll(gameID string, msg map[string]interface{}) {
+func (gs *GameService) SendMessageInsideGameToAll(gameID string, msg map[string]interface{}) error {
 	game, exists := gs.activeGames[gameID]
 	if !exists {
-		return
+		return fmt.Errorf("game not exists")
 	}
 	for conn := range game.Players {
 		if err := conn.WriteJSON(msg); err != nil {
 			if err := conn.Close(); err != nil {
-				fmt.Println("Error conn closing to client")
-				return
+				return fmt.Errorf("error conn closing to client")
 			}
 			gs.mu.Lock()
 			delete(game.Players, conn)
 			gs.mu.Unlock()
 		}
 	}
+	return nil
 }
 
 func (gs *GameService) CheckGameEndConditions(gameID string) {
@@ -397,19 +397,26 @@ func (gs *GameService) GetGameState(gameID string) ([]models.PlayerInfo, error) 
 	return players, nil
 }
 
-func (gs *GameService) StartTimer(gameID string) {
-	game := gs.activeGames[gameID]
+func (gs *GameService) StartTimer(gameID string) error {
+	gs.mu.Lock()
+	game, exists := gs.activeGames[gameID]
+	gs.mu.Unlock()
+
+	if !exists {
+		return fmt.Errorf("game %s does not exist", gameID)
+	}
+
 	go func() {
 		ticker := time.NewTicker(1 * time.Second)
 		defer ticker.Stop()
 		for {
 			select {
 			case <-ticker.C:
-				elapsed := time.Since(game.StartTime)
-				remaining := game.Duration - elapsed
+				//elapsed := time.Since(game.StartTime)
+				remaining := game.Duration // - elapsed
 				if remaining <= 0 {
-					if err := gs.EndGame(game.GameID); err != nil {
-						fmt.Println("error end game from timer: ", err)
+					if err := gs.EndGame(gameID); err != nil {
+						return
 					}
 					return
 				}
@@ -421,8 +428,9 @@ func (gs *GameService) StartTimer(gameID string) {
 					},
 				}
 
-				gs.SendMessageInsideGameToAll(game.GameID, msg)
+				gs.SendMessageInsideGameToAll(gameID, msg)
 			}
 		}
 	}()
+	return nil
 }

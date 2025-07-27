@@ -100,7 +100,10 @@ func (rs *RoomService) UnregisterConnection(conn *websocket.Conn, roomID, userID
 		},
 	}
 
-	rs.wsService.SendMessageGlobal(leaveMsg)
+	if err := rs.wsService.SendMessageGlobal(leaveMsg); err != nil {
+		log.Printf("Error sending leave msg: %v", err)
+		return
+	}
 	leaveMsg["type"] = "user_leaved_l"
 	err := rs.SendMessageInsideRoom(conn, roomID, leaveMsg)
 	if err != nil {
@@ -121,7 +124,10 @@ func (rs *RoomService) UnregisterConnection(conn *websocket.Conn, roomID, userID
 				"roomId": roomID,
 			},
 		}
-		rs.wsService.SendMessageGlobal(deleteRoomMsg)
+		if err := rs.wsService.SendMessageGlobal(deleteRoomMsg); err != nil {
+			log.Printf("Error sending delete room msg: %v", err)
+			return
+		}
 		deleteRoomMsg["type"] = "delete_room_l"
 		err := rs.SendMessageInsideRoom(conn, roomID, deleteRoomMsg)
 		if err != nil {

@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         //await startTimer();
 
         setMessageHandler((event) => {
+            console.log("event.data: ", event.data);
             const msg = JSON.parse(event.data);
             console.log("msg: ", msg);
 

@@ -215,7 +215,9 @@ func (gh *GameHandler) HandleGameConnection2(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	fmt.Println("/-444-/")
-	gh.gameService.StartTimer(gameID)
+	if err := gh.gameService.StartTimer(gameID); err != nil {
+		log.Printf("Game WS start timer failed: %v", err)
+	}
 	gh.handleGameMessage(conn, gameID, player.PlayerID)
 }
 
@@ -255,7 +257,7 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 	for {
 		var msg models.Msg
 		if err := conn.ReadJSON(&msg); err != nil {
-			fmt.Printf("&&&& %+v", msg)
+			fmt.Printf("&&&& %+v\n", msg)
 			fmt.Printf("&&& msg.Type: %+v\n", msg.Type)
 			fmt.Printf("&&& msg.Data: %+v\n", msg.Data)
 			log.Printf("$$ Game WS read message failed: %v", err)

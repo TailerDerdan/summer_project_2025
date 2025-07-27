@@ -8,16 +8,16 @@ import (
 
 type IGameService interface {
 	CreateGame(roomID, gameType string) *models.Game
-	//StartGame(conn *websocket.Conn, roomID, userID, gameType string)
-	SendMessageInsideGame(playerConn *websocket.Conn, gameID string, msg map[string]interface{})
-	SendMessageInsideGameToAll(gameID string, msg map[string]interface{})
+	//StartGame(roomID, gameType string)
+	SendMessageInsideGame(playerConn *websocket.Conn, gameID string, msg map[string]interface{}) error
+	SendMessageInsideGameToAll(gameID string, msg map[string]interface{}) error
 	CheckGameEndConditions(gameID string)
 	RemovePlayerFromGame(gameID string, conn *websocket.Conn)
 	EndGame(gameID string) error
 	SendGameStatsUpdate(gameID string)
 	PlayerKill(gameID, killerID, victimID string)
 	PlayerDeath(gameID, playerID string)
-	StartTimer(gameID string)
+	StartTimer(gameID string) error
 	RegisterPlayer(conn *websocket.Conn, gameID string, player *models.PlayerInfo) error
 	GetGameState(gameID string) ([]models.PlayerInfo, error)
 }
