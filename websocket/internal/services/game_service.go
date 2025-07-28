@@ -495,6 +495,9 @@ func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID str
 		},
 	}
 	fmt.Println("()_2_2_()")
-	gs.SendMessageInsideGameToAll(gameID, positionMsg)
+	if err := gs.SendMessageInsideGame(conn, gameID, positionMsg); err != nil {
+		fmt.Println("()_3_3_()")
+		return err
+	}
 	return nil
 }

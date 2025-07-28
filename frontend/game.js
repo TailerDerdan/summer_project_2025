@@ -361,11 +361,10 @@ let lastSentTime = 0;
 
 export function checkAndSendPosition()
 {
-    console.log('QQQ')
     const now = Date.now();
     const currentPos = getCurrentPosition();
 
-    console.log(now - lastSentTime);
+    //console.log(now - lastSentTime);
 
     if (now - lastSentTime > 100 &&
         (Math.abs(currentPos.x - lastSentPosition.x) > 5 ||
