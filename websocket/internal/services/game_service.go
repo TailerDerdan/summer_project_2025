@@ -112,6 +112,7 @@ func (gs *GameService) CreateGame(roomID, gameType string) *models.Game {
 	}
 
 	gs.activeGames[gameID] = game
+	gs.StartTimer(gameID)
 	return game
 }
 
