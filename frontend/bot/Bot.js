@@ -14,9 +14,9 @@ const PATH_CHECK_DISTANCE = 200;
 
 class Bot extends Character
 {
-    constructor(x, y, width, height, dir, speed, weapon)
+    constructor(id, x, y, width, height, dir, speed, weapon)
     {
-        super(x, y, width, height, dir);
+        super(id, x, y, width, height, dir);
 
         this.speed = speed;
         this.weapon = weapon;
@@ -182,6 +182,6 @@ const weaponBot2 = new Weapon(InitShotgun, TYPE_WEAPON.SHOTGUN);
 const weaponBot3 = new Weapon(InitShotgun, TYPE_WEAPON.SNIPER_RIFLE);
 
 //for commit
-export const bot1 = new Bot(800, 400, 80, 51.2, 0, BOT_SPEED, weaponBot1);
-export const bot2 = new Bot(1500, 300, 80, 51.2, 0, BOT_SPEED, weaponBot2);
-export const bot3 = new Bot(700, 2000, 80, 51.2, 0, BOT_SPEED, weaponBot3);
+export const bot1 = new Bot(null, 800, 400, 80, 51.2, 0, BOT_SPEED, weaponBot1);
+export const bot2 = new Bot(null, 1500, 300, 80, 51.2, 0, BOT_SPEED, weaponBot2);
+export const bot3 = new Bot(null, 700, 2000, 80, 51.2, 0, BOT_SPEED, weaponBot3);

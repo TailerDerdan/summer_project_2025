@@ -19,4 +19,4 @@ export class Enemy extends Character
     }
 }
 
-// export const enemy1 = new Enemy(600, 600, 80, 51.2, 0);
+// export const enemy1 = new Enemy(null, 600, 600, 80, 51.2, 0);

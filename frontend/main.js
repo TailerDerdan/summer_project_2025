@@ -21,25 +21,7 @@ function gameLoop()
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     map.draw(ctx, camera.xView, camera.yView);
 
-    arrEnemy.forEach(enemy => {
-        enemy.drawCharacter(ctx, camera.xView, camera.yView)
-        enemy.drawBlood(ctx, camera.xView, camera.yView);
-        enemy.updateCharacter();
-    })
-
-    arrBot.forEach(bot => {
-        bot.drawBlood(ctx, camera.xView, camera.yView);
-        bot.updateMovementBot(ctx, camera.xView, camera.yView);
-        bot.updateCharacter();
-    })
-
-    arrBot.forEach((bot, index) => {
-        if (bot.isCharacterLive && bot.weapon) {
-            // throttleBotsShoot[index]();
-        }
-    });
-    updateMovementBullets();
-
+    //player.drawCharacter(ctx, camera.xView, camera.yView);
     updateMovementPlayer(camera.xView, camera.yView, deltaTime);
     player.drawBlood(ctx, camera.xView, camera.yView);
     player.updateCharacter();
@@ -49,7 +31,27 @@ function gameLoop()
         //recordDeath();
     }
 
-    checkAndSendPosition()
+    arrEnemy.forEach(enemy => {
+        enemy.drawCharacter(ctx, camera.xView, camera.yView)
+        enemy.drawBlood(ctx, camera.xView, camera.yView);
+        enemy.updateCharacter();
+    })
+
+    arrBot.forEach(bot => {
+        //bot.drawCharacter(ctx, camera.xView, camera.yView);
+        bot.drawBlood(ctx, camera.xView, camera.yView);
+        bot.updateMovementBot(ctx, camera.xView, camera.yView);
+        bot.updateCharacter();
+    })
+
+    arrBot.forEach((bot, index) => {
+        if (bot.isCharacterLive && bot.weapon) {
+            throttleBotsShoot[index]();
+        }
+    });
+    updateMovementBullets();
+
+    checkAndSendPosition();
 
     camera.update();
     updateTexture();
@@ -73,7 +75,7 @@ const initGame = async () => {
     map.fillWalls(gettedMap.walls);
     setTimeout(() => {
         gameLoop();
-    }, 5000);
+    }, 100);
 }
 
 initGame();
