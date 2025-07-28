@@ -479,18 +479,7 @@ func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID str
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
 
-	var playerConn *websocket.Conn
-	for conn, player := range game.Players {
-		if player.PlayerID == playerID {
-			playerConn = conn
-			break
-		}
-	}
-	if playerConn == nil {
-		return fmt.Errorf("player %s not found in game", playerID)
-	}
-
-	player := game.Players[playerConn]
+	player := game.Players[conn]
 	player.X = x.(float64)
 	player.Y = y.(float64)
 	//player.Angle = angle.(float64)
