@@ -11,4 +11,5 @@ interface UserServiceInterface {
     public function getAll(): ?array;
     public function save(array $user): int;
     public function updateRoomId(int $userId, int $roomId): void;
+    public function updateReadyState(int $userId, bool $isReady): void;
 }

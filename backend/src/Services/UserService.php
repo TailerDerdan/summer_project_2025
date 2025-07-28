@@ -39,4 +39,8 @@ class UserService implements UserServiceInterface {
     public function getAll(): ?array {
         return $this->userRepository->getAll();
     }
+
+    public function updateReadyState(int $userId, bool $isReady): void {
+        $this->userRepository->updateReadyState($userId, $isReady);
+    }
 }

@@ -7,7 +7,7 @@ use App\Entity\User\User;
 
 interface UserRepositoryInterface {
 
-    public function save(array $user): int;
+    public function save(array $userData): int;
     public function getById(int $userId): ?User;
     public function get(string $nickName): ?User;
     public function getAll(): ?array;
@@ -15,4 +15,5 @@ interface UserRepositoryInterface {
     public function delete(int $userId): void;
     public function update(User $user): void;
     public function updateRoomId(int $userId, int $roomId): void;
+    public function updateReadyState(int $userId, bool $isReady): void;
 }

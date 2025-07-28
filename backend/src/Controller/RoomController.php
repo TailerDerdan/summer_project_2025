@@ -128,7 +128,7 @@ class RoomController extends AbstractController {
     {
         $user = $this->getUser();
         $data = json_decode($request->getContent(), true);
-        $user->setIsReady($data['isReady']);
+        $this->userService->updateReadyState($user->getUserId(), $data["isReady"] ?? false);
         return $this->json([
             "status" => "success",
         ]);

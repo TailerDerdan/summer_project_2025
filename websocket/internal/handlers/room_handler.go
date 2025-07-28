@@ -140,25 +140,21 @@ func NewRoomHandler(rs infrastructure.IRoomService, gs infrastructure.IGameServi
 //}
 
 func (rh *RoomHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("000")
 	if r.Method != "POST" {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	fmt.Println("111")
 	var msgCreateRoom models.MsgCreateRoom
 	if err := json.NewDecoder(r.Body).Decode(&msgCreateRoom); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
-	fmt.Println("222")
 	room, err := rh.roomService.CreateRoom(msgCreateRoom)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	fmt.Println("333")
 	msg := map[string]interface{}{
 		"type": "room_create",
 		"room": map[string]interface{}{
@@ -176,13 +172,11 @@ func (rh *RoomHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Request) 
 			"nickname": msgCreateRoom.Nickname,
 		},
 	}
-	fmt.Println("444")
 	if err := rh.wsService.SendMessageGlobal(msg); err != nil {
 		log.Println(err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	fmt.Println("555")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	resp := map[string]interface{}{
@@ -191,49 +185,40 @@ func (rh *RoomHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Request) 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("WebSocket error: %v", err)
 	}
-	fmt.Println("666")
 }
 
 func (rh *RoomHandler) HandleRoomConnection(w http.ResponseWriter, r *http.Request, roomID string) {
-	fmt.Println("777")
 	conn, err := rh.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("WebSocket error: %v", err)
 		return
 	}
 	defer conn.Close()
-	fmt.Println("888")
 	user, err := rh.authenticateUser(conn)
 	if err != nil {
 		log.Printf("Failed to authenticate user: %v", err)
 		rh.sendError(conn, "Failed to authenticate user")
 		return
 	}
-	fmt.Println("999")
 	if err := rh.roomService.RegisterUser(conn, roomID, user); err != nil {
 		log.Printf("Failed to register user: %v", err)
 		rh.sendError(conn, "Failed to register user")
 		return
 	}
-	fmt.Println("#-000-#")
 	if err := rh.sendInitialRoomState(conn, roomID); err != nil {
 		log.Printf("Failed to send initial room state: %v", err)
 		rh.sendError(conn, "Failed to send initial room state")
 		return
 	}
-	fmt.Println("#-111-#")
 	if err := rh.sendJoinRoom(conn, roomID, user); err != nil {
 		log.Printf("Failed to send join room: %v", err)
 		rh.sendError(conn, "Failed to send join room")
 		return
 	}
-	fmt.Println("#-222-#")
 	rh.handleRoomMessage(conn, roomID, user.UserID)
-	fmt.Println("#-333-#")
 }
 
 func (rh *RoomHandler) sendJoinRoom(conn *websocket.Conn, roomID string, user *models.UserInfo) error {
-	fmt.Println("#-444-#")
 	msg := map[string]interface{}{
 		"type": "user_joined",
 		"data": map[string]string{
@@ -241,12 +226,10 @@ func (rh *RoomHandler) sendJoinRoom(conn *websocket.Conn, roomID string, user *m
 			"nickname": user.Nickname,
 		},
 	}
-	fmt.Println("#-555-#")
 	err := rh.roomService.SendMessageInsideRoom(conn, roomID, msg)
 	if err != nil {
 		return err
 	}
-	fmt.Println("#-666-#")
 	msg = map[string]interface{}{
 		"type": "add_user",
 		"data": map[string]string{
@@ -255,7 +238,6 @@ func (rh *RoomHandler) sendJoinRoom(conn *websocket.Conn, roomID string, user *m
 			"nickname": user.Nickname,
 		},
 	}
-	fmt.Println("#-777-#")
 	if err := rh.wsService.SendMessageGlobal(msg); err != nil {
 		return err
 	}
@@ -263,7 +245,6 @@ func (rh *RoomHandler) sendJoinRoom(conn *websocket.Conn, roomID string, user *m
 }
 
 func (rh *RoomHandler) authenticateUser(conn *websocket.Conn) (*models.UserInfo, error) {
-	fmt.Println("#-888-#")
 	var msg models.Msg
 	if err := conn.ReadJSON(&msg); err != nil {
 		return nil, err
@@ -273,7 +254,6 @@ func (rh *RoomHandler) authenticateUser(conn *websocket.Conn) (*models.UserInfo,
 		fmt.Printf("Msg-Type: %s\n", msg.Type)
 		return nil, errors.New("invalid user type")
 	}
-	fmt.Println("#-999-#")
 	return &models.UserInfo{
 		IsReady:  false,
 		UserID:   msg.Data["userId"].(string),
@@ -286,7 +266,6 @@ func (rh *RoomHandler) sendInitialRoomState(conn *websocket.Conn, roomID string)
 	if err != nil {
 		return err
 	}
-	fmt.Println("$-000-$")
 	return conn.WriteJSON(map[string]interface{}{
 		"type": "init_users",
 		"data": map[string]interface{}{
@@ -296,52 +275,35 @@ func (rh *RoomHandler) sendInitialRoomState(conn *websocket.Conn, roomID string)
 }
 
 func (rh *RoomHandler) handleRoomMessage(conn *websocket.Conn, roomID, userID string) {
-	fmt.Println("$-111-$")
 	for {
 		var msg models.Msg
 		_, messageBytes, err := conn.ReadMessage()
 		if err != nil {
 			log.Printf("WebSocket read error: %v", err)
-			//rh.roomService.UnregisterConnection(conn, roomID, userID)
 			break
 		}
 		log.Printf("Raw message: %s", string(messageBytes))
 		if err := json.Unmarshal(messageBytes, &msg); err != nil {
 			log.Printf("Failed to parse JSON: %v\nRaw data: %s", err, string(messageBytes))
-			//rh.roomService.UnregisterConnection(conn, roomID, userID)
 			break
 		}
-		//if err := conn.ReadJSON(&msg); err != nil {
-		//	fmt.Printf("Raw JSON data: %s\n", string(msg))
-		//	log.Printf("Error parsing JSON: %v", err)
-		//	rh.roomService.UnregisterConnection(conn, roomID, userID)
-		//	break
-		//}
 		if err := rh.processRoomMessage(conn, roomID, userID, msg); err != nil {
 			log.Printf("Error reading message: %v", err)
 			break
 		}
 	}
-	fmt.Println("#-789-#")
 	rh.roomService.UnregisterConnection(conn, roomID, userID)
 }
 
 func (rh *RoomHandler) processRoomMessage(conn *websocket.Conn, roomID, userID string, msg models.Msg) error {
-	fmt.Println("$-222-$")
 	switch msg.Type {
 	case "user_leave":
-		fmt.Println("$-333-$")
 		err := rh.roomService.UserLeave(conn, roomID, userID)
 		return err
 	case "user_ready":
-		fmt.Println("$-444-$")
 		err := rh.roomService.UserReady(conn, roomID)
 		return err
-	//case "delete_room":
-	//	err := rh.roomService.DeleteRoom()
-	//	return err
 	case "start_game":
-		fmt.Println("$-555-$")
 		gameType, _ := msg.Data["gameType"].(string)
 		err := rh.roomService.StartGame(conn, roomID, userID, gameType)
 		return err

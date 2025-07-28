@@ -77,4 +77,13 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
         $user->setRoomId($roomId);
         $this->getEntityManager()->flush();
     }
+
+    public function updateReadyState(int $userId, bool $isReady): void
+    {
+        $user = $this->find($userId);
+        if ($user->getReadyState() !== $isReady) {
+            $user->setReadyState($isReady);
+        }
+        $this->getEntityManager()->flush();
+    }
 }
