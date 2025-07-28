@@ -299,6 +299,10 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 	case "game_end":
 		fmt.Println("/-876786986-/")
 		return nil
+	case "update_bullets":
+		fmt.Println("/-00000_99999_0000-/")
+		err := gh.gameService.UpdateBullets(conn, gameID, msg.Data)
+		return err
 	}
 	return nil
 }

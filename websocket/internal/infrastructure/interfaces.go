@@ -21,6 +21,7 @@ type IGameService interface {
 	RegisterPlayer(conn *websocket.Conn, gameID string, player *models.PlayerInfo) error
 	GetGameState(gameID string) ([]models.PlayerInfo, error)
 	UpdatePosition(conn *websocket.Conn, gameID, playerID string, x, y interface{}) error
+	UpdateBullets(conn *websocket.Conn, gameID string, data map[string]interface{}) error
 }
 
 type IRoomService interface {

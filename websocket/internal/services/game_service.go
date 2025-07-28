@@ -515,7 +515,7 @@ func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID str
 	player := game.Players[conn]
 	player.X = x.(float64)
 	player.Y = y.(float64)
-	//player.Angle = angle.(float64)
+
 	fmt.Println("()_1_1_()")
 	positionMsg := map[string]interface{}{
 		"type": "player_move",
@@ -529,6 +529,26 @@ func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID str
 	fmt.Println("()_2_2_()")
 	if err := gs.SendMessageInsideGame(conn, gameID, positionMsg); err != nil {
 		fmt.Println("()_3_3_()")
+		return err
+	}
+	return nil
+}
+
+func (gs *GameService) UpdateBullets(conn *websocket.Conn, gameID string, data map[string]interface{}) error {
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
+
+	_, exists := gs.activeGames[gameID]
+	if !exists {
+		return fmt.Errorf("game %s does not exist", gameID)
+	}
+
+	bulletsMsg := map[string]interface{}{
+		"type": "update_bullets",
+		"data": data,
+	}
+
+	if err := gs.SendMessageInsideGame(conn, gameID, bulletsMsg); err != nil {
 		return err
 	}
 	return nil
