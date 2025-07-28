@@ -268,23 +268,7 @@ func (gs *GameService) EndGame(gameID string) error {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
 
-	var winnerID string
-	var maxScore = -1
-	for id, stats := range game.Stats {
-		if stats.Score > maxScore {
-			maxScore = stats.Score
-			winnerID = id
-		}
-	}
-
-	if maxScore <= 0 {
-		if len(game.Players) > 0 {
-			for conn := range game.Players {
-				winnerID = game.Players[conn].PlayerID
-				break
-			}
-		}
-	}
+	winnerID := gs.determineWinner(gameID)
 	game.State.Winner = winnerID
 	players := make([]models.PlayerInfo, 0, len(game.Players))
 	for _, player := range game.Players {
@@ -319,6 +303,33 @@ func (gs *GameService) EndGame(gameID string) error {
 	delete(gs.activeGames, gameID)
 	gs.mu.Unlock()
 	return nil
+}
+
+func (gs *GameService) determineWinner(gameID string) string {
+	game, exists := gs.activeGames[gameID]
+	if !exists {
+		return ""
+	}
+
+	var winnerID string
+	var maxScore = -1
+
+	for id, stats := range game.Stats {
+		if stats.Score > maxScore {
+			maxScore = stats.Score
+			winnerID = id
+		}
+	}
+
+	if maxScore <= 0 {
+		if len(game.Players) > 0 {
+			for conn := range game.Players {
+				winnerID = game.Players[conn].PlayerID
+				break
+			}
+		}
+	}
+	return winnerID
 }
 
 func (gs *GameService) SendGameStatsUpdate(gameID string) {
