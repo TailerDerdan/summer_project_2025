@@ -194,7 +194,6 @@ async function deleteUserFromRoom(roomId) {
  }
 
  async function updateReadyStateFetch(isReady) {
-    console.log("isReady:", isReady, typeof isReady)
     const response = await fetch('/room/updateReadyState', {
         method: "POST",
         headers: {
@@ -207,5 +206,4 @@ async function deleteUserFromRoom(roomId) {
      if (!response.ok) {
          throw new Error(`HTTP error! status: ${response.status}`);
      }
-
  }

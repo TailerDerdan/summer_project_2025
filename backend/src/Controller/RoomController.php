@@ -127,6 +127,9 @@ class RoomController extends AbstractController {
     public function updateReadyState(Request $request): Response
     {
         $user = $this->getUser();
+        if (!$user) {
+            return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
+        }
         $data = json_decode($request->getContent(), true);
         $this->userService->updateReadyState($user->getUserId(), $data["isReady"] ?? false);
         return $this->json([
