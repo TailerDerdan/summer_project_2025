@@ -22,6 +22,7 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
             $userData['roomId'] ?? null,
             $userData['nickName'],
             $passwordHash,
+            false,
             $userData['avatarPath'] ?? null,
         );
         $this->getEntityManager()->persist($user);
