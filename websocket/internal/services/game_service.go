@@ -470,7 +470,7 @@ func (gs *GameService) StartTimer(gameID string) {
 	}()
 }
 
-func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID string, x, y, angle interface{}) error {
+func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID string, x, y interface{}) error {
 	gs.mu.Lock()
 	defer gs.mu.Unlock()
 

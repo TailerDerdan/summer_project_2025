@@ -294,7 +294,7 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 		fmt.Println("/-777777-/")
 		//gh.gameService.EndGame(gameID)
 		//return nil
-		return gh.gameService.UpdatePosition(conn, gameID, playerID, msg.Data["x"], msg.Data["Y"], msg.Data["angle"])
+		return gh.gameService.UpdatePosition(conn, gameID, playerID, msg.Data["x"], msg.Data["y"])
 	case "game_end":
 		fmt.Println("/-876786986-/")
 		return nil

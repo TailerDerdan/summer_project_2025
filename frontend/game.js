@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function handleInitPlayers(players)
 {
-    Object.values(players).forEach(playerData => {
+    players.forEach(playerData => {
 
         console.log("playerData(init_players): ", playerData)
 
