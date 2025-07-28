@@ -171,6 +171,13 @@ class Bot extends Character
                     this.y += stepVect.dy;
                 }
             }
+            else
+            {
+                if (target.dist >= 1200)
+                {
+                    this.canStrike = false;
+                }
+            }
         }
 
         this.drawCharacter(ctx, xView, yView);

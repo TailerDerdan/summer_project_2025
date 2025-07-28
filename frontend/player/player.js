@@ -82,6 +82,6 @@ export class Player extends Character
     }
 }
 
-const weapon1 = new Weapon(InitShotgun, TYPE_WEAPON.SHOTGUN);
+const weapon1 = new Weapon(InitShotgun, TYPE_WEAPON.ASSAULT_RIFLE);
 
 export const player = new Player(null, 400, 400, 0, 75, 48, 14, weapon1);

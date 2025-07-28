@@ -34,7 +34,7 @@ export class Character
         this.sprite = new Sprite(COUNT_FRAMES, './sprites/enemySprite.png', 0.1, true);
         this.sprite.makeFrames(WIDTH_FRAME, HEIGHT_FRAME, START_X);
 
-        this.spriteBlood = new Sprite(COUNT_SPRITE, 'sprites/Gore/sprBloodSplat_strip8.png', 0.1, false);
+        this.spriteBlood = new Sprite(COUNT_SPRITE, 'sprites/Gore/sprBloodSplat_strip8.png', 0.02, false);
         this.spriteBlood.makeFrames(WIDTH_FRAME_BLOOD, HEIGHT_FRAME_BLOOD, START_X);
 
         this.revivalSound = new Sound('sounds/Hotline_Miami_2_Wrong_Number/revival.wav');
@@ -131,7 +131,7 @@ export class Character
     }
 
     appearanceAfterDeathWidthDelay() {
-        setTimeout(() => this.appearanceAfterDeath(), 3000);
+        setTimeout(() => this.appearanceAfterDeath(), 100);
     }
 
     updateCharacter()

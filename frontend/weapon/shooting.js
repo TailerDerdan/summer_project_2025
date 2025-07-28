@@ -65,6 +65,26 @@ const updateBullets = (event) => {
             bullets.push(bullet);
         }
     }
+    else
+    {
+        objForMovement.dir = player.dir;
+
+        getNormalizeShootingVect(objForMovement);
+
+        inverseDir(objForMovement);
+
+        changeDistXYBySpeedBullet(objForMovement, player.weapon.speedBullet);
+
+        const bullet = new Bullet(
+            player.x, player.y,
+            player.weapon.speedBullet,
+            objForMovement.dir,
+            objForMovement.distX, objForMovement.distY,
+            player.weapon.fireRange,
+            player
+        );
+        bullets.push(bullet);
+    }
 
     player.soundShoot.play();
 }

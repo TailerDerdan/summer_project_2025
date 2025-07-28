@@ -41,7 +41,7 @@ export const InitShotgun = {
     totalAmmo: Infinity,
     currentAmmo: 4,
     fireRange: 1200,
-    timeBetweenBul: 1,
+    timeBetweenBul: 2.5,
     weight: 1.6,
     timeReload: 5,
     damage: 2,
