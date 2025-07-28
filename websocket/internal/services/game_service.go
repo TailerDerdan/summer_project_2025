@@ -108,7 +108,7 @@ func (gs *GameService) CreateGame(roomID, gameType string) *models.Game {
 		Players:   make(map[*websocket.Conn]*models.PlayerInfo),
 		Stats:     make(map[string]*models.PlayerStats),
 		StartTime: time.Now(),
-		Duration:  20 * time.Second,
+		Duration:  35 * time.Second,
 	}
 
 	gs.activeGames[gameID] = game
@@ -493,7 +493,7 @@ func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID str
 	player := game.Players[playerConn]
 	player.X = x.(float64)
 	player.Y = y.(float64)
-	player.Angle = angle.(float64)
+	//player.Angle = angle.(float64)
 
 	positionMsg := map[string]interface{}{
 		"type": "player_move",
@@ -501,7 +501,7 @@ func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID str
 			"playerId": playerID,
 			"x":        player.X,
 			"y":        player.Y,
-			"angle":    player.Angle,
+			//"angle":    player.Angle,
 		},
 	}
 
