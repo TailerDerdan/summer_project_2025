@@ -454,9 +454,9 @@ func (gs *GameService) GetGameState(gameID string) ([]models.PlayerInfo, error) 
 }
 
 func (gs *GameService) StartTimer(gameID string) {
-	//gs.mu.Lock()
+	gs.mu.Lock()
 	game, exists := gs.activeGames[gameID]
-	//gs.mu.Unlock()
+	gs.mu.Unlock()
 
 	if !exists {
 		return //fmt.Errorf("game %s does not exist", gameID)
