@@ -104,6 +104,7 @@ async function joinRoom(roomId) {
     sessionStorage.setItem('roomSettings', JSON.stringify({
         userId: dataJson.userId,
         roomId: roomId,
+        isReady: dataJson.isReady,
     }))
 
     sessionStorage.setItem('ws_join_data', JSON.stringify({

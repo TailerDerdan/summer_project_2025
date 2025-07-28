@@ -43,7 +43,6 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
      * @return ?User[]
      */
     public function getAll(): ?array {
-        //return $this->findAll();
         $users = $this->findAll();
         return array_map(function (User $user) {
             return [
