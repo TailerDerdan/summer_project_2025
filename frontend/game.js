@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             switch (msg.type) {
                 case "init_players":
                     console.log(msg);
-                    handleInitPlayers(msg);
+                    handleInitPlayers(msg.data);
                     break;
                 case "join_player":
                     handleJoinPlayer(msg.data);

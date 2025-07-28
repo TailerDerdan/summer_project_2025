@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func GeneratePosition() int {
+func GeneratePosition() float64 {
 	rand.Seed(time.Now().UnixNano())
 	//flag := false
 	for {
@@ -13,7 +13,7 @@ func GeneratePosition() int {
 		//if !used[num] {
 		//	used[num] = true
 		//	flag = true
-		return num
+		return float64(num)
 		//}
 	}
 }

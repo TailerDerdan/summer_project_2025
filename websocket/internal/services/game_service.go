@@ -491,9 +491,9 @@ func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID str
 	}
 
 	player := game.Players[playerConn]
-	player.X = x.(int)
-	player.Y = y.(int)
-	player.Angle = angle.(int)
+	player.X = x.(float64)
+	player.Y = y.(float64)
+	player.Angle = angle.(float64)
 
 	positionMsg := map[string]interface{}{
 		"type": "player_move",

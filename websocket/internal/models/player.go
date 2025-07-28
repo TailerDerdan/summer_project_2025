@@ -1,7 +1,7 @@
 package models
 
 type PlayerInfo struct {
-	X, Y, Angle int
+	X, Y, Angle float64
 	PlayerID    string `json:"playerId"`
 	Nickname    string `json:"nickname"`
 }
