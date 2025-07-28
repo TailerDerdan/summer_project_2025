@@ -110,6 +110,7 @@ class RoomController extends AbstractController {
         $user = $this->getUser();
         if ($user->getRoomId() == (int)$roomId) {
             $this->userService->deleteRoomId($user->getUserId());
+            $this->userService->updateReadyState($user->getUserId(), false);
             $this->roomService->removeUserFromRoom($user->getUserId(), (int)$roomId);
         }
         return $this->json([

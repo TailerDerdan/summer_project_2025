@@ -142,8 +142,11 @@ function addUserToList(user) {
     const userList = document.querySelector('.room-info__main-indicator-bar');
     if (!document.getElementById(`user-${user.userId}`)) {
         const userElement = document.createElement('div');
-        console.log("set style RED")
-        userElement.setAttribute("style", "background-color: red;")
+        if (user.isReady) {
+            userElement.setAttribute("style", "background-color: green;")
+        } else {
+            userElement.setAttribute("style", "background-color: red;")
+        }
         userElement.id = `user-${user.userId}`
         userElement.innerHTML = `
             <p>${ user.userId }: ${user.nickname}</p>
