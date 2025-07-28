@@ -1,5 +1,7 @@
 import { Enemy, HEIGHT_ENEMY, WIDTH_ENEMY } from "./enemy/enemy.js";
 import { arrEnemy, arrEnemyForWS, player } from "./player/player.js";
+import { playerBullets, updateMovementBullets } from "./weapon/shooting.js";
+import { Bullet } from "./weapon/bullet.js";
 import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
 
 let gameTimer;
@@ -63,6 +65,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     break;
                 case "player_move":
                     handlePlayerMove(msg.data);
+                    break;
+                case "bullets_update":
+                    updateEnemyBullets(msg.data.bullets);
                     break;
                 case "time_update":
                     updateTimer(msg.data.remaining);
@@ -411,4 +416,57 @@ function updateEnemyPosition(userId, x, y)
         }
         console.log('TTT')
     }
+}
+
+export function sendBullets()
+{
+    const now = Date.now();
+
+    //console.log(now - lastSentTime);
+
+    if ((now - lastSentTime > 100) && (playerBullets.length !== 0))
+    {
+        sendWebSocketMessage({
+            type: "player_shot",
+            data: {
+                userId: stateForWS.userId.toString(),
+                userBullets: playerBullets
+            }
+        });
+
+        let lastSentTime = now;
+    }
+}
+
+let enemyBullets = [];
+
+function updateEnemyBullets(bulletsData) {
+    enemyBullets = bulletsData.map(bullet => {
+        return new Bullet(
+            bullet.x,
+            bullet.y,
+            bullet.speed,
+            bullet.dir,
+            bullet.distX,
+            bullet.distY,
+            bullet.fireRange,
+            { id: bullet.ownerId }
+        );
+    });
+}
+
+export function updateAllBullets(ctx, xView, yView) {
+    updateMovementBullets();
+
+    enemyBullets.forEach((bullet, index) => {
+        bullet.setX(bullet.getX() + bullet.getDistX());
+        bullet.setY(bullet.getY() - bullet.getDistY());
+
+        const remainingDist = bullet.getRemainingDist(bullet.getFireRange());
+        if (remainingDist >= -4 && remainingDist <= 4) {
+            enemyBullets.splice(index, 1);
+        }
+
+        bullet.drawBullet(ctx, xView, yView);
+    });
 }

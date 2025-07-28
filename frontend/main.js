@@ -10,6 +10,7 @@ import { render, texture2D, updateTexture } from './shadows/shadows.js';
 import { getMap } from './requests/requests.js';
 import { stateForWS } from './websocketGame.js';
 import { checkAndSendPosition } from './game.js';
+import { sendBullets, updateAllBullets } from './game.js';
 
 const clock = new Clock();
 
@@ -49,9 +50,14 @@ function gameLoop()
             throttleBotsShoot[index]();
         }
     });
-    updateMovementBullets();
+
+    //updateMovementBullets();
 
     checkAndSendPosition();
+
+    sendBullets();
+
+    updateAllBullets(ctx, camera.xView, camera.yView);
 
     camera.update();
     updateTexture();
