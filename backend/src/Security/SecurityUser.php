@@ -11,6 +11,7 @@ class SecurityUser implements UserInterface, PasswordAuthenticatedUserInterface 
         private ?int $userId,
         private string $nickName,
         private string $password,
+        private bool $isReady,
         private array $roles,
         private ?int $roomId,
         private ?string $avatarPath,
@@ -30,6 +31,9 @@ class SecurityUser implements UserInterface, PasswordAuthenticatedUserInterface 
     }
     public function getRoomId(): ?int {
         return $this->roomId;
+    }
+    private function getIsReady(): bool {
+        return $this->isReady;
     }
     public function getNickName(): string {
         return $this->nickName;

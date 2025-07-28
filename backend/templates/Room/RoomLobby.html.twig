@@ -30,25 +30,9 @@
                             <p class="room-info__main-parameters-list-item-value">Закрыто</p>
                         {% endif %}
                     </div>
-{#                    {% if not room.isOpen %}#}
-{#                        <div class="room-info__main-parameters-list-item">#}
-{#                            <p class="room-info__main-parameters-list-item-title">Пароль:</p>#}
-{#                            <p class="room-info__main-parameters-list-item-value">{{ room.password }}</p>#}
-{#                        </div>#}
-{#                    {% endif %}#}
                 </div>
-                <div class="room-info__main-indicator-bar">
-{#                    {% for player in room.players %}#}
-{#                        <div class="room-info__main-indicator-bar-elem">#}
-{#                            <img src="public/images/carbon_user-avatar.png" alt="Аватар 1">#}
-{#                            {% if player.isReady %}#}
-{#                                <img class="room-info__main-indicator-bar-elem-icon" src="public/images/green_indicator.png" alt="Y">#}
-{#                            {% else %}#}
-{#                                <img class="room-info__main-indicator-bar-elem-icon" src="public/images/red_indicator.png" alt="N">#}
-{#                            {% endif %}#}
-{#                        </div>#}
-{#                    {% endfor %}#}
-                </div>
+                <div class="timer-down"></div>
+                <div class="room-info__main-indicator-bar"></div>
             </div>
             <div class="room-info__decorations">
                 <img src="/images/cool_man.png" alt="Здесь должна быть картинка с крутым чуваком">
@@ -58,7 +42,6 @@
             {% if user.userId == room.hostId %}
                 <button class="room-window__button" id="room_start" type="button">Поехали!</button>
             {% endif %}
-            <a class="room-window__button" id="room_leave" href="{{ path('main_page') }}">Назад</a>
             <button class="room-window__button" id="leave-room-btn" type="button">Выйти из комнаты</button>
             <button value="not ready" type="button" class="room-window__button room-window__button-ready" id="room_ready-{{ user.userId }}">ГОТОВ</button>
         </div>

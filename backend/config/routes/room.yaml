@@ -37,3 +37,8 @@ room_get_all_users:
     path: /room/getUsers
     methods: GET
     controller: App\Controller\RoomController::getUsers
+
+update_ready_state:
+    path: /room/updateReadyState
+    methods: POST
+    controller: App\Controller\RoomController::updateReadyState

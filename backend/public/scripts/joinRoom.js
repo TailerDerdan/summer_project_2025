@@ -95,13 +95,13 @@ function connectToWSRoom(dataUser)   {
             window.location.href = ("/main")
         }
         if (data.type === "update_ready_state") {
-            updateReadyState(data.data)
+            await updateReadyState(data.data)
         }
     }
     return socket
 }
 
-function updateReadyState(data) {
+async function updateReadyState(data) {
     const userElt = document.getElementById(`user-${data.userId}`)
     const readyBtn = document.getElementById(`room_ready-${data.userId}`)
     if (data.isReady) {
@@ -115,6 +115,7 @@ function updateReadyState(data) {
             readyBtn.value = "not ready"
         }
     }
+    await updateReadyStateFetch(data.isReady)
 }
 
 async function deleteRoom(roomId) {
@@ -166,8 +167,7 @@ function handleGameStart(data, user) {
         nickname: user.nickname,
     }))
     let countStart = 2
-    const countStartElt = document.createElement("div")
-    document.body.prepend(countStartElt)
+    const countStartElt = document.querySelector(".timer-down")
     const timer = setInterval(() => {
         countStartElt.textContent = `Переход в игру через ${countStart}`
         countStart--
@@ -191,4 +191,16 @@ async function deleteUserFromRoom(roomId) {
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
+ }
+
+ async function updateReadyStateFetch(isReady) {
+    const response = await fetch('/room/updateReadyState', {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            isReady: isReady,
+        })
+    })
  }

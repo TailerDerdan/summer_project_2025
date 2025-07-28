@@ -12,6 +12,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
         private ?int $roomId,
         private string $nickName,
         private string $password,
+        private bool $isReady,
         private ?string $avatarPath,
         private int $countGames = 0,
         private int $countWins = 0,
@@ -35,6 +36,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
     }
     public function getNickName(): string {
         return $this->nickName;
+    }
+    public function getIsReady(): bool {
+        return $this->isReady;
     }
     public function getPassword(): string {
         return $this->password;
@@ -60,5 +64,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
 
     public function setRoomId(?int $roomId): void {
         $this->roomId = $roomId;
+    }
+    public function setIsReady(bool $isReady): void {
+        $this->isReady = $isReady;
     }
 }

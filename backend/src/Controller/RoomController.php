@@ -123,4 +123,14 @@ class RoomController extends AbstractController {
             'users' => $users,
         ]);
     }
+
+    public function updateReadyState(Request $request): Response
+    {
+        $user = $this->getUser();
+        $data = json_decode($request->getContent(), true);
+        $user->setIsReady($data['isReady']);
+        return $this->json([
+            "status" => "success",
+        ]);
+    }
 }
