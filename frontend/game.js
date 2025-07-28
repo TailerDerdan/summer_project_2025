@@ -244,7 +244,7 @@ function updateTimer(seconds) {
 
             if (remainingTime <= 0) {
                 console.log("END TIMER")
-                //clearInterval(gameTimer);
+                clearInterval(gameTimer);
                 //showResultsAfterBattle();
             }
         }, 1000);
