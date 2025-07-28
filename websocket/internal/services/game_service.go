@@ -262,7 +262,7 @@ func (gs *GameService) generateGameID(gameType string) string {
 	return fmt.Sprintf("%s-%s", gameType, string(idPart))
 }
 
-func (gs *GameService) EndGame(gameID string) error {
+func (gs *GameService) EndGame(conn *websocket.Conn, gameID string) error {
 	gs.mu.Lock()
 	defer gs.mu.Unlock()
 
@@ -300,10 +300,15 @@ func (gs *GameService) EndGame(gameID string) error {
 		},
 	}
 	fmt.Printf("<-222-> endMsg: %v\n", endMsg)
+	if err := conn.WriteJSON(endMsg); err != nil {
+		fmt.Println("MMMMMMMM")
+	}
+	fmt.Println("LLLLLLLL")
 	//if err := gs.SendMessageInsideGameToAll(gameID, endMsg); err != nil {
 	//	fmt.Println("error sending end message")
 	//	return err
 	//}
+
 	for conn, _ := range game.Players {
 		//if err := conn.Close(); err != nil {
 		//	return fmt.Errorf("error conn closing to client")
@@ -456,7 +461,7 @@ func (gs *GameService) GetGameState(gameID string) ([]models.PlayerInfo, error) 
 	return players, nil
 }
 
-func (gs *GameService) StartTimer(gameID string) {
+func (gs *GameService) StartTimer(conn *websocket.Conn, gameID string) {
 	gs.mu.Lock()
 	game, exists := gs.activeGames[gameID]
 	gs.mu.Unlock()
@@ -475,9 +480,10 @@ func (gs *GameService) StartTimer(gameID string) {
 				remaining := game.Duration - elapsed
 				if remaining <= 0 {
 					fmt.Printf("game %s has finished\n", gameID)
-					//if err := gs.EndGame(gameID); err != nil {
-					//	return
-					//}
+					if err := gs.EndGame(conn, gameID); err != nil {
+						fmt.Printf("error sending end message: %v\n", err)
+						return
+					}
 					//endMsg := map[string]interface{}{
 					//	"type": "game_end",
 					//	"data": map[string]interface{}{

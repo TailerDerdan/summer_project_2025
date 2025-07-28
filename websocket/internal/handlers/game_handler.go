@@ -216,7 +216,7 @@ func (gh *GameHandler) HandleGameConnection2(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	fmt.Println("/-444-/")
-	gh.gameService.StartTimer(gameID)
+	gh.gameService.StartTimer(conn, gameID)
 	fmt.Println("/-GGGGGGGGGGGGG-/")
 	//if err := gh.gameService.StartTimer(gameID); err != nil {
 	//	log.Printf("Game WS start timer failed: %v", err)
