@@ -108,7 +108,7 @@ func (gs *GameService) CreateGame(roomID, gameType string) *models.Game {
 		Players:   make(map[*websocket.Conn]*models.PlayerInfo),
 		Stats:     make(map[string]*models.PlayerStats),
 		StartTime: time.Now(),
-		Duration:  35 * time.Second,
+		Duration:  15 * time.Second,
 	}
 
 	gs.activeGames[gameID] = game
@@ -146,9 +146,9 @@ func (gs *GameService) SendMessageInsideGameToAll(gameID string, msg map[string]
 	}
 	fmt.Printf("Sending message to all players: %v\n", msg)
 	for conn := range game.Players {
-		fmt.Printf("qwerty")
+		fmt.Printf("qwerty, msg: %v\n", msg)
 		if err := conn.WriteJSON(msg); err != nil {
-			fmt.Printf("asdfg")
+			fmt.Printf("asdfg\n")
 			if err := conn.Close(); err != nil {
 				return fmt.Errorf("error conn closing to client")
 			}
