@@ -306,6 +306,15 @@ func (gs *GameService) EndGame(gameID string) error {
 		fmt.Println("error sending end message")
 		return err
 	}
+	for conn := range game.Players {
+		if err := conn.Close(); err != nil {
+			fmt.Println("error closing to client")
+			return err
+		}
+		gs.mu.Lock()
+		delete(game.Players, conn)
+		gs.mu.Unlock()
+	}
 	gs.mu.Lock()
 	delete(gs.activeGames, gameID)
 	gs.mu.Unlock()
