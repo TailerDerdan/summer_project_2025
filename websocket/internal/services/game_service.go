@@ -112,7 +112,7 @@ func (gs *GameService) CreateGame(roomID, gameType string) *models.Game {
 	}
 
 	gs.activeGames[gameID] = game
-	gs.StartTimer(gameID)
+	//gs.StartTimer(gameID)
 	return game
 }
 
@@ -475,7 +475,21 @@ func (gs *GameService) StartTimer(gameID string) {
 					//if err := gs.EndGame(gameID); err != nil {
 					//	return
 					//}
-					gs.EndGame(gameID)
+					endMsg := map[string]interface{}{
+						"type": "game_end",
+						"data": map[string]interface{}{
+							"gameId":  gameID,
+							"winner":  "20",
+							"stats":   game.Stats,
+							"players": game.Players,
+						},
+					}
+					fmt.Printf("<-222-> endMsg: %v\n", endMsg)
+					if err := gs.SendMessageInsideGameToAll(gameID, endMsg); err != nil {
+						fmt.Println("error sending end message")
+						//return err
+					}
+					//gs.EndGame(gameID)
 					fmt.Println("&)*(&)*&)*")
 					return
 				}
