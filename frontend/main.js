@@ -49,7 +49,7 @@ function gameLoop()
         //recordDeath();
     }
 
-    // checkAndSendPosition()
+    checkAndSendPosition()
 
     camera.update();
     updateTexture();
