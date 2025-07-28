@@ -12,7 +12,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
         private ?int $roomId,
         private string $nickName,
         private string $password,
-        private bool $isReady,
+        private bool $isReady = false,
         private ?string $avatarPath,
         private int $countGames = 0,
         private int $countWins = 0,

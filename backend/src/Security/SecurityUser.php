@@ -12,7 +12,7 @@ class SecurityUser implements UserInterface, PasswordAuthenticatedUserInterface 
         private string $nickName,
         private string $password,
         private bool $isReady,
-        private array $roles,
+//        private array $roles,
         private ?int $roomId,
         private ?string $avatarPath,
         private int $countGames,
