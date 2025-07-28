@@ -50,6 +50,7 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
                 'roomId' => $user->getRoomId(),
                 'userId' => $user->getUserId(),
                 'nickname' => $user->getNickName(),
+                'isReady' => $user->getIsReady(),
             ];
         }, $users);
     }

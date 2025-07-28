@@ -118,7 +118,6 @@ func (rs *RoomService) UnregisterConnection(conn *websocket.Conn, roomID, userID
 	if err := conn.Close(); err != nil {
 		log.Printf("Error closing connection: %v", err)
 	}
-	delete(room.Clients, conn)
 
 	if room.PlayersCount == 0 || room.HostID == userID {
 		deleteRoomMsg := map[string]interface{}{
@@ -145,9 +144,11 @@ func (rs *RoomService) UnregisterConnection(conn *websocket.Conn, roomID, userID
 			delete(room.Clients, conn)
 		}
 		delete(rs.rooms, roomID)
-	} else if err := conn.Close(); err != nil {
+	}
+	if err := conn.Close(); err != nil {
 		log.Printf("Error closing websocket connection: %v", err)
 	}
+	delete(room.Clients, conn)
 }
 
 func (rs *RoomService) SendRoomInfo(conn *websocket.Conn, roomID string) {
