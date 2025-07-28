@@ -290,13 +290,20 @@ func (gs *GameService) EndGame(conn *websocket.Conn, gameID string) error {
 		}
 	}
 	game.State.Winner = winnerID
+	players := make([]models.PlayerInfo, 0, len(game.Players))
+	for _, player := range game.Players {
+		players = append(players, models.PlayerInfo{
+			PlayerID: player.PlayerID,
+			Nickname: player.Nickname,
+		})
+	}
 	endMsg := map[string]interface{}{
 		"type": "game_end",
 		"data": map[string]interface{}{
 			"gameId":  gameID,
 			"winner":  winnerID,
 			"stats":   game.Stats,
-			"players": game.Players,
+			"players": players,
 		},
 	}
 	fmt.Printf("<-222-> endMsg: %v\n", endMsg)
@@ -478,23 +485,6 @@ func (gs *GameService) StartTimer(conn *websocket.Conn, gameID string) {
 			case <-ticker.C:
 				elapsed := time.Since(game.StartTime)
 				remaining := game.Duration - elapsed
-				if remaining == 15 {
-					endMsg := map[string]interface{}{
-						"type": "game_end",
-						"data": map[string]interface{}{
-							"gameId":  gameID,
-							"winner":  "20",
-							"stats":   game.Stats,
-							"players": game.Players,
-						},
-					}
-					fmt.Printf("<-234523-> endMsg: %v\n", endMsg)
-					if err := gs.SendMessageInsideGameToAll(gameID, endMsg); err != nil {
-						fmt.Println("error sending end message")
-						return
-					}
-					return
-				}
 				if remaining <= 0 {
 					fmt.Printf("game %s has finished\n", gameID)
 					if err := gs.EndGame(conn, gameID); err != nil {
