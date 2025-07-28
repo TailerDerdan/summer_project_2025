@@ -167,7 +167,7 @@ function handleGameStart(data, user) {
     }))
     let countStart = 2
     const countStartElt = document.createElement("div")
-    document.body.appendChild(countStartElt)
+    document.body.prepend(countStartElt)
     const timer = setInterval(() => {
         countStartElt.textContent = `Переход в игру через ${countStart}`
         countStart--
