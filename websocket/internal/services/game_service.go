@@ -139,13 +139,15 @@ func (gs *GameService) SendMessageInsideGame(playerConn *websocket.Conn, gameID 
 }
 
 func (gs *GameService) SendMessageInsideGameToAll(gameID string, msg map[string]interface{}) error {
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game not exists")
 	}
 	fmt.Printf("Sending message to all players: %v\n", msg)
 	for conn := range game.Players {
-		conn.WriteJSON(msg)
+		//conn.WriteJSON(msg)
 		if err := conn.WriteJSON(msg); err != nil {
 			fmt.Println("OOO0---OOOO")
 		}
@@ -260,8 +262,8 @@ func (gs *GameService) generateGameID(gameType string) string {
 }
 
 func (gs *GameService) EndGame(gameID string) error {
-	gs.mu.Lock()
-	defer gs.mu.Unlock()
+	//gs.mu.Lock()
+	//defer gs.mu.Unlock()
 
 	game, exists := gs.activeGames[gameID]
 	if !exists {
@@ -308,7 +310,9 @@ func (gs *GameService) EndGame(gameID string) error {
 	//	conn.Close()
 	//	//delete(game.Players, conn)
 	//}
+	gs.mu.Lock()
 	delete(gs.activeGames, gameID)
+	gs.mu.Unlock()
 	return nil
 }
 

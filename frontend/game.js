@@ -243,6 +243,7 @@ function updateTimer(seconds) {
             timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
             if (remainingTime <= 0) {
+                console.log("END TIMER")
                 clearInterval(gameTimer);
                 //showResultsAfterBattle();
             }
