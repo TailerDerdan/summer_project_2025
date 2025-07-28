@@ -201,10 +201,18 @@ export function updateMovementBullets()
 
 let throttleUpd = throttle(updateBullets, player.weapon.timeBetweenBul * 1000);
 
+// export let throttleBotsShoot = [];
+// for (const bot of arrBot) {
+//     const throttleBotShoot = throttle(updateBotShooting(bot), bot.weapon.timeBetweenBul * 1000);
+//     throttleBotsShoot.push(throttleBotShoot);
+// }
+
 export let throttleBotsShoot = [];
 for (const bot of arrBot) {
-    const throttleBotShoot = throttle(updateBotShooting(bot), bot.weapon.timeBetweenBul * 1000);
-    throttleBotsShoot.push(throttleBotShoot);
+    if (bot.weapon) {
+        const throttleBotShoot = throttle(() => updateBotShooting(bot), bot.weapon.timeBetweenBul * 1000);
+        throttleBotsShoot.push(throttleBotShoot);
+    }
 }
 
 function throttleUpdateBullets(event)

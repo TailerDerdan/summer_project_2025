@@ -16,9 +16,9 @@ export const arrEnemy = [];
 
 export class Player extends Character
 {
-    constructor(x, y, dir, width, height, speed, weapon)
+    constructor(id, x, y, dir, width, height, speed, weapon)
     {
-        super(x, y, width, height, dir);
+        super(id, x, y, width, height, dir);
 
         this.speed = speed;
         this.weapon = weapon;
@@ -84,4 +84,4 @@ export class Player extends Character
 
 const weapon1 = new Weapon(InitShotgun, TYPE_WEAPON.SHOTGUN);
 
-export const player = new Player(400, 400, 0, 75, 48, 14, weapon1);
+export const player = new Player(null, 400, 400, 0, 75, 48, 14, weapon1);
