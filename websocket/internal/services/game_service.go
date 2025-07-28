@@ -401,6 +401,19 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 	}
 	game.Players[conn] = player
 	game.Stats[player.PlayerID] = &models.PlayerStats{}
+	joinMsg := map[string]interface{}{
+		"type": "join_player",
+		"data": map[string]interface{}{
+			"userId": player.PlayerID,
+			"x":      player.X,
+			"y":      player.Y,
+			"angle":  player.Angle,
+		},
+	}
+	if err := gs.SendMessageInsideGame(conn, gameID, joinMsg); err != nil {
+		fmt.Println("error sending join message")
+		return err
+	}
 	return nil
 }
 
