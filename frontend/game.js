@@ -393,12 +393,12 @@ function getCurrentPosition()
 function updateEnemyPosition(userId, x, y)
 {
     console.log('WWW')
-    const enemy = arrEnemyForWS.find(e => e.userId === userId);
+    const enemy = arrEnemyForWS.find(e => parseInt(e.userId) === parseInt(userId));
     if (enemy) {
         enemy.x = x;
         enemy.y = y;
         console.log('RRR')
-        const gameEnemy = arrEnemy.find(e => e.playerId === userId);
+        const gameEnemy = arrEnemy.find(e => parseInt(e.playerId) === parseInt(userId));
         if (gameEnemy) {
             gameEnemy.x = x;
             gameEnemy.y = y;
