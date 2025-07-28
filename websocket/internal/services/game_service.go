@@ -469,3 +469,42 @@ func (gs *GameService) StartTimer(gameID string) {
 		}
 	}()
 }
+
+func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID string, x, y, angle interface{}) error {
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
+
+	game, exists := gs.activeGames[gameID]
+	if !exists {
+		return fmt.Errorf("game %s does not exist", gameID)
+	}
+
+	var playerConn *websocket.Conn
+	for conn, player := range game.Players {
+		if player.PlayerID == playerID {
+			playerConn = conn
+			break
+		}
+	}
+	if playerConn == nil {
+		return fmt.Errorf("player %s not found in game", playerID)
+	}
+
+	player := game.Players[playerConn]
+	player.X = x.(int)
+	player.Y = y.(int)
+	player.Angle = angle.(int)
+
+	positionMsg := map[string]interface{}{
+		"type": "player_move",
+		"data": map[string]interface{}{
+			"playerId": playerID,
+			"x":        player.X,
+			"y":        player.Y,
+			"angle":    player.Angle,
+		},
+	}
+
+	gs.SendMessageInsideGame(conn, gameID, positionMsg)
+	return nil
+}

@@ -360,6 +360,7 @@ let lastSentTime = 0;
 
 export function checkAndSendPosition()
 {
+    console.log('QQQ')
     const now = Date.now();
     const currentPos = getCurrentPosition();
 
@@ -391,6 +392,7 @@ function getCurrentPosition()
 
 function updateEnemyPosition(userId, x, y)
 {
+    console.log('WWW')
     const enemy = arrEnemyForWS.find(e => e.userId === userId);
     if (enemy) {
         enemy.x = x;

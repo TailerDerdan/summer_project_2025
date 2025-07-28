@@ -49,6 +49,8 @@ function gameLoop()
         //recordDeath();
     }
 
+    checkAndSendPosition()
+
     camera.update();
     updateTexture();
     render(state);

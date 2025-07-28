@@ -293,8 +293,8 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 	case "player_move":
 		fmt.Println("/-777777-/")
 		//gh.gameService.EndGame(gameID)
-		return nil
-		//return gh.gameService.UpdatePosition(gameID, playerID, msgUpdatePos.Data["x"], msgUpdatePos.Data["Y"], msgUpdatePos.Data["angle"])
+		//return nil
+		return gh.gameService.UpdatePosition(conn*websocket.Conn{}, gameID, playerID, msg.Data["x"], msg.Data["Y"], msg.Data["angle"])
 	case "game_end":
 		fmt.Println("/-876786986-/")
 		return nil
