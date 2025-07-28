@@ -148,18 +148,12 @@ func (gs *GameService) SendMessageInsideGameToAll(gameID string, msg map[string]
 	}
 	fmt.Printf("Sending message to all players: %v\n", msg)
 	for conn := range game.Players {
-		//conn.WriteJSON(msg)
-		if err := conn.WriteJSON(msg); err != nil {
-			fmt.Printf("OOO0---OOOO, %v\n", conn)
+		if err := conn.Close(); err != nil {
+			return fmt.Errorf("error conn closing to client")
 		}
-		fmt.Println("EEEEEEE")
-		//	if err := conn.Close(); err != nil {
-		//		return fmt.Errorf("error conn closing to client")
-		//	}
-		//	//gs.mu.Lock()
-		//	delete(game.Players, conn)
-		//	//gs.mu.Unlock()
-		//}
+		gs.mu.Lock()
+		delete(game.Players, conn)
+		gs.mu.Unlock()
 	}
 	fmt.Println("End sending message to all players")
 	return nil
@@ -262,7 +256,7 @@ func (gs *GameService) generateGameID(gameType string) string {
 	return fmt.Sprintf("%s-%s", gameType, string(idPart))
 }
 
-func (gs *GameService) EndGame(conn *websocket.Conn, gameID string) error {
+func (gs *GameService) EndGame(gameID string) error {
 	gs.mu.Lock()
 	defer gs.mu.Unlock()
 
@@ -271,7 +265,6 @@ func (gs *GameService) EndGame(conn *websocket.Conn, gameID string) error {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
 
-	fmt.Println("88888888888")
 	var winnerID string
 	var maxScore = -1
 	for id, stats := range game.Stats {
@@ -280,7 +273,7 @@ func (gs *GameService) EndGame(conn *websocket.Conn, gameID string) error {
 			winnerID = id
 		}
 	}
-	fmt.Println("00000000")
+
 	if maxScore <= 0 {
 		if len(game.Players) > 0 {
 			for conn := range game.Players {
@@ -306,34 +299,13 @@ func (gs *GameService) EndGame(conn *websocket.Conn, gameID string) error {
 			"players": players,
 		},
 	}
-	fmt.Printf("<-222-> endMsg: %v\n", endMsg)
-	if err := conn.WriteJSON(endMsg); err != nil {
-		fmt.Printf("MMMMMMMM, %v\n", err)
+	if err := gs.SendMessageInsideGameToAll(gameID, endMsg); err != nil {
+		fmt.Println("error sending end message")
+		return err
 	}
-	fmt.Println("LLLLLLLL")
-	//if err := gs.SendMessageInsideGameToAll(gameID, endMsg); err != nil {
-	//	fmt.Println("error sending end message")
-	//	return err
-	//}
-
-	for conn, _ := range game.Players {
-		//if err := conn.Close(); err != nil {
-		//	return fmt.Errorf("error conn closing to client")
-		//}
-		//fmt.Println("XXXX")
-		//if (user[]) {
-		//	fmt.Println("XXXX")
-		//}
-		if err := conn.WriteJSON(endMsg); err != nil {
-			fmt.Println("YYYY")
-		}
-		fmt.Println("ZZZZ")
-		//conn.Close()
-		//delete(game.Players, conn)
-	}
-	//gs.mu.Lock()
-	//delete(gs.activeGames, gameID)
-	//gs.mu.Unlock()
+	gs.mu.Lock()
+	delete(gs.activeGames, gameID)
+	gs.mu.Unlock()
 	return nil
 }
 
@@ -468,7 +440,7 @@ func (gs *GameService) GetGameState(gameID string) ([]models.PlayerInfo, error) 
 	return players, nil
 }
 
-func (gs *GameService) StartTimer(conn *websocket.Conn, gameID string) {
+func (gs *GameService) StartTimer(gameID string) {
 	gs.mu.Lock()
 	game, exists := gs.activeGames[gameID]
 	gs.mu.Unlock()
@@ -486,27 +458,10 @@ func (gs *GameService) StartTimer(conn *websocket.Conn, gameID string) {
 				elapsed := time.Since(game.StartTime)
 				remaining := game.Duration - elapsed
 				if remaining <= 0 {
-					fmt.Printf("game %s has finished\n", gameID)
-					if err := gs.EndGame(conn, gameID); err != nil {
+					if err := gs.EndGame(gameID); err != nil {
 						fmt.Printf("error sending end message: %v\n", err)
 						return
 					}
-					//endMsg := map[string]interface{}{
-					//	"type": "game_end",
-					//	"data": map[string]interface{}{
-					//		"gameId":  gameID,
-					//		"winner":  "20",
-					//		"stats":   game.Stats,
-					//		"players": game.Players,
-					//	},
-					//}
-					//fmt.Printf("<-222-> endMsg: %v\n", endMsg)
-					//if err := gs.SendMessageInsideGameToAll(gameID, endMsg); err != nil {
-					//	fmt.Println("error sending end message")
-					//	//return err
-					//}
-					//gs.EndGame(gameID)
-					fmt.Println("&)*(&)*&)*")
 					return
 				}
 
