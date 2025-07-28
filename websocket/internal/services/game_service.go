@@ -121,18 +121,16 @@ func (gs *GameService) SendMessageInsideGame(playerConn *websocket.Conn, gameID 
 	if !exists {
 		return fmt.Errorf("game not exists")
 	}
-	fmt.Printf("rrrrrrrr")
 	for conn := range game.Players {
 		if conn != playerConn {
-			fmt.Printf("uuuuuu")
 			if err := conn.WriteJSON(msg); err != nil {
 				if err := conn.Close(); err != nil {
 					return fmt.Errorf("error conn closing to client")
 				}
-				fmt.Println("FFFFFFF")
-				//gs.mu.Lock()
+				gs.mu.Lock()
 				delete(game.Players, conn)
-				//gs.mu.Unlock()
+				gs.mu.Unlock()
+				return err
 			}
 		}
 	}
@@ -140,20 +138,23 @@ func (gs *GameService) SendMessageInsideGame(playerConn *websocket.Conn, gameID 
 }
 
 func (gs *GameService) SendMessageInsideGameToAll(gameID string, msg map[string]interface{}) error {
-	gs.mu.Lock()
-	defer gs.mu.Unlock()
+	//gs.mu.Lock()
+	//defer gs.mu.Unlock()
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game not exists")
 	}
 	fmt.Printf("Sending message to all players: %v\n", msg)
 	for conn := range game.Players {
-		if err := conn.Close(); err != nil {
-			return fmt.Errorf("error conn closing to client")
+		if err := conn.WriteJSON(msg); err != nil {
+			if err := conn.Close(); err != nil {
+				return fmt.Errorf("error conn closing to client")
+			}
+			gs.mu.Lock()
+			delete(game.Players, conn)
+			gs.mu.Unlock()
+			return err
 		}
-		gs.mu.Lock()
-		delete(game.Players, conn)
-		gs.mu.Unlock()
 	}
 	fmt.Println("End sending message to all players")
 	return nil
