@@ -479,11 +479,12 @@ func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID str
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
 
+	fmt.Println("()_0_0_()")
 	player := game.Players[conn]
 	player.X = x.(float64)
 	player.Y = y.(float64)
 	//player.Angle = angle.(float64)
-
+	fmt.Println("()_1_1_()")
 	positionMsg := map[string]interface{}{
 		"type": "player_move",
 		"data": map[string]interface{}{
@@ -493,7 +494,7 @@ func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID str
 			//"angle":    player.Angle,
 		},
 	}
-
-	gs.SendMessageInsideGame(conn, gameID, positionMsg)
+	fmt.Println("()_2_2_()")
+	gs.SendMessageInsideGameToAll(gameID, positionMsg)
 	return nil
 }
