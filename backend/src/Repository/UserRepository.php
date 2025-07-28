@@ -81,7 +81,7 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
     public function updateReadyState(int $userId, bool $isReady): void
     {
         $user = $this->find($userId);
-        if ($user->getReadyState() === $isReady) {
+        if ($user->getIsReady() === $isReady) {
             return;
         }
         $user->setIsReady($isReady);
