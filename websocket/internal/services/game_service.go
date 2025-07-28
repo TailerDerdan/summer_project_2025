@@ -263,8 +263,8 @@ func (gs *GameService) generateGameID(gameType string) string {
 }
 
 func (gs *GameService) EndGame(gameID string) error {
-	//gs.mu.Lock()
-	//defer gs.mu.Unlock()
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
 
 	game, exists := gs.activeGames[gameID]
 	if !exists {
@@ -304,11 +304,14 @@ func (gs *GameService) EndGame(gameID string) error {
 	//	fmt.Println("error sending end message")
 	//	return err
 	//}
-	for conn := range game.Players {
+	for conn, _ := range game.Players {
 		//if err := conn.Close(); err != nil {
 		//	return fmt.Errorf("error conn closing to client")
 		//}
-		fmt.Println("XXXX")
+		//fmt.Println("XXXX")
+		//if (user[]) {
+		//	fmt.Println("XXXX")
+		//}
 		if err := conn.WriteJSON(endMsg); err != nil {
 			fmt.Println("YYYY")
 		}
@@ -475,20 +478,20 @@ func (gs *GameService) StartTimer(gameID string) {
 					//if err := gs.EndGame(gameID); err != nil {
 					//	return
 					//}
-					endMsg := map[string]interface{}{
-						"type": "game_end",
-						"data": map[string]interface{}{
-							"gameId":  gameID,
-							"winner":  "20",
-							"stats":   game.Stats,
-							"players": game.Players,
-						},
-					}
-					fmt.Printf("<-222-> endMsg: %v\n", endMsg)
-					if err := gs.SendMessageInsideGameToAll(gameID, endMsg); err != nil {
-						fmt.Println("error sending end message")
-						//return err
-					}
+					//endMsg := map[string]interface{}{
+					//	"type": "game_end",
+					//	"data": map[string]interface{}{
+					//		"gameId":  gameID,
+					//		"winner":  "20",
+					//		"stats":   game.Stats,
+					//		"players": game.Players,
+					//	},
+					//}
+					//fmt.Printf("<-222-> endMsg: %v\n", endMsg)
+					//if err := gs.SendMessageInsideGameToAll(gameID, endMsg); err != nil {
+					//	fmt.Println("error sending end message")
+					//	//return err
+					//}
 					//gs.EndGame(gameID)
 					fmt.Println("&)*(&)*&)*")
 					return
