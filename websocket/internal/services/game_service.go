@@ -146,7 +146,9 @@ func (gs *GameService) SendMessageInsideGameToAll(gameID string, msg map[string]
 	}
 	fmt.Printf("Sending message to all players: %v\n", msg)
 	for conn := range game.Players {
+		fmt.Printf("qwerty")
 		if err := conn.WriteJSON(msg); err != nil {
+			fmt.Printf("asdfg")
 			if err := conn.Close(); err != nil {
 				return fmt.Errorf("error conn closing to client")
 			}
