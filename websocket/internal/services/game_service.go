@@ -299,17 +299,22 @@ func (gs *GameService) EndGame(gameID string) error {
 		},
 	}
 	fmt.Printf("<-222-> endMsg: %v\n", endMsg)
-	if err := gs.SendMessageInsideGameToAll(gameID, endMsg); err != nil {
-		fmt.Println("error sending end message")
-		return err
-	}
-	//for conn := range game.Players {
-	//	//if err := conn.Close(); err != nil {
-	//	//	return fmt.Errorf("error conn closing to client")
-	//	//}
-	//	conn.Close()
-	//	//delete(game.Players, conn)
+	//if err := gs.SendMessageInsideGameToAll(gameID, endMsg); err != nil {
+	//	fmt.Println("error sending end message")
+	//	return err
 	//}
+	for conn := range game.Players {
+		//if err := conn.Close(); err != nil {
+		//	return fmt.Errorf("error conn closing to client")
+		//}
+		fmt.Println("XXXX")
+		if err := conn.WriteJSON(endMsg); err != nil {
+			fmt.Println("YYYY")
+		}
+		fmt.Println("ZZZZ")
+		//conn.Close()
+		//delete(game.Players, conn)
+	}
 	//gs.mu.Lock()
 	//delete(gs.activeGames, gameID)
 	//gs.mu.Unlock()
@@ -480,7 +485,6 @@ func (gs *GameService) StartTimer(gameID string) {
 						"remaining": int(remaining.Seconds()),
 					},
 				}
-
 				if err := gs.SendMessageInsideGameToAll(gameID, msg); err != nil {
 					return
 				}
