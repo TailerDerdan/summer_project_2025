@@ -101,12 +101,13 @@ function handleInitPlayers(players)
 
         console.log("playerData(init_players): ", playerData)
 
+        console.log("oooo")
         const enemy = arrEnemyForWS.find((elem) => {
             if (elem.playerId === playerData.playerId) return true;
         });
-
         if (!enemy)
         {
+            console.log("pppp")
             arrEnemyForWS.push({
                 x: playerData.x,
                 y: playerData.y,
@@ -114,7 +115,7 @@ function handleInitPlayers(players)
             })
             const newEnemy = new Enemy(playerData.playerId, playerData.x, playerData.y, WIDTH_ENEMY, HEIGHT_ENEMY);
             arrEnemy.push(newEnemy);
-            console.log(arrEnemy);
+            console.log("arrEnemy: ++++", arrEnemy);
         }
     })
 }
@@ -136,7 +137,7 @@ function handleJoinPlayer(data)
         })
         const newEnemy = new Enemy(data.userId, data.x, data.y, WIDTH_ENEMY, HEIGHT_ENEMY);
         arrEnemy.push(newEnemy);
-        console.log(arrEnemy);
+        console.log("arrEnemy: ====", arrEnemy);
     }
 }
 
@@ -394,12 +395,12 @@ function updateEnemyPosition(userId, x, y)
 {
 
     const enemy = arrEnemyForWS.find(e => e.userId === parseInt(userId));
-    console.log('WWW: ', arrEnemyForWS)
+    console.log('WWW: ', arrEnemyForWS, typeof arrEnemyForWS[0].userId)
     if (enemy) {
         enemy.x = x;
         enemy.y = y;
         const gameEnemy = arrEnemy.find(e => e.playerId === parseInt(userId));
-        console.log('RRR: ', arrEnemy)
+        console.log('RRR: ', arrEnemy, typeof arrEnemy[0].playerId)
         if (gameEnemy) {
             gameEnemy.x = x;
             gameEnemy.y = y;
