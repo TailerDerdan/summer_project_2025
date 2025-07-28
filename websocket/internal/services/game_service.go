@@ -139,8 +139,8 @@ func (gs *GameService) SendMessageInsideGame(playerConn *websocket.Conn, gameID 
 }
 
 func (gs *GameService) SendMessageInsideGameToAll(gameID string, msg map[string]interface{}) error {
-	gs.mu.Lock()
-	defer gs.mu.Unlock()
+	//gs.mu.Lock()
+	//defer gs.mu.Unlock()
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game not exists")
@@ -262,8 +262,8 @@ func (gs *GameService) generateGameID(gameType string) string {
 }
 
 func (gs *GameService) EndGame(gameID string) error {
-	gs.mu.Lock()
-	defer gs.mu.Unlock()
+	//gs.mu.Lock()
+	//defer gs.mu.Unlock()
 
 	game, exists := gs.activeGames[gameID]
 	if !exists {
