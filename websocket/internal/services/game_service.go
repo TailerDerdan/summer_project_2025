@@ -97,8 +97,8 @@ func NewGameService() *GameService {
 //}
 
 func (gs *GameService) CreateGame(roomID, gameType string) *models.Game {
-	gs.mu.Lock()
-	defer gs.mu.Unlock()
+	//gs.mu.Lock()
+	//defer gs.mu.Unlock()
 
 	gameID := gs.generateGameID(gameType)
 	game := &models.Game{
@@ -112,7 +112,6 @@ func (gs *GameService) CreateGame(roomID, gameType string) *models.Game {
 	}
 
 	gs.activeGames[gameID] = game
-	//gs.StartTimer(gameID)
 	return game
 }
 
@@ -213,8 +212,8 @@ func (gs *GameService) CheckGameEndConditions(gameID string) {
 	//}
 }
 func (gs *GameService) RemovePlayerFromGame(gameID string, conn *websocket.Conn) {
-	gs.mu.Lock()
-	defer gs.mu.Unlock()
+	//gs.mu.Lock()
+	//defer gs.mu.Unlock()
 
 	game, exists := gs.activeGames[gameID]
 	if !exists {
@@ -260,8 +259,8 @@ func (gs *GameService) generateGameID(gameType string) string {
 }
 
 func (gs *GameService) EndGame(gameID string) error {
-	gs.mu.Lock()
-	defer gs.mu.Unlock()
+	//gs.mu.Lock()
+	//defer gs.mu.Unlock()
 
 	game, exists := gs.activeGames[gameID]
 	if !exists {
@@ -415,8 +414,8 @@ func (gs *GameService) PlayerDeath(gameID, playerID string) {
 //}
 
 func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, player *models.PlayerInfo) error {
-	gs.mu.Lock()
-	defer gs.mu.Unlock()
+	//gs.mu.Lock()
+	//defer gs.mu.Unlock()
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
@@ -440,8 +439,8 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 }
 
 func (gs *GameService) GetGameState(gameID string) ([]models.PlayerInfo, error) {
-	gs.mu.Lock()
-	defer gs.mu.Unlock()
+	//gs.mu.Lock()
+	//defer gs.mu.Unlock()
 
 	game, exists := gs.activeGames[gameID]
 	if !exists {
@@ -503,8 +502,8 @@ func (gs *GameService) StartTimer(gameID string) {
 }
 
 func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID string, x, y interface{}) error {
-	gs.mu.Lock()
-	defer gs.mu.Unlock()
+	//gs.mu.Lock()
+	//defer gs.mu.Unlock()
 
 	game, exists := gs.activeGames[gameID]
 	if !exists {
@@ -535,8 +534,8 @@ func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID str
 }
 
 func (gs *GameService) UpdateBullets(conn *websocket.Conn, gameID string, data map[string]interface{}) error {
-	gs.mu.Lock()
-	defer gs.mu.Unlock()
+	//gs.mu.Lock()
+	//defer gs.mu.Unlock()
 
 	_, exists := gs.activeGames[gameID]
 	if !exists {
