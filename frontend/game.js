@@ -112,8 +112,9 @@ function handleInitPlayers(players)
                 x: playerData.x,
                 y: playerData.y,
                 userId: playerData.playerId,
+                dir: playerData.angle
             })
-            const newEnemy = new Enemy(playerData.playerId, playerData.x, playerData.y, WIDTH_ENEMY, HEIGHT_ENEMY);
+            const newEnemy = new Enemy(playerData.playerId, playerData.x, playerData.y, WIDTH_ENEMY, HEIGHT_ENEMY, playerData.angle);
             arrEnemy.push(newEnemy);
             console.log("arrEnemy: ++++", arrEnemy);
         }
@@ -134,8 +135,9 @@ function handleJoinPlayer(data)
             x: data.x,
             y: data.y,
             userId: data.userId,
+            dir: data.angle,
         })
-        const newEnemy = new Enemy(data.userId, data.x, data.y, WIDTH_ENEMY, HEIGHT_ENEMY);
+        const newEnemy = new Enemy(data.userId, data.x, data.y, WIDTH_ENEMY, HEIGHT_ENEMY, data.angle);
         arrEnemy.push(newEnemy);
         console.log("arrEnemy: ====", arrEnemy);
     }

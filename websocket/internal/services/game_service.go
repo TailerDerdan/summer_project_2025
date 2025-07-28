@@ -491,7 +491,7 @@ func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID str
 			"userId": playerID,
 			"x":      player.X,
 			"y":      player.Y,
-			//"angle":    player.Angle,
+			"angle":  player.Angle,
 		},
 	}
 	fmt.Println("()_2_2_()")
