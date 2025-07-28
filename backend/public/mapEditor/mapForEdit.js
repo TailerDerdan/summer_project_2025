@@ -1,8 +1,8 @@
+import { car1, car2, CountOfBuildings, floor, TypeBuilding, wall } from "./buildings/deterBuildings.js";
 import { COUNT_TILE_X, COUNT_TILE_Y, HEIGHT_MAP, TILE_HEIGHT, TILE_WIDTH, WIDTH_MAP } from "./sizes.js";
-import { CountOfBuildings, rectForFloor, rectForWall, TypeBuilding } from "./fillingBuldings.js";
 import { stateEditor } from "./state.js";
 
-export const COLOR_FLOOR = 'rgba(179, 211, 0, 1)';
+export const COLOR_FLOOR = 'rgba(0, 0, 0, 1)';
 export const COLOR_WALL = 'rgba(231, 40, 10, 1)';
 
 class GreedyQuad
@@ -18,7 +18,7 @@ class GreedyQuad
 
 export class MapEditor
 {
-    constructor(width, height, imageFloor, imageWall)
+    constructor(width, height, imageFloor, imageWall, imageCar1, imageCar2)
     {
         this.width = width;
         this.height = height;
@@ -26,6 +26,8 @@ export class MapEditor
         this.buldings = new Array(COUNT_TILE_X * COUNT_TILE_Y).fill(0);
         this.imageFloor = imageFloor;
         this.imageWall = imageWall;
+        this.imageCar1 = imageCar1;
+        this.imageCar2 = imageCar2;
         this.buldingsObject = [];
         this.horizontalWalls = new Array(COUNT_TILE_X * COUNT_TILE_Y).fill(0);
         this.verticalWalls = new Array(COUNT_TILE_X * COUNT_TILE_Y).fill(0);
@@ -59,47 +61,44 @@ export class MapEditor
                     {
                         let iter = this.tileMap[iterY * COUNT_TILE_Y + iterX] - TypeBuilding.Floor1;
                         ctx.drawImage(this.imageFloor,
-                            rectForFloor[iter].sx,
-                            rectForFloor[iter].sy,
-                            rectForFloor[iter].sWidth,
-                            rectForFloor[iter].sHeight,
+                            floor.rectsForSprite[iter].sx,
+                            floor.rectsForSprite[iter].sy,
+                            floor.rectsForSprite[iter].sWidth,
+                            floor.rectsForSprite[iter].sHeight,
                             tileX,
                             tileY,
-                            rectForFloor[iter].dWidth,
-                            rectForFloor[iter].dHeight
+                            floor.rectsForSprite[iter].dWidth,
+                            floor.rectsForSprite[iter].dHeight
                         );
                     }
                     if (this.buldings[iterY * COUNT_TILE_Y + iterX] >= TypeBuilding.Wall1 &&
                         this.buldings[iterY * COUNT_TILE_Y + iterX] <= TypeBuilding.Wall1 + CountOfBuildings.Wall - 1)
                     {
-                        const wall = this.buldingsObject.find((elem) => {
+                        const wallObj = this.buldingsObject.find((elem) => {
                             if (elem.x == iterX && elem.y == iterY) return true;
-                        })
-                        let rotation = 0;
-                        if (wall)
+                        });
+                        if (wallObj)
                         {
-                            rotation = wall.rotation;
+                            wall.drawOnMap(ctx, wallObj);
                         }
-                        let iter = this.buldings[iterY * COUNT_TILE_Y + iterX] - TypeBuilding.Wall1;
-                        ctx.save();
-                        ctx.translate(iterX * TILE_WIDTH + TILE_WIDTH / 2,
-                                      iterY * TILE_HEIGHT + TILE_HEIGHT / 2);
-                        ctx.rotate(rotation * Math.PI / 180);
-                        ctx.drawImage(this.imageWall,
-                            rectForWall[iter].sx,
-                            rectForWall[iter].sy,
-                            rectForWall[iter].sWidth,
-                            rectForWall[iter].sHeight,
-                            -TILE_WIDTH / 2 + 12,
-                            -TILE_HEIGHT / 2,
-                            rectForWall[iter].dWidth,
-                            rectForWall[iter].dHeight
-                        );
-                        ctx.restore();
                     }
                 }
             }
         }
+
+        this.buldingsObject.forEach((elem) => {
+
+            if (elem.choosenBuilding >= TypeBuilding.Car11 &&
+                elem.choosenBuilding <= TypeBuilding.Car11 + CountOfBuildings.Car1 - 1)
+            {
+                car1.drawOnMap(ctx, elem);
+            }
+            if (elem.choosenBuilding >= TypeBuilding.Car21 &&
+                elem.choosenBuilding <= TypeBuilding.Car21 + CountOfBuildings.Car2 - 1)
+            {
+                car2.drawOnMap(ctx, elem);
+            }
+        })
     }
 
     preparingToGreedyMeshing()

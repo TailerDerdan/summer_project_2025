@@ -2,14 +2,12 @@ import { Container } from "../collisions/collisions.js";
 import { Sprite } from "../spriteScript/spriteScript.js";
 import { randomPosition } from "../random.js";
 import {Sound} from "../soundsScript/sound.js";
+import { Blood, remainingBlood } from "../blood/blood.js";
 
 
-const WIDTH_FRAME_BLOOD = 23;
-const HEIGHT_FRAME_BLOOD = 34;
 const WIDTH_FRAME = 25;
 const HEIGHT_FRAME = 34;
 const START_X = 0;
-const COUNT_SPRITE = 8;
 const COUNT_FRAMES = 8;
 
 export class Character
@@ -17,7 +15,7 @@ export class Character
     constructor(x, y, width, height, dir)
     {
         console.log('Bot created with:', {x, y, width, height, dir});
-
+        
         this.x = x;
         this.y = y;
         this.width = width;
@@ -32,9 +30,6 @@ export class Character
 
         this.sprite = new Sprite(COUNT_FRAMES, './sprites/enemySprite.png', 0.1, true);
         this.sprite.makeFrames(WIDTH_FRAME, HEIGHT_FRAME, START_X);
-
-        this.spriteBlood = new Sprite(COUNT_SPRITE, 'sprites/Gore/sprBloodSplat_strip8.png', 0.1, false);
-        this.spriteBlood.makeFrames(WIDTH_FRAME_BLOOD, HEIGHT_FRAME_BLOOD, START_X);
 
         this.revivalSound = new Sound('sounds/Hotline_Miami_2_Wrong_Number/revival.wav');
     }
@@ -96,26 +91,6 @@ export class Character
         ctx.restore();
     }
 
-    drawBlood(ctx, xView, yView)
-    {
-        ctx.save();
-
-        let screenX = this.x - xView;
-        let screenY = this.y - yView;
-
-        ctx.translate(screenX + this.width / 2, screenY + this.height / 2);
-        ctx.rotate(this.dir * Math.PI / 180);
-
-        this.sprite.applyToSpriteMovement(ctx, -this.width / 2, -this.height / 2, this.width, this.height);
-
-        if (this.wasCharacterWounded)
-        {
-            this.spriteBlood.applyToSpriteMovement(ctx, -this.width / 2, -this.height / 2, this.width * 2, this.height * 2);
-        }
-
-        ctx.restore();
-    }
-
     appearanceAfterDeath()
     {
         if (this.isCharacterLive) return;
@@ -124,9 +99,6 @@ export class Character
         this.y = pos.y;
         this.isCharacterLive = true;
         this.wasCharacterWounded = false;
-        this.spriteBlood.timeForMovement = 0;
-        this.spriteBlood.currentFrame = 0;
-        this.spriteBlood.isAnimationPlayed = false;
     }
 
     appearanceAfterDeathWidthDelay() {
@@ -137,10 +109,13 @@ export class Character
     {
         if (this.wasCharacterWounded)
         {
-            this.spriteBlood.playAnimation()
-            if (this.spriteBlood.isAnimationPlayed)
+            const blood = new Blood(this);
+            remainingBlood.push(blood);
+            blood.playAnimationBlood();
+            if (blood.isAnimationPlayed)
             {
                 this.isCharacterLive = false;
+                this.wasCharacterWounded = false;
                 this.appearanceAfterDeathWidthDelay();
                 this.revivalSound.play();
             }

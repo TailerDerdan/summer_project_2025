@@ -27,11 +27,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         setMessageHandler((event) => {
             const msg = JSON.parse(event.data);
-            console.log("msg: ", msg);
+            // console.log("msg: ", msg);
 
             switch (msg.type) {
                 case "init_players":
-                    handleInitPlayers(msg);
+                    handleInitPlayers(msg.data.players);
                     break;
                 case "join_player":
                     handleJoinPlayer(msg.data);
@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function handleInitPlayers(players)
 {
+    console.log(players);
     Object.values(players).forEach(player => {
         
         if (!arrEnemy.has(player.playerId))

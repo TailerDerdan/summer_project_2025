@@ -1,7 +1,8 @@
 import { COUNT_TILE_X, TILE_HEIGHT, TILE_WIDTH } from "./sizes.js";
-import { choosenBuilding, CountOfBuildings, TypeBuilding } from "./fillingBuldings.js";
 import { panOffset, scaleData } from "./panning.js";
 import { stateEditor } from "./state.js";
+import { Building } from "./buildings/bulding.js";
+import { car1, car2, choosenBuilding, CountOfBuildings, floor, TypeBuilding, wall } from "./buildings/deterBuildings.js";
 
 let drawing = false;
 let erasing = false;
@@ -41,18 +42,7 @@ const handleMouseMove = (event) => {
 
     if (erasing)
     {
-        stateEditor.map.tileMap[iterY * COUNT_TILE_X + iterX] = 0;
-        stateEditor.map.buldings[iterY * COUNT_TILE_X + iterX] = 0;
-
-        const wall = stateEditor.map.buldingsObject.find((elem) => {
-            if (elem.x == iterX && elem.y == iterY) return true;
-        });
-
-        if (wall)
-        {
-            const indexDeletedWall = stateEditor.map.buldingsObject.indexOf(wall);
-            stateEditor.map.buldingsObject.splice(indexDeletedWall, 1);
-        }
+        Building.erasingOnMainCanvas(stateEditor.map.tileMap, stateEditor.map.buldingsObject, stateEditor.map.buldings, iterX, iterY);
 
         return;
     }
@@ -62,23 +52,26 @@ const handleMouseMove = (event) => {
             choosenBuilding.state <= TypeBuilding.Floor1 + CountOfBuildings.Floor - 1
         )
         {
-            stateEditor.map.tileMap[iterY * COUNT_TILE_X + iterX] = choosenBuilding.state;
+            floor.drawOnMainCanvas(stateEditor.map.tileMap, stateEditor.map.buldingsObject, stateEditor.map.buldings, iterX, iterY);
         }
 
         if (choosenBuilding.state >= TypeBuilding.Wall1 &&
             choosenBuilding.state <= TypeBuilding.Wall1 + CountOfBuildings.Wall - 1
         )
         {
-            stateEditor.map.buldings[iterY * COUNT_TILE_X + iterX] = choosenBuilding.state;
-
-            const wall = stateEditor.map.buldingsObject.find((elem) => {
-                if (elem.x == iterX && elem.y == iterY) return true;
-            });
-
-            if (wall == undefined)
-            {
-                stateEditor.map.buldingsObject.push({x: iterX, y: iterY, choosenBuilding: choosenBuilding.state, rotation: choosenBuilding.rotation});
-            }
+            wall.drawOnMainCanvas(stateEditor.map.tileMap, stateEditor.map.buldingsObject, stateEditor.map.buldings, iterX, iterY);
+        }
+        if (choosenBuilding.state >= TypeBuilding.Car11 &&
+            choosenBuilding.state <= TypeBuilding.Car11 + CountOfBuildings.Car1 - 1
+        )
+        {
+            car1.drawOnMainCanvas(stateEditor.map.tileMap, stateEditor.map.buldingsObject, stateEditor.map.buldings, iterX, iterY);
+        }
+        if (choosenBuilding.state >= TypeBuilding.Car21 &&
+            choosenBuilding.state <= TypeBuilding.Car21 + CountOfBuildings.Car2 - 1
+        )
+        {
+            car2.drawOnMainCanvas(stateEditor.map.tileMap, stateEditor.map.buldingsObject, stateEditor.map.buldings, iterX, iterY);
         }
     }
     
@@ -95,12 +88,12 @@ const rotationObject = (event) => {
     if (event.key == 'к' || event.key == 'К' || event.key == 'r' || event.key == 'R')
     {
         choosenBuilding.rotation += 90;
-        console.log(choosenBuilding.rotation)
     }
     if (choosenBuilding.rotation == 360)
     {
         choosenBuilding.rotation = 0;
     }
+    console.log(choosenBuilding.rotation)
 }
 
 
