@@ -401,8 +401,8 @@ function updateEnemyPosition(userId, x, y)
     if (enemy) {
         enemy.x = x;
         enemy.y = y;
-        const gameEnemy = arrEnemy.find(e => e.playerId === userId);
-        console.log('RRR: ', arrEnemy, typeof arrEnemy[0].playerId)
+        const gameEnemy = arrEnemy.find(e => e.id === userId);
+        console.log('RRR: ', arrEnemy, typeof arrEnemy[0].id)
         if (gameEnemy) {
             gameEnemy.x = x;
             gameEnemy.y = y;
