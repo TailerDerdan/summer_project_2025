@@ -281,10 +281,10 @@ export function checkAndSendPosition()
                 sendWebSocketMessage({
                     type: "player_move",
                     data: {
-                        userId: "2",
-                        x: 190,
-                        y: 490,
-                        dir: 20,
+                        userId: stateForWS.userId.toString(),
+                        x: currentPos.x,
+                        y: currentPos.y,
+                        dir: currentPos.dir,
                     }
                 });
 
