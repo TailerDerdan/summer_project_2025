@@ -38,18 +38,18 @@ function gameLoop()
         enemy.updateCharacter();
     })
 
-    arrBot.forEach(bot => {
-        //bot.drawCharacter(ctx, camera.xView, camera.yView);
-        bot.drawBlood(ctx, camera.xView, camera.yView);
-        bot.updateMovementBot(ctx, camera.xView, camera.yView);
-        bot.updateCharacter();
-    })
-
-    arrBot.forEach((bot, index) => {
-        if (bot.isCharacterLive && bot.weapon) {
-            throttleBotsShoot[index]();
-        }
-    });
+    // arrBot.forEach(bot => {
+    //     //bot.drawCharacter(ctx, camera.xView, camera.yView);
+    //     bot.drawBlood(ctx, camera.xView, camera.yView);
+    //     bot.updateMovementBot(ctx, camera.xView, camera.yView);
+    //     bot.updateCharacter();
+    // })
+    //
+    // arrBot.forEach((bot, index) => {
+    //     if (bot.isCharacterLive && bot.weapon) {
+    //         throttleBotsShoot[index]();
+    //     }
+    // });
 
     //updateMovementBullets();
 

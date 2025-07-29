@@ -277,7 +277,7 @@ function showResultsAfterBattle(endData, userId) {
         padding: 30px;
         background-color: rgba(0, 0, 0, 0.9);
         color: white;
-        font-size: 25px;
+        font-size: 100px;
         border-radius: 10px;
         text-align: center;
         z-index: 1000;
@@ -303,6 +303,7 @@ function showResultsAfterBattle(endData, userId) {
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 70px;
         ">Выйти</button>
     `
 
