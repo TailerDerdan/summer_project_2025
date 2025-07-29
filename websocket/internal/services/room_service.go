@@ -286,7 +286,6 @@ func (rs *RoomService) UserLeave(conn *websocket.Conn, roomID, userID string) er
 		return fmt.Errorf("room not found")
 	}
 	clientInfo := room.Clients[conn]
-	fmt.Println("&-111-&")
 	leaveMsg := map[string]interface{}{
 		"type": "leave_ack",
 		"data": map[string]interface{}{
@@ -295,7 +294,9 @@ func (rs *RoomService) UserLeave(conn *websocket.Conn, roomID, userID string) er
 			"nickname": clientInfo.Nickname,
 		},
 	}
-	conn.WriteJSON(leaveMsg)
+	if err := conn.WriteJSON(leaveMsg); err != nil {
+		return fmt.Errorf("error sending leave ack: %v", err)
+	}
 	rs.UnregisterConnection(conn, roomID, userID)
 	return nil
 }

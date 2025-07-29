@@ -82,6 +82,7 @@ function connectToWSRoom(dataUser)   {
         }
         if (data.type === 'start_game') {
             handleGameStart(data.data, dataUser.data)
+            await deleteUserFromRoom(data.data.roomId)
             await deleteRoom(data.data.roomId)
             socket.close()
         }
