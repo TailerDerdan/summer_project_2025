@@ -431,7 +431,7 @@ export function sendBullets()
             type: "update_bullets",
             data: {
                 userId: stateForWS.userId.toString(),
-                userBullets: playerBullets
+                bullets: playerBullets
             }
         });
 

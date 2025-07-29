@@ -20,10 +20,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 })
 
 function addUserLocal(user) {
+    console.log("user.isReady", user.isReady, typeof user.isReady)
     const userList = document.querySelector(`.room-info__main-indicator-bar`)
     if (userList &&  !document.getElementById(`user-${user.userId}`)) {
         const userElt = document.createElement("p")
-        if (user.isReady) {
+        if (user.isReady === 1) {
             userElt.setAttribute("style", "background-color: green;")
         } else {
             userElt.setAttribute("style", "background-color: red;")
