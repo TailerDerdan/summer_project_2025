@@ -156,7 +156,7 @@ func (rh *RoomHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	msg := map[string]interface{}{
-		"type": "room_create",
+		"type": "room_create_server",
 		"room": map[string]interface{}{
 			"roomId":       room.RoomID,
 			"name":         room.Name,
@@ -220,7 +220,7 @@ func (rh *RoomHandler) HandleRoomConnection(w http.ResponseWriter, r *http.Reque
 
 func (rh *RoomHandler) sendJoinRoom(conn *websocket.Conn, roomID string, user *models.UserInfo) error {
 	msg := map[string]interface{}{
-		"type": "user_joined",
+		"type": "user_joined_server",
 		"data": map[string]string{
 			"userId":   user.UserID,
 			"nickname": user.Nickname,
@@ -231,7 +231,7 @@ func (rh *RoomHandler) sendJoinRoom(conn *websocket.Conn, roomID string, user *m
 		return err
 	}
 	msg = map[string]interface{}{
-		"type": "add_user",
+		"type": "add_user_server",
 		"data": map[string]string{
 			"roomId":   roomID,
 			"userId":   user.UserID,
@@ -267,7 +267,7 @@ func (rh *RoomHandler) sendInitialRoomState(conn *websocket.Conn, roomID string)
 		return err
 	}
 	return conn.WriteJSON(map[string]interface{}{
-		"type": "init_users",
+		"type": "init_users_server",
 		"data": map[string]interface{}{
 			"users": users,
 		},
