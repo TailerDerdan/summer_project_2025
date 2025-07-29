@@ -264,8 +264,6 @@ func (gs *GameService) endGame(gameID string) error {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
 
-	winnerID := gs.determineWinner(gameID)
-	game.State.Winner = winnerID
 	players := make([]models.PlayerInfo, 0, len(game.Players))
 	for _, player := range game.Players {
 		players = append(players, models.PlayerInfo{
@@ -277,7 +275,7 @@ func (gs *GameService) endGame(gameID string) error {
 		"type": "game_end_server",
 		"data": map[string]interface{}{
 			"gameId":  gameID,
-			"winner":  winnerID,
+			"winner":  game.State.Winner,
 			"stats":   game.Stats,
 			"players": players,
 		},
@@ -586,12 +584,16 @@ func (gs *GameService) saveGameStats(conn *websocket.Conn, gameID string) error 
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
+
+	winnerID := gs.determineWinner(gameID)
+	game.State.Winner = winnerID
+
 	fmt.Println("DDD")
 	player := game.Players[conn]
 	statsMsg := map[string]interface{}{
 		"type": "save_stats_server",
 		"data": map[string]interface{}{
-			"winner": game.State.Winner,
+			"winner": winnerID,
 			"stats": map[string]interface{}{
 				"countKills":  game.Stats[player.PlayerID].Kills,
 				"countDeaths": game.Stats[player.PlayerID].Deaths,
@@ -599,7 +601,7 @@ func (gs *GameService) saveGameStats(conn *websocket.Conn, gameID string) error 
 		},
 	}
 
-	fmt.Print("qwe %+v\n", statsMsg)
+	fmt.Printf("qwe %+v\n", statsMsg)
 	if err := conn.WriteJSON(statsMsg); err != nil {
 		fmt.Printf("error sending stats message: %+v\n", statsMsg)
 		return err

@@ -31,8 +31,8 @@ class UserController extends AbstractController {
             "countKills" => $statsData["countKills"],
             "countDeaths" => $statsData["countDeaths"],
         ];
-        if ($statsData["winner"] == strval($user->getUserId())) {
-            $stats["winner"] = $statsData["winner"];
+        if ($data["winner"] == strval($user->getUserId())) {
+            $stats["winner"] = $data["winner"];
         }
         $this->userService->updateStats($user->getUserId(), $stats);
         return new JsonResponse(['success' => true]);

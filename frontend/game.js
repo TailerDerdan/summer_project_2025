@@ -194,9 +194,9 @@ function showResultsAfterBattle(endData) {
         z-index: 1000;
     `)
 
-    console.log("endData.winner", typeof endData.winner)
+    console.log("endData.winner", endData.winner, typeof endData.winner)
     const userId = stateForWS.userId
-    console.log("userId", typeof userId)
+    console.log("userId", userId, typeof userId)
     const winnerNickname = findPlayerNickname(endData.winner);
     const isWinner = parseInt(endData.winner) === userId;
     console.log("results tyt")
@@ -256,7 +256,7 @@ function showResultsAfterBattle(endData) {
 
 function findPlayerNickname(playerId) 
 {
-    console.log("arrEnemy.has(playerId.toString())", arrEnemy.has(playerId.toString()))
+    console.log("arrEnemy.has(playerId.toString())", arrEnemy.get(playerId.toString()))
     if (arrEnemy.has(playerId.toString())) {
         return arrEnemy.get(playerId.toString()).nickname;
     }
