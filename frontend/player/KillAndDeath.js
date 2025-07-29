@@ -10,7 +10,6 @@ export function playerKill(playerId) {
     console.log(msg, playerId);
     sendWebSocketMessage(msg)
 }
-
 export function playerDeath(playerId) {
     const msg = {
         type: "player_death",
