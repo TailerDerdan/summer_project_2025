@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function handleInitPlayers(players)
 {
+    console.log("==>", players)
     Object.values(players).forEach(player => {
         if (!arrEnemy.has(player.playerId))
         {
