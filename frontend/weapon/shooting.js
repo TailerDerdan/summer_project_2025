@@ -5,6 +5,8 @@ import { Bullet } from './bullet.js';
 import { camera } from '../camera/camera.js';
 import { getDir, inverseDir } from '../player/changeDir.js';
 import { randomMinMax } from '../random.js';
+import { playerKill } from '../player/KillAndDeath.js';
+import { stateForWS } from '../websocketGame.js';
 
 const bullets = [];
 export const playerBullets = [];
@@ -209,6 +211,7 @@ export function updateMovementBullets()
             {
                 bullets.splice(index, 1);
                 enemy.wasCharacterWounded = true;
+                playerKill(stateForWS.userId);
             }
         }
 

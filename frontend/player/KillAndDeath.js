@@ -1,19 +1,21 @@
-import {sendWebSocketMessage} from "../websocketGame";
+import { sendWebSocketMessage } from "../websocketGame.js";
 
-export function playerKill(data) {
+export function playerKill(playerId) {
     const msg = {
         type: "player_kill",
         data: {
-            playerId: data.playerId,
+            playerId: playerId,
         }
     }
+    console.log(msg, playerId);
     sendWebSocketMessage(msg)
 }
-export function playerDeath(data) {
+
+export function playerDeath(playerId) {
     const msg = {
         type: "player_death",
         data: {
-            playerId: data.playerId,
+            playerId: playerId,
         }
     }
     sendWebSocketMessage(msg)

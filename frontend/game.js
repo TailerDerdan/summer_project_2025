@@ -86,12 +86,11 @@ function handleJoinPlayer(player)
 
 function handlePlayerMove(data)
 {
-    console.log(data, arrEnemy);
     if (arrEnemy.has(data.userId))
     {
         arrEnemy.get(data.userId).x = data.x;
         arrEnemy.get(data.userId).y = data.y;
-        arrEnemy.get(data.userId).dir = data.angle;
+        arrEnemy.get(data.userId).dir = data.dir;
     }
 }
 
