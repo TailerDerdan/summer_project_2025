@@ -290,12 +290,12 @@ func (gs *GameService) EndGame(gameID string) error {
 		fmt.Println("error sending end message")
 		return err
 	}
-
+	fmt.Println("EEE")
 	if err := gs.saveGameStats(gameID); err != nil {
 		fmt.Println("error saving game stats")
 		return err
 	}
-
+	fmt.Println("GGG")
 	for conn := range game.Players {
 		if err := conn.Close(); err != nil {
 			fmt.Println("error closing to client")
@@ -583,10 +583,14 @@ func (gs *GameService) SendInitialGameState(conn *websocket.Conn, gameID string)
 }
 
 func (gs *GameService) saveGameStats(gameID string) error {
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
+	fmt.Println("CCC")
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
+	fmt.Println("DDD")
 	stats := map[string]interface{}{
 		"winner": game.State.Winner,
 		"stats":  game.Stats,
@@ -595,12 +599,13 @@ func (gs *GameService) saveGameStats(gameID string) error {
 	if err != nil {
 		return err
 	}
-
+	fmt.Println("AAA")
 	req, err := http.NewRequest(
 		http.MethodPost,
-		"http://mochilovo-avi.ru:82/main/profile/updateStats",
+		"http://mochilovo-avi.ru:9000/main/profile/updateStats",
 		bytes.NewBuffer(jsonData),
 	)
+	fmt.Println("BBB")
 	if err != nil {
 		return err
 	}
@@ -610,10 +615,12 @@ func (gs *GameService) saveGameStats(gameID string) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println("EEE")
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("unexpected status: %d, body: %s", resp.StatusCode, string(body))
 	}
+	fmt.Println("FFF")
 	return nil
 }
