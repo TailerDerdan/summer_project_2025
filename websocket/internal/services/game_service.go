@@ -1,11 +1,7 @@
 package services
 
 import (
-	"bytes"
 	"crypto/rand"
-	"encoding/json"
-	"io"
-	"net/http"
 	"sort"
 	"time"
 
@@ -259,7 +255,7 @@ func (gs *GameService) generateGameID(gameType string) string {
 	return fmt.Sprintf("%s-%s", gameType, string(idPart))
 }
 
-func (gs *GameService) EndGame(gameID string) error {
+func (gs *GameService) endGame(gameID string) error {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
 
@@ -291,10 +287,6 @@ func (gs *GameService) EndGame(gameID string) error {
 		return err
 	}
 	fmt.Println("EEE")
-	if err := gs.saveGameStats(gameID); err != nil {
-		fmt.Println("error saving game stats")
-		return err
-	}
 	fmt.Println("GGG")
 	for conn := range game.Players {
 		if err := conn.Close(); err != nil {
@@ -477,7 +469,7 @@ func (gs *GameService) GetGameState(gameID string) ([]models.PlayerInfo, error) 
 	return players, nil
 }
 
-func (gs *GameService) StartTimer(gameID string) {
+func (gs *GameService) StartTimer(conn *websocket.Conn, gameID string) {
 	gs.mu.Lock()
 	game, exists := gs.activeGames[gameID]
 	gs.mu.Unlock()
@@ -495,7 +487,11 @@ func (gs *GameService) StartTimer(gameID string) {
 				elapsed := time.Since(game.StartTime)
 				remaining := game.Duration - elapsed
 				if remaining <= 0 {
-					if err := gs.EndGame(gameID); err != nil {
+					if err := gs.saveGameStats(conn, gameID); err != nil {
+						fmt.Println("error saving stats message")
+						return
+					}
+					if err := gs.endGame(gameID); err != nil {
 						fmt.Printf("error sending end message: %v\n", err)
 						return
 					}
@@ -582,7 +578,7 @@ func (gs *GameService) SendInitialGameState(conn *websocket.Conn, gameID string)
 	})
 }
 
-func (gs *GameService) saveGameStats(gameID string) error {
+func (gs *GameService) saveGameStats(conn *websocket.Conn, gameID string) error {
 	gs.mu.Lock()
 	defer gs.mu.Unlock()
 	fmt.Println("CCC")
@@ -591,36 +587,50 @@ func (gs *GameService) saveGameStats(gameID string) error {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
 	fmt.Println("DDD")
-	stats := map[string]interface{}{
-		"winner": game.State.Winner,
-		"stats":  game.Stats,
+	player := game.Players[conn]
+	statsMsg := map[string]interface{}{
+		"type": "save_stats_server",
+		"data": map[string]interface{}{
+			"winner": game.State.Winner,
+			"stats": map[string]interface{}{
+				"countKills":  game.Stats[player.PlayerID].Kills,
+				"countDeaths": game.Stats[player.PlayerID].Deaths,
+			},
+		},
 	}
-	jsonData, err := json.Marshal(stats)
-	if err != nil {
+
+	if err := conn.WriteJSON(statsMsg); err != nil {
+		fmt.Printf("error sending stats message: %+v\n", statsMsg)
 		return err
 	}
-	fmt.Println("AAA")
-	req, err := http.NewRequest(
-		http.MethodPost,
-		"http://mochilovo-avi.ru:82/main/profile/updateStats",
-		bytes.NewBuffer(jsonData),
-	)
-	fmt.Println("BBB")
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	client := &http.Client{Timeout: 5 * time.Second}
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	fmt.Println("EEE")
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("unexpected status: %d, body: %s", resp.StatusCode, string(body))
-	}
-	fmt.Println("FFF")
+	fmt.Println("11111")
 	return nil
+	//jsonData, err := json.Marshal(stats)
+	//if err != nil {
+	//	return err
+	//}
+	//fmt.Println("AAA")
+	//req, err := http.NewRequest(
+	//	http.MethodPost,
+	//	"http://mochilovo-avi.ru:82/main/profile/updateStats",
+	//	bytes.NewBuffer(jsonData),
+	//)
+	//fmt.Println("BBB")
+	//if err != nil {
+	//	return err
+	//}
+	//req.Header.Set("Content-Type", "application/json")
+	//client := &http.Client{Timeout: 15 * time.Second}
+	//resp, err := client.Do(req)
+	//if err != nil {
+	//	return err
+	//}
+	//fmt.Println("EEE")
+	//defer resp.Body.Close()
+	//if resp.StatusCode != http.StatusOK {
+	//	body, _ := io.ReadAll(resp.Body)
+	//	return fmt.Errorf("unexpected status: %d, body: %s", resp.StatusCode, string(body))
+	//}
+	//fmt.Println("FFF")
+	//return nil
 }

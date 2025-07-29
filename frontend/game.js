@@ -41,6 +41,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     handleUpdateTimer(msg.data.remaining);
                     break;
                 case "game_end_server":
+                    console.log("players: ", gameStats.leaderboard);
+                    gameStats.leaderboard.map(player => console.log("player: ", player))
                     handleGameEnd(msg.data);
                     break;
                 case "stats_update_server":
@@ -51,6 +53,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     break;
                 case "update_bullets_server":
                     updateEnemyBullets(msg.data);
+                    break;
+                case "save_stats_server":
+                    console.log("save stats: ")
+                    saveStats(msg.data);
                     break;
             }
         });
@@ -69,7 +75,7 @@ function handleInitPlayers(players)
     Object.values(players).forEach(player => {
         if (!arrEnemy.has(player.playerId))
         {
-            const newEnemy = new Enemy(player.playerId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir);
+            const newEnemy = new Enemy(player.playerId, player.x, player.y, WIDTH_ENEMY, HEIGHT_ENEMY, player.dir, player.nickname);
             arrEnemy.set(player.playerId, newEnemy);
         }
     })
@@ -79,7 +85,7 @@ function handleJoinPlayer(player)
 {
     if (!arrEnemy.has(player.userId))
     {
-        const newEnemy = new Enemy(player.userId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir);
+        const newEnemy = new Enemy(player.userId, player.x, player.y, WIDTH_ENEMY, HEIGHT_ENEMY, player.dir, player.nickname);
         arrEnemy.set(player.userId, newEnemy);
     }
 }
@@ -97,10 +103,6 @@ function handlePlayerMove(data)
 function handleGameEnd(data)
 {
     showResultsAfterBattle(data);
-    stateForWS.gameSocket.send(JSON.stringify({
-        type: "game_end",
-        data: { gameId: data.gameId }
-    }));
     stateForWS.gameSocket.close();
 }
 
@@ -170,7 +172,7 @@ function handleUpdateTimer(seconds) {
     }
 }
 
-function showResultsAfterBattle(endData, userId) {
+function showResultsAfterBattle(endData) {
     if (gameTimer) {
         clearInterval(gameTimer);
     }
@@ -192,6 +194,9 @@ function showResultsAfterBattle(endData, userId) {
         z-index: 1000;
     `)
 
+    console.log("endData.winner", typeof endData.winner)
+    const userId = stateForWS.userId
+    console.log("userId", typeof userId)
     const winnerNickname = findPlayerNickname(endData.winner);
     const isWinner = parseInt(endData.winner) === userId;
     console.log("results tyt")
@@ -249,10 +254,11 @@ function showResultsAfterBattle(endData, userId) {
 //     }))
 // }
 
-function findPlayerNickname(playerId)
+function findPlayerNickname(playerId) 
 {
-    if (arrEnemy.has[playerId.toString()]) {
-        return arrEnemy.get[playerId.toString()].nickname;
+    console.log("arrEnemy.has(playerId.toString())", arrEnemy.has(playerId.toString()))
+    if (arrEnemy.has(playerId.toString())) {
+        return arrEnemy.get(playerId.toString()).nickname;
     }
     return stateForWS.nickname;
 }
@@ -267,7 +273,7 @@ let lastSentTime = 0;
 
 export function checkAndSendPosition()
 {
-    setInterval(() =>
+    setInterval(() => 
     {
         if (player.isCharacterLive)
         {
@@ -276,7 +282,7 @@ export function checkAndSendPosition()
 
             if (now - lastSentTime > 100 &&
                 (Math.abs(currentPos.x - lastSentPosition.x) > 5 ||
-                    Math.abs(currentPos.y - lastSentPosition.y) > 5 || Math.abs(currentPos.dir - lastSentPosition.dir) > 3)
+                Math.abs(currentPos.y - lastSentPosition.y) > 5 || Math.abs(currentPos.dir - lastSentPosition.dir) > 3)
             )
             {
                 sendWebSocketMessage({
@@ -346,4 +352,26 @@ function updateEnemyBullets(data) {
             // { id: data.userId }
         );
     });
+}
+
+async function saveStats(data) {
+    const formData = {
+        winner: data["winner"],
+        stats: data["stats"],
+    };
+    try
+    {
+        const response = await fetch("/main/profile/updateStats", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData)
+        })
+
+        const result = await response.json();
+        return result.map;
+    }
+    catch (error) {
+        console.error('Ошибка:', error);
+        return null
+    }
 }
