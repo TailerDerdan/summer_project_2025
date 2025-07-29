@@ -93,7 +93,8 @@ function handleJoinPlayer(player)
 
 function handlePlayerMove(data)
 {
-    if (arrEnemy.has(data.userId))
+    const userId = parseInt(data.userId)
+    if (arrEnemy.has(userId))
     {
         const snapshot = {
             x: data.x,
@@ -101,7 +102,7 @@ function handlePlayerMove(data)
             dir: data.dir,
             timestamp: 0,
         }
-        arrEnemy.get(data.userId).snapshotBuffer.addSnapshot(snapshot);
+        arrEnemy.get(userId).snapshotBuffer.addSnapshot(snapshot);
         // arrEnemy.get(data.userId).currentState.x = data.x;
         // arrEnemy.get(data.userId).currentState.y = data.y;
         // arrEnemy.get(data.userId).currentState.dir = data.dir;
@@ -140,13 +141,13 @@ function handleUpdateStats(data)
     gameStats.position = data.stats[stateForWS.userId]?.position || 0;
 
     gameStats.leaderboard = data.leaderboard.map((item, index) => ({
-        id: item.id,
+        id: parseInt(item.id),
         nickname: findPlayerNickname(item.id),
         kills: data.stats[item.id]?.kills || 0,
         deaths: data.stats[item.id]?.deaths || 0,
         score: data.stats[item.id]?.score || 0,
         position: index + 1,
-        isCurrent: item.id === data.userId
+        isCurrent: parseInt(item.id) === data.userId
     }));
 
     updateStats();
@@ -239,10 +240,10 @@ function showResultsAfterBattle(endData) {
 
 function findPlayerNickname(playerId) 
 {
-    console.log("arrEnemy.has(playerId.toString())", arrEnemy.get(playerId.toString()))
-    if (arrEnemy.has(playerId.toString())) {
-        console.log("--===---", arrEnemy.get(playerId.toString()))
-        return arrEnemy.get(playerId.toString()).nickname;
+    console.log("arrEnemy.has(playerId.toString())", arrEnemy.get(playerId))
+    if (arrEnemy.has(playerId)) {
+        console.log("--===---", arrEnemy.get(playerId))
+        return arrEnemy.get(playerId).nickname;
     }
     return stateForWS.nickname;
 }
