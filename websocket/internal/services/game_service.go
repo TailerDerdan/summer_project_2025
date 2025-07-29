@@ -507,7 +507,7 @@ func (gs *GameService) StartTimer(gameID string) {
 	}()
 }
 
-func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID string, x, y interface{}) error {
+func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID string, data map[string]interface{}) error {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
 
@@ -517,8 +517,9 @@ func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID str
 	}
 
 	player := game.Players[conn]
-	player.X = x.(float64)
-	player.Y = y.(float64)
+	player.X = data["x"].(float64)
+	player.Y = data["y"].(float64)
+	player.Dir = data["dir"].(float64)
 
 	positionMsg := map[string]interface{}{
 		"type": "player_move_server",

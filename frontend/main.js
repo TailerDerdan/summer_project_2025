@@ -12,6 +12,7 @@ import { stateForWS } from './websocketGame.js';
 // import { checkAndSendPosition } from './game.js';
 import { sendBullets, updateAllBullets } from './game.js';
 import { drawRemainingBlood } from './blood/blood.js';
+import {playerDeath} from "./player/KillAndDeath";
 
 const clock = new Clock();
 
@@ -56,7 +57,7 @@ function gameLoop()
     if (!player.isCharacterLive)
     {
         player.appearanceAfterDeathWidthDelay();
-        recordDeath();
+        playerDeath(stateForWS.userId)
     }
 
     camera.update();
