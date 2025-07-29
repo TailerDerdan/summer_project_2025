@@ -278,15 +278,15 @@ export function checkAndSendPosition()
                 Math.abs(currentPos.y - lastSentPosition.y) > 5 || Math.abs(currentPos.dir - lastSentPosition.dir) > 3)
             )
             {
-                sendWebSocketMessage(JSON.stringify({
+                sendWebSocketMessage({
                     type: "player_move",
                     data: {
-                        userId: (stateForWS.userId).toString(),
-                        x: currentPos.x,
-                        y: currentPos.y,
-                        dir: currentPos.dir,
+                        userId: "2",
+                        x: 190,
+                        y: 490,
+                        dir: 20,
                     }
-                }));
+                });
 
                 lastSentPosition = {...currentPos};
                 lastSentTime = now;
