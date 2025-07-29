@@ -1,5 +1,5 @@
 import { updateMovementPlayer } from './player/movement.js';
-import {throttleBotsShoot, updateMovementBullets} from './weapon/shooting.js';
+import {throttleBotsShoot, updateMovementBullets, updateAllBullets } from './weapon/shooting.js';
 import { canvas, ctx, gl, state } from './canvas.js';
 import { map } from './map/map.js';
 import { camera } from './camera/camera.js';
@@ -10,7 +10,7 @@ import { render, texture2D, updateTexture } from './shadows/shadows.js';
 import { getMap } from './requests/requests.js';
 import { stateForWS } from './websocketGame.js';
 // import { checkAndSendPosition } from './game.js';
-import { sendBullets, updateAllBullets } from './game.js';
+import { sendBullets} from './game.js';
 import { drawRemainingBlood } from './blood/blood.js';
 import {playerDeath} from "./player/KillAndDeath.js";
 
@@ -36,7 +36,7 @@ function gameLoop()
 
     arrBot.forEach((bot, index) => {
         if (bot.isCharacterLive && bot.weapon) {
-            // throttleBotsShoot[index]();
+            throttleBotsShoot[index]();
         }
     });
 

@@ -1,6 +1,6 @@
 import { Enemy, HEIGHT_ENEMY, WIDTH_ENEMY } from "./enemy/enemy.js";
 import { arrEnemy, player } from "./player/player.js";
-import { playerBullets, updateMovementBullets } from "./weapon/shooting.js";
+import { playerBullets } from "./weapon/shooting.js";
 import { Bullet } from "./weapon/bullet.js";
 import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
 
@@ -69,7 +69,7 @@ function handleInitPlayers(players)
     Object.values(players).forEach(player => {
         if (!arrEnemy.has(player.playerId))
         {
-            const newEnemy = new Enemy(player.playerId, player.x, player.y, WIDTH_ENEMY, HEIGHT_ENEMY, player.dir, player.nickname);
+            const newEnemy = new Enemy(player.playerId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir);
             arrEnemy.set(player.playerId, newEnemy);
         }
     })
@@ -79,7 +79,7 @@ function handleJoinPlayer(player)
 {
     if (!arrEnemy.has(player.userId))
     {
-        const newEnemy = new Enemy(player.userId, player.x, player.y, WIDTH_ENEMY, HEIGHT_ENEMY, player.dir, player.nickname);
+        const newEnemy = new Enemy(player.userId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir);
         arrEnemy.set(player.userId, newEnemy);
     }
 }
@@ -97,6 +97,10 @@ function handlePlayerMove(data)
 function handleGameEnd(data)
 {
     showResultsAfterBattle(data);
+    stateForWS.gameSocket.send(JSON.stringify({
+        type: "game_end",
+        data: { gameId: data.gameId }
+    }));
     stateForWS.gameSocket.close();
 }
 
@@ -165,7 +169,7 @@ function handleUpdateTimer(seconds) {
     }
 }
 
-function showResultsAfterBattle(endData) {
+function showResultsAfterBattle(endData, userId) {
     if (gameTimer) {
         clearInterval(gameTimer);
     }
@@ -187,9 +191,6 @@ function showResultsAfterBattle(endData) {
         z-index: 1000;
     `)
 
-    console.log("endData.winner", typeof endData.winner)
-    const userId = stateForWS.userId
-    console.log("userId", typeof userId)
     const winnerNickname = findPlayerNickname(endData.winner);
     const isWinner = parseInt(endData.winner) === userId;
     console.log("results tyt")
@@ -247,11 +248,10 @@ function showResultsAfterBattle(endData) {
 //     }))
 // }
 
-function findPlayerNickname(playerId) 
+function findPlayerNickname(playerId)
 {
-    console.log("arrEnemy.has(playerId.toString())", arrEnemy.has(playerId.toString()))
-    if (arrEnemy.has(playerId.toString())) {
-        return arrEnemy.get(playerId.toString()).nickname;
+    if (arrEnemy.has[playerId.toString()]) {
+        return arrEnemy.get[playerId.toString()].nickname;
     }
     return stateForWS.nickname;
 }
@@ -266,7 +266,7 @@ let lastSentTime = 0;
 
 export function checkAndSendPosition()
 {
-    setInterval(() => 
+    setInterval(() =>
     {
         if (player.isCharacterLive)
         {
@@ -275,7 +275,7 @@ export function checkAndSendPosition()
 
             if (now - lastSentTime > 100 &&
                 (Math.abs(currentPos.x - lastSentPosition.x) > 5 ||
-                Math.abs(currentPos.y - lastSentPosition.y) > 5 || Math.abs(currentPos.dir - lastSentPosition.dir) > 3)
+                    Math.abs(currentPos.y - lastSentPosition.y) > 5 || Math.abs(currentPos.dir - lastSentPosition.dir) > 3)
             )
             {
                 sendWebSocketMessage({
@@ -319,40 +319,30 @@ export function sendBullets()
                 }
             });
 
+            for (const playerBullet of playerBullets) {
+                console.log(playerBullet);
+            }
+
             lastSentTimeForBullets = now;
+
+            playerBullets.length = 0;
         }
     }, 20);
 }
 
-let enemyBullets = [];
+export let enemyBullets = [];
 
 function updateEnemyBullets(data) {
     enemyBullets = data.bullets.map(bullet => {
         return new Bullet(
             bullet.x,
             bullet.y,
-            100,// bullet.speed,
-            50,//bullet.dir,
+            // 100,// bullet.speed,
+            // 50,//bullet.dir,
             bullet.distX,
             bullet.distY,
-            500,//bullet.fireRange,
-            { id: data.userId }
+            // 500,//bullet.fireRange,
+            // { id: data.userId }
         );
-    });
-}
-
-export function updateAllBullets(ctx, xView, yView) {
-    updateMovementBullets();
-
-    enemyBullets.forEach((bullet, index) => {
-        bullet.setX(bullet.getX() + bullet.getDistX());
-        bullet.setY(bullet.getY() - bullet.getDistY());
-
-        const remainingDist = bullet.getRemainingDist(bullet.getFireRange());
-        if (remainingDist >= -4 && remainingDist <= 4) {
-            enemyBullets.splice(index, 1);
-        }
-
-        bullet.drawBullet(ctx, xView, yView);
     });
 }
