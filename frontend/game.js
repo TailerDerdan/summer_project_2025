@@ -51,9 +51,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         //await startTimer();
 
         setMessageHandler((event) => {
-            console.log("event.data: ", event.data);
+            //console.log("event.data: ", event.data);
             const msg = JSON.parse(event.data);
-            console.log("msg: ", msg);
+            //console.log("msg: ", msg);
 
             switch (msg.type) {
                 case "init_players":
@@ -446,11 +446,11 @@ function updateEnemyBullets(data) {
         return new Bullet(
             bullet.x,
             bullet.y,
-            10,// bullet.speed,
-            10,//bullet.dir,
+            100,// bullet.speed,
+            50,//bullet.dir,
             bullet.distX,
             bullet.distY,
-            10,//bullet.fireRange,
+            500,//bullet.fireRange,
             { id: data.userId }
         );
     });
