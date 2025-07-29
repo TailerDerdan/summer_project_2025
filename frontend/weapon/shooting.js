@@ -6,7 +6,7 @@ import { camera } from '../camera/camera.js';
 import { getDir, inverseDir } from '../player/changeDir.js';
 import { randomMinMax } from '../random.js';
 import { playerKill } from '../player/KillAndDeath.js';
-import { stateForWS } from '../websocketGame.js';
+import { stateForWS } from '../ws/websocketGame.js';
 
 const bullets = [];
 export const playerBullets = [];

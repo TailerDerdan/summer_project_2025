@@ -1,4 +1,4 @@
-import { sendWebSocketMessage } from "../websocketGame.js";
+import { sendWebSocketMessage } from "../ws/websocketGame.js";
 
 export function playerKill(playerId) {
     const msg = {
