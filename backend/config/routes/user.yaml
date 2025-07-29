@@ -2,3 +2,8 @@ profile:
     path: /main/profile/{id}
     methods: GET
     controller: App\Controller\UserController::showProfile
+
+update_stats:
+    path: /main/profile/updateStats
+    methods: POST
+    controller: App\Controller\UserController::updateStats

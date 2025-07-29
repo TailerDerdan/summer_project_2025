@@ -1,7 +1,11 @@
 package services
 
 import (
+	"bytes"
 	"crypto/rand"
+	"encoding/json"
+	"io"
+	"net/http"
 	"sort"
 	"time"
 
@@ -286,6 +290,12 @@ func (gs *GameService) EndGame(gameID string) error {
 		fmt.Println("error sending end message")
 		return err
 	}
+
+	if err := gs.saveGameStats(gameID); err != nil {
+		fmt.Println("error saving game stats")
+		return err
+	}
+
 	for conn := range game.Players {
 		if err := conn.Close(); err != nil {
 			fmt.Println("error closing to client")
@@ -570,4 +580,40 @@ func (gs *GameService) SendInitialGameState(conn *websocket.Conn, gameID string)
 			"players": players,
 		},
 	})
+}
+
+func (gs *GameService) saveGameStats(gameID string) error {
+	game, exists := gs.activeGames[gameID]
+	if !exists {
+		return fmt.Errorf("game %s does not exist", gameID)
+	}
+	stats := map[string]interface{}{
+		"winner": game.State.Winner,
+		"stats":  game.Stats,
+	}
+	jsonData, err := json.Marshal(stats)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest(
+		http.MethodPost,
+		"http://mochilovo-avi.ru:82/main/profile/updateStats",
+		bytes.NewBuffer(jsonData),
+	)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	client := &http.Client{Timeout: 5 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("unexpected status: %d, body: %s", resp.StatusCode, string(body))
+	}
+	return nil
 }

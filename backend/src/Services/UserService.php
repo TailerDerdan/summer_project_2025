@@ -43,4 +43,8 @@ class UserService implements UserServiceInterface {
     public function updateReadyState(int $userId, bool $isReady): void {
         $this->userRepository->updateReadyState($userId, $isReady);
     }
+
+    public function updateStats(int $userId, array $statsData): void {
+        $this->userRepository->updateStats($userId, $statsData);
+    }
 }
