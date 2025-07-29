@@ -5,8 +5,7 @@ namespace App\Entity\Room;
 
 class Room
 {
-    private const MaxSize = 6;
-
+    private const MaxSize = 5;
     public function __construct(
         private ?int $id,
         private int $playersCount,
