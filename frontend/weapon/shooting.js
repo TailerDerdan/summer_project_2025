@@ -4,14 +4,10 @@ import { ctx } from  '../canvas.js';
 import { Bullet } from './bullet.js';
 import { camera } from '../camera/camera.js';
 import { getDir, inverseDir } from '../player/changeDir.js';
+import { randomMinMax } from '../random.js';
 
 const bullets = [];
 export const playerBullets = [];
-
-function randomMinMax(min, max)
-{
-    return Math.random() * (max - min) + min;
-}
 
 function getNormalizeShootingVect(objForMovement) {
     const angle = objForMovement.dir * Math.PI / 180;

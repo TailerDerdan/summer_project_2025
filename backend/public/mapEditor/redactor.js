@@ -3,9 +3,8 @@ import { HEIGHT_MAP, viewportHeight, viewportWidth, WIDTH_MAP } from "./sizes.js
 import { MapEditor } from "./mapForEdit.js";
 import { stateEditor } from "./state.js";
 import { applyEventsToCanvas } from "./drawing.js";
-import {} from "./interactionWithBuldings.js";
-import { imageFloor, imageWall } from "./fillingBuldings.js";
 import { panOffset, scaleData } from "./panning.js";
+import { car1, car2, floor, wall } from "./buildings/deterBuildings.js";
 
 function setupForEditor()
 {
@@ -19,7 +18,7 @@ function setupForEditor()
     stateEditor.ctx.canvas.width = WIDTH_MAP;
     stateEditor.ctx.canvas.height = HEIGHT_MAP;
 
-    stateEditor.map = new MapEditor(WIDTH_MAP, HEIGHT_MAP, imageFloor, imageWall);
+    stateEditor.map = new MapEditor(WIDTH_MAP, HEIGHT_MAP, floor.image, wall.image, car1.image, car2.image);
 }
 
 const clock = new Clock();

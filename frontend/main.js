@@ -9,8 +9,9 @@ import { render, texture2D, updateTexture } from './shadows/shadows.js';
 //import {recordDeath, recordKill} from "./game.js";
 import { getMap } from './requests/requests.js';
 import { stateForWS } from './websocketGame.js';
-import { checkAndSendPosition } from './game.js';
+// import { checkAndSendPosition } from './game.js';
 import { sendBullets, updateAllBullets } from './game.js';
+import { drawRemainingBlood } from './blood/blood.js';
 
 const clock = new Clock();
 
@@ -34,30 +35,39 @@ function gameLoop()
 
     arrEnemy.forEach(enemy => {
         enemy.drawCharacter(ctx, camera.xView, camera.yView)
-        enemy.drawBlood(ctx, camera.xView, camera.yView);
         enemy.updateCharacter();
     })
 
     arrBot.forEach(bot => {
-        //bot.drawCharacter(ctx, camera.xView, camera.yView);
-        bot.drawBlood(ctx, camera.xView, camera.yView);
         bot.updateMovementBot(ctx, camera.xView, camera.yView);
         bot.updateCharacter();
     })
 
     arrBot.forEach((bot, index) => {
         if (bot.isCharacterLive && bot.weapon) {
-            throttleBotsShoot[index]();
+            // throttleBotsShoot[index]();
         }
     });
 
     //updateMovementBullets();
 
-    checkAndSendPosition();
+    // checkAndSendPosition();
 
     sendBullets();
 
     updateAllBullets(ctx, camera.xView, camera.yView);
+
+    drawRemainingBlood(ctx, camera.xView, camera.yView);
+
+    updateMovementBullets();
+
+    updateMovementPlayer(camera.xView, camera.yView, deltaTime);
+    player.updateCharacter();
+    if (!player.isCharacterLive)
+    {
+        player.appearanceAfterDeathWidthDelay();
+        recordDeath();
+    }
 
     camera.update();
     updateTexture();

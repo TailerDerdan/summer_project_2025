@@ -8,3 +8,8 @@ export function randomPosition()
 
     return {x: x, y: y};
 }
+
+export function randomMinMax(min, max)
+{
+    return Math.random() * (max - min) + min;
+}

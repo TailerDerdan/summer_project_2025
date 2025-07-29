@@ -4,19 +4,106 @@ import { playerBullets, updateMovementBullets } from "./weapon/shooting.js";
 import { Bullet } from "./weapon/bullet.js";
 import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
 
-let gameTimer;
-let playersCache = {};
-let remainingTime = 0;
-let gameSocket;
-let gameData;
-
-export let gameStats = {
+export const gameStats = {
     kills: 0,
     deaths: 0,
     score: 0,
     position: 0,
     leaderboard: []
 };
+
+document.addEventListener('DOMContentLoaded', async () => {
+
+    const data = JSON.parse(sessionStorage.getItem('gameSession'))
+    console.log("DATA: ", data)
+
+    if (!data) {
+        window.location.href = `/main`
+        return
+    }
+    sessionStorage.removeItem('gameSession');
+
+    try
+    {
+        await initGameWebsocket(data);
+
+        setMessageHandler((event) => {
+            const msg = JSON.parse(event.data);
+            // console.log("msg: ", msg);
+
+            switch (msg.type) {
+                case "init_players":
+                    handleInitPlayers(msg.data.players);
+                    break;
+                case "join_player":
+                    handleJoinPlayer(msg.data);
+                    break;
+                case "time_update":
+                    handleUpdateTimer(msg.data.remaining);
+                    break;
+                case "game_end":
+                    handleGameEnd(msg.data);
+                    break;
+                case "stats_update":
+                    handleUpdateStats(msg.data);
+                    break;
+                case "player_move":
+                    handlePlayerMove(msg.data);
+                    break;
+            }
+        });
+
+        checkAndSendPosition();
+    }
+    catch (error) {
+        console.error("WebSocket error:", error);
+        window.location.href = '/main';
+    }
+});
+
+function handleInitPlayers(players)
+{
+    console.log(players);
+    Object.values(players).forEach(player => {
+        
+        if (!arrEnemy.has(player.playerId))
+        {
+            const newEnemy = new Enemy(player.playerId, player.x, player.y, WIDTH_ENEMY, HEIGHT_ENEMY, player.dir);
+            arrEnemy.set(player.playerId, newEnemy);
+            console.log(arrEnemy);
+        }
+    })
+}
+
+function handleJoinPlayer(player)
+{
+    if (!arrEnemy.has(player.userId))
+    {
+        const newEnemy = new Enemy(player.userId, player.x, player.y, WIDTH_ENEMY, HEIGHT_ENEMY, player.dir);
+        arrEnemy.set(player.userId, newEnemy);
+        console.log(arrEnemy);
+    }
+}
+
+function handlePlayerMove(data)
+{
+    if (arrEnemy.has(data.palyerId))
+    {
+        arrEnemy.get(data.palyerId).x = data.x;
+        arrEnemy.get(data.palyerId).y = data.y;
+        arrEnemy.get(data.palyerId).dir = data.dir;
+    }
+}
+
+function handleGameEnd(data)
+{
+    showResultsAfterBattle(data);
+    stateForWS.gameSocket.send(JSON.stringify({
+        type: "game_ended",
+        data: { gameId: data.gameId }
+    }));
+    stateForWS.gameSocket.close();
+}
 
 function updateStatsUI() {
     document.getElementById('kills-count').textContent = gameStats.kills;
@@ -97,7 +184,15 @@ function handleInitPlayers(players)
     console.log("players: ", players)
     players.forEach(playerData => {
 
-        console.log("playerData(init_players): ", playerData)
+    gameStats.leaderboard = data.leaderboard.map((item, index) => ({
+        id: item.ID,
+        nickname: findPlayerNickname(item.ID),
+        kills: data.stats[item.ID]?.kills || 0,
+        deaths: data.stats[item.ID]?.deaths || 0,
+        score: data.stats[item.ID]?.score || 0,
+        position: index + 1,
+        isCurrent: item.ID === data.userId
+    }));
 
         const enemy = arrEnemyForWS.find((elem) => {
             if (elem.playerId === playerData.playerId) return true;
@@ -238,7 +333,7 @@ function updateTimer(seconds) {
             if (remainingTime <= 0) {
                 console.log("END TIMER")
                 clearInterval(gameTimer);
-                //showResultsAfterBattle();
+                // showResultsAfterBattle();
             }
         }, 1000);
     }
@@ -340,48 +435,51 @@ function showResultsAfterBattle(endData, userId) {
 //     }))
 // }
 
-function findPlayerNickname(playerId) {
-    if (playersCache[playerId]) {
-        return playersCache[playerId].nickname
+function findPlayerNickname(playerId) 
+{
+    if (arrEnemy.has[playerId.toString()]) {
+        return arrEnemy.get[playerId.toString()].nickname;
     }
-
-    if (gameData && gameData.userId === playerId) {
-        return gameData.nickname
-    }
-
-    return `Player_${playerId}`
+    return stateForWS.nickname;
 }
+
 let lastSentPosition = {
     x: 0,
     y: 0,
+    dir: 0,
 }
 
 let lastSentTime = 0;
 
 export function checkAndSendPosition()
 {
-    const now = Date.now();
-    const currentPos = getCurrentPosition();
-
-    //console.log(now - lastSentTime);
-
-    if (now - lastSentTime > 100 &&
-        (Math.abs(currentPos.x - lastSentPosition.x) > 5 ||
-        Math.abs(currentPos.y - lastSentPosition.y) > 5)
-    )
+    setInterval(() => 
     {
-        sendWebSocketMessage({
-            type: "player_move",
-            data: {
-                userId: stateForWS.userId.toString(),
-                x: currentPos.x,
-                y: currentPos.y,
-            }
-        });
+        if (player.isCharacterLive)
+        {
+            const now = Date.now();
+            const currentPos = getCurrentPosition();
 
-        lastSentPosition = {...currentPos};
-        lastSentTime = now;
-    }
+            if (now - lastSentTime > 100 &&
+                (Math.abs(currentPos.x - lastSentPosition.x) > 5 ||
+                Math.abs(currentPos.y - lastSentPosition.y) > 5 || Math.abs(currentPos.dir - lastSentPosition.dir) > 3)
+            )
+            {
+                sendWebSocketMessage(JSON.stringify({
+                    type: "update_position",
+                    data: {
+                        userId: stateForWS.userId.toString(),
+                        x: currentPos.x,
+                        y: currentPos.y,
+                        dir: currentPos.dir,
+                    }
+                }));
+
+                lastSentPosition = {...currentPos};
+                lastSentTime = now;
+            }
+        }
+    }, 50);
 }
 
 function getCurrentPosition()

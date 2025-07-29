@@ -115,7 +115,7 @@ export class Sprite
         }
     }
 
-    playAnimation()
+    playAnimation(deltaTime)
     {
         if (this.isAnimationPlayed) return;
 
@@ -123,7 +123,7 @@ export class Sprite
 
             if (this.isAnimationPlayed) return;
 
-            this.updateFrames(16 / 100000);
+            this.updateFrames(deltaTime);
 
             requestAnimationFrame(animate);
         }
