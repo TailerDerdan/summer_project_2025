@@ -98,7 +98,7 @@ function handleGameEnd(data)
 {
     showResultsAfterBattle(data);
     stateForWS.gameSocket.send(JSON.stringify({
-        type: "game_ended",
+        type: "game_end",
         data: { gameId: data.gameId }
     }));
     stateForWS.gameSocket.close();

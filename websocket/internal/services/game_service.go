@@ -382,7 +382,7 @@ func (gs *GameService) PlayerKill(gameID, playerID string) error {
 		stats.Score += 100
 	}
 
-	if err := gs.SendGameStatsUpdate(gameID); err != nil {
+	if err := gs.sendGameStatsUpdate(gameID); err != nil {
 		fmt.Println("error sending stats message")
 		return err
 	}
@@ -402,7 +402,7 @@ func (gs *GameService) PlayerDeath(gameID, playerID string) error {
 		stats.Deaths++
 	}
 
-	if err := gs.SendGameStatsUpdate(gameID); err != nil {
+	if err := gs.sendGameStatsUpdate(gameID); err != nil {
 		fmt.Println("error sending stats message")
 		return err
 	}
