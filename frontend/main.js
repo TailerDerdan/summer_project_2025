@@ -23,16 +23,6 @@ function gameLoop()
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     map.draw(ctx, camera.xView, camera.yView);
 
-    //player.drawCharacter(ctx, camera.xView, camera.yView);
-    updateMovementPlayer(camera.xView, camera.yView, deltaTime);
-    player.drawBlood(ctx, camera.xView, camera.yView);
-    player.updateCharacter();
-    if (!player.isCharacterLive)
-    {
-        player.appearanceAfterDeathWidthDelay();
-        //recordDeath();
-    }
-
     arrEnemy.forEach(enemy => {
         enemy.drawCharacter(ctx, camera.xView, camera.yView)
         enemy.updateCharacter();

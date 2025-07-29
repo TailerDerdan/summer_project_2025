@@ -31,25 +31,25 @@ document.addEventListener('DOMContentLoaded', async () => {
             const msg = JSON.parse(event.data);
 
             switch (msg.type) {
-                case "init_players":
+                case "init_players_server":
                     handleInitPlayers(msg.data.players);
                     break;
-                case "join_player":
+                case "join_player_server":
                     handleJoinPlayer(msg.data);
                     break;
-                case "time_update":
+                case "time_update_server":
                     handleUpdateTimer(msg.data.remaining);
                     break;
-                case "game_end":
+                case "game_end_server":
                     handleGameEnd(msg.data);
                     break;
-                case "stats_update":
+                case "stats_update_server":
                     handleUpdateStats(msg.data);
                     break;
-                case "player_move":
+                case "player_move_server":
                     handlePlayerMove(msg.data);
                     break;
-                case "update_bullets":
+                case "update_bullets_server":
                     updateEnemyBullets(msg.data);
                     break;
             }
@@ -67,22 +67,10 @@ function handleInitPlayers(players)
 {
     console.log(players);
     Object.values(players).forEach(player => {
-        
-        gameStats.leaderboard = data.leaderboard.map((item, index) => ({
-            id: item.ID,
-            nickname: findPlayerNickname(item.ID),
-            kills: data.stats[item.ID]?.kills || 0,
-            deaths: data.stats[item.ID]?.deaths || 0,
-            score: data.stats[item.ID]?.score || 0,
-            position: index + 1,
-            isCurrent: item.ID === data.userId
-        }));
-
         if (!arrEnemy.has(player.playerId))
         {
             const newEnemy = new Enemy(player.playerId, player.x, player.y, WIDTH_ENEMY, HEIGHT_ENEMY, player.dir);
             arrEnemy.set(player.playerId, newEnemy);
-            console.log(arrEnemy);
         }
     })
 }
@@ -93,7 +81,6 @@ function handleJoinPlayer(player)
     {
         const newEnemy = new Enemy(player.userId, player.x, player.y, WIDTH_ENEMY, HEIGHT_ENEMY, player.dir);
         arrEnemy.set(player.userId, newEnemy);
-        console.log(arrEnemy);
     }
 }
 
@@ -103,7 +90,7 @@ function handlePlayerMove(data)
     {
         arrEnemy.get(data.palyerId).x = data.x;
         arrEnemy.get(data.palyerId).y = data.y;
-        arrEnemy.get(data.palyerId).dir = data.dir;
+        arrEnemy.get(data.palyerId).dir = data.angle;
     }
 }
 
@@ -152,11 +139,6 @@ function handleUpdateStats(data)
     }));
 
     updateStats();
-}
-
-function handlePlayerMove(data)
-{
-    updateEnemyPosition(data.userId, data.x, data.y);
 }
 
 let gameTimer = null;
@@ -297,7 +279,7 @@ export function checkAndSendPosition()
             )
             {
                 sendWebSocketMessage(JSON.stringify({
-                    type: "update_position",
+                    type: "player_move",
                     data: {
                         userId: stateForWS.userId.toString(),
                         x: currentPos.x,
@@ -315,41 +297,31 @@ export function checkAndSendPosition()
 
 function getCurrentPosition()
 {
-    return {x: player.x, y: player.y};
+    return {x: player.x, y: player.y, dir: player.dir};
 }
 
-function updateEnemyPosition(userId, x, y)
-{
-    const enemy = arrEnemyForWS.find(e => e.userId === userId);
-    if (enemy) {
-        enemy.x = x;
-        enemy.y = y;
-        const gameEnemy = arrEnemy.find(e => e.id === userId);
-        if (gameEnemy) {
-            gameEnemy.x = x;
-            gameEnemy.y = y;
-        }
-    }
-}
+let lastSentTimeForBullets = 0;
 
 export function sendBullets()
 {
-    const now = Date.now();
 
-    //console.log(now - lastSentTime);
+    setInterval(() => {
 
-    if ((now - lastSentTime > 100) && (playerBullets.length !== 0))
-    {
-        sendWebSocketMessage({
-            type: "update_bullets",
-            data: {
-                userId: stateForWS.userId.toString(),
-                bullets: playerBullets
-            }
-        });
+        const now = Date.now();
 
-        let lastSentTime = now;
-    }
+        if ((now - lastSentTimeForBullets > 100) && (playerBullets.length !== 0))
+        {
+            sendWebSocketMessage({
+                type: "update_bullets",
+                data: {
+                    userId: stateForWS.userId.toString(),
+                    bullets: playerBullets
+                }
+            });
+
+            lastSentTimeForBullets = now;
+        }
+    }, 20);
 }
 
 let enemyBullets = [];

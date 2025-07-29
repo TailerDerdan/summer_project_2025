@@ -201,7 +201,7 @@ export function updateMovementBullets()
             bullets.splice(index, 1);
         }
 
-        for (const enemy of arrEnemy) {
+        for (const [id, enemy] of arrEnemy) {
             if (enemy.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) &&
                 enemy.isCharacterLive &&
                 (elem.owner !== enemy)
@@ -238,7 +238,7 @@ export function updateMovementBullets()
     });
 }
 
-let throttleUpd = throttle(updateBullets, player.weapon.timeBetweenBul * 1000);
+
 
 // export let throttleBotsShoot = [];
 // for (const bot of arrBot) {
@@ -253,6 +253,8 @@ for (const bot of arrBot) {
         throttleBotsShoot.push(throttleBotShoot);
     }
 }
+
+let throttleUpd = throttle(updateBullets, player.weapon.timeBetweenBul * 1000);
 
 function throttleUpdateBullets(event)
 {
