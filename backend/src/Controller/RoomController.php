@@ -81,7 +81,7 @@ class RoomController extends AbstractController {
         return $this->json([
             'userId' => $user->getUserId() ?? null,
             'nickname' => $user->getNickname() ?? null,
-            'isReady' => $user->getIsReady(),
+            //'isReady' => $user->getIsReady(),
         ]);
     }
 
