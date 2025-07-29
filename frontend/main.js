@@ -8,11 +8,12 @@ import { player, arrEnemy, arrBot } from './player/player.js';
 import { render, texture2D, updateTexture } from './shadows/shadows.js';
 //import {recordDeath, recordKill} from "./game.js";
 import { getMap } from './requests/requests.js';
-import { stateForWS } from './websocketGame.js';
+
 // import { checkAndSendPosition } from './game.js';
-import { sendBullets, updateAllBullets } from './game.js';
 import { drawRemainingBlood } from './blood/blood.js';
 import {playerDeath} from "./player/KillAndDeath.js";
+import { stateForWS } from './ws/websocketGame.js';
+import { sendBullets, updateAllBullets } from './ws/game.js';
 
 const clock = new Clock();
 
@@ -25,6 +26,7 @@ function gameLoop()
     map.draw(ctx, camera.xView, camera.yView);
 
     arrEnemy.forEach(enemy => {
+        enemy.snapshotBuffer.interpolate();
         enemy.drawCharacter(ctx, camera.xView, camera.yView)
         enemy.updateCharacter();
     })

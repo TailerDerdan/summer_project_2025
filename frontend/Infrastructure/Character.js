@@ -3,6 +3,7 @@ import { Sprite } from "../spriteScript/spriteScript.js";
 import { randomPosition } from "../random.js";
 import {Sound} from "../soundsScript/sound.js";
 import { Blood, remainingBlood } from "../blood/blood.js";
+import { SnapshotBuffer } from "../ws/snapshot.js";
 
 
 const WIDTH_FRAME = 25;
@@ -24,6 +25,7 @@ export class Character
         this.dir = dir;
         this.container = new Container(width, height, x, y, dir);
         this.nickname = nickname;
+        this.snapshotBuffer = new SnapshotBuffer(this);
 
         this.speed = 0;
 

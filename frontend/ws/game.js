@@ -1,7 +1,7 @@
-import { Enemy, HEIGHT_ENEMY, WIDTH_ENEMY } from "./enemy/enemy.js";
-import { arrEnemy, player } from "./player/player.js";
-import { playerBullets, updateMovementBullets } from "./weapon/shooting.js";
-import { Bullet } from "./weapon/bullet.js";
+import { Enemy, HEIGHT_ENEMY, WIDTH_ENEMY } from "../enemy/enemy.js";
+import { arrEnemy, player } from "../player/player.js";
+import { playerBullets, updateMovementBullets } from "../weapon/shooting.js";
+import { Bullet } from "../weapon/bullet.js";
 import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
 
 export const gameStats = {
@@ -15,7 +15,6 @@ export const gameStats = {
 document.addEventListener('DOMContentLoaded', async () => {
 
     const data = JSON.parse(sessionStorage.getItem('gameSession'))
-    console.log("DATA: ", data)
 
     if (!data) {
         window.location.href = `/main`
@@ -65,7 +64,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function handleInitPlayers(players)
 {
-    console.log(players);
     Object.values(players).forEach(player => {
         if (!arrEnemy.has(player.playerId))
         {
@@ -88,9 +86,16 @@ function handlePlayerMove(data)
 {
     if (arrEnemy.has(data.userId))
     {
-        arrEnemy.get(data.userId).x = data.x;
-        arrEnemy.get(data.userId).y = data.y;
-        arrEnemy.get(data.userId).dir = data.dir;
+        const snapshot = {
+            x: data.x,
+            y: data.y,
+            dir: data.dir,
+            timestamp: 0,
+        }
+        arrEnemy.get(data.userId).snapshotBuffer.addSnapshot(snapshot);
+        // arrEnemy.get(data.userId).currentState.x = data.x;
+        // arrEnemy.get(data.userId).currentState.y = data.y;
+        // arrEnemy.get(data.userId).currentState.dir = data.dir;
     }
 }
 
@@ -226,37 +231,12 @@ function showResultsAfterBattle(endData) {
     })
 }
 
-// export function recordKill(victimId) {
-//     if (!gameSocket || gameSocket.readyState !== WebSocket.OPEN) return;
-//
-//     gameSocket.send(JSON.stringify({
-//         type: "player_kill",
-//         data: {
-//             killerId: gameData.userId,
-//             victimId: victimId,
-//             gameId: gameData.gameId
-//         }
-//     }))
-// }
-
-// export function recordDeath() {
-//     if (!gameSocket || gameSocket.readyState !== WebSocket.OPEN) return;
-//
-//     gameSocket.send(JSON.stringify({
-//         type: "player_death",
-//         data: {
-//             playerId: gameData.userId,
-//             gameId: gameData.gameId
-//         }
-//     }))
-// }
-
 function findPlayerNickname(playerId) 
 {
-    console.log("arrEnemy.has(playerId.toString())", arrEnemy.has(playerId.toString()))
-    if (arrEnemy.has(playerId.toString())) {
-        return arrEnemy.get(playerId.toString()).nickname;
-    }
+    // console.log("arrEnemy.has(playerId.toString())", arrEnemy.has(playerId.toString()))
+    // if (arrEnemy.has(playerId.toString())) {
+    //     return arrEnemy.get(playerId.toString()).nickname;
+    // }
     return stateForWS.nickname;
 }
 
