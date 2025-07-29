@@ -53,7 +53,6 @@ export function setMessageHandler(handler)
 
 export function sendWebSocketMessage(message)
 {
-    console.log(stateForWS.gameSocket.readyState)
     if (stateForWS.gameSocket && stateForWS.gameSocket.readyState === WebSocket.OPEN) 
     {
         stateForWS.gameSocket.send(JSON.stringify(message));

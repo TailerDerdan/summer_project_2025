@@ -86,11 +86,12 @@ function handleJoinPlayer(player)
 
 function handlePlayerMove(data)
 {
-    if (arrEnemy.has(data.palyerId))
+    console.log(data, arrEnemy);
+    if (arrEnemy.has(data.userId))
     {
-        arrEnemy.get(data.palyerId).x = data.x;
-        arrEnemy.get(data.palyerId).y = data.y;
-        arrEnemy.get(data.palyerId).dir = data.angle;
+        arrEnemy.get(data.userId).x = data.x;
+        arrEnemy.get(data.userId).y = data.y;
+        arrEnemy.get(data.userId).dir = data.angle;
     }
 }
 
@@ -292,7 +293,7 @@ export function checkAndSendPosition()
                 lastSentTime = now;
             }
         }
-    }, 50);
+    }, 25);
 }
 
 function getCurrentPosition()
