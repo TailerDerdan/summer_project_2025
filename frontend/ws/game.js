@@ -40,6 +40,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     handleUpdateTimer(msg.data.remaining);
                     break;
                 case "game_end_server":
+                    console.log("players: ", gameStats.leaderboard);
+                    gameStats.leaderboard.map(player => console.log("player: ", player))
                     handleGameEnd(msg.data);
                     break;
                 case "stats_update_server":
@@ -50,6 +52,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     break;
                 case "update_bullets_server":
                     updateEnemyBullets(msg.data);
+                    break;
+                case "save_stats_server":
+                    console.log("save stats: ")
+                    saveStats(msg.data);
                     break;
             }
         });
@@ -102,10 +108,6 @@ function handlePlayerMove(data)
 function handleGameEnd(data)
 {
     showResultsAfterBattle(data);
-    stateForWS.gameSocket.send(JSON.stringify({
-        type: "game_end",
-        data: { gameId: data.gameId }
-    }));
     stateForWS.gameSocket.close();
 }
 
@@ -116,6 +118,7 @@ function updateStats() {
     document.getElementById('position-count').textContent = gameStats.position;
 
     const leaderboardElement = document.getElementById('leaderboard-body');
+    leaderboardElement.setAttribute("style", "font-size: 25px;")
     leaderboardElement.innerHTML = gameStats.leaderboard.map(player => `
         <tr ${player.isCurrent ? 'class="highlight"' : ''}>
             <td>${player.position}. ${player.nickname}</td>
@@ -134,13 +137,13 @@ function handleUpdateStats(data)
     gameStats.position = data.stats[stateForWS.userId]?.position || 0;
 
     gameStats.leaderboard = data.leaderboard.map((item, index) => ({
-        id: item.ID,
-        nickname: findPlayerNickname(item.ID),
-        kills: data.stats[item.ID]?.kills || 0,
-        deaths: data.stats[item.ID]?.deaths || 0,
-        score: data.stats[item.ID]?.score || 0,
+        id: item.id,
+        nickname: findPlayerNickname(item.id),
+        kills: data.stats[item.id]?.kills || 0,
+        deaths: data.stats[item.id]?.deaths || 0,
+        score: data.stats[item.id]?.score || 0,
         position: index + 1,
-        isCurrent: item.ID === data.userId
+        isCurrent: item.id === data.userId
     }));
 
     updateStats();
@@ -190,15 +193,15 @@ function showResultsAfterBattle(endData) {
         padding: 30px;
         background-color: rgba(0, 0, 0, 0.9);
         color: white;
-        font-size: 100px;
+        font-size: 70px;
         border-radius: 10px;
         text-align: center;
         z-index: 1000;
     `)
 
-    console.log("endData.winner", typeof endData.winner)
+    console.log("endData.winner", endData.winner, typeof endData.winner)
     const userId = stateForWS.userId
-    console.log("userId", typeof userId)
+    console.log("userId", userId, typeof userId)
     const winnerNickname = findPlayerNickname(endData.winner);
     const isWinner = parseInt(endData.winner) === userId;
     console.log("results tyt")
@@ -219,7 +222,7 @@ function showResultsAfterBattle(endData) {
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 70px;
+            font-size: 60px;
         ">Выйти</button>
     `
 
@@ -233,10 +236,10 @@ function showResultsAfterBattle(endData) {
 
 function findPlayerNickname(playerId) 
 {
-    // console.log("arrEnemy.has(playerId.toString())", arrEnemy.has(playerId.toString()))
-    // if (arrEnemy.has(playerId.toString())) {
-    //     return arrEnemy.get(playerId.toString()).nickname;
-    // }
+    console.log("arrEnemy.has(playerId.toString())", arrEnemy.get(playerId.toString()))
+    if (arrEnemy.has(playerId.toString())) {
+        return arrEnemy.get(playerId.toString()).nickname;
+    }
     return stateForWS.nickname;
 }
 
@@ -339,4 +342,27 @@ export function updateAllBullets(ctx, xView, yView) {
 
         bullet.drawBullet(ctx, xView, yView);
     });
+}
+
+async function saveStats(data) {
+    console.log("data RRRRRR: ", data)
+    const formData = {
+        winner: data["winner"],
+        stats: data["stats"],
+    };
+    try
+    {
+        const response = await fetch("/main/profile/updateStats", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData)
+        })
+
+        if (!response.ok) {
+            console.log("@ Ошибка")
+        }
+    }
+    catch (error) {
+        console.error('Ошибка:', error);
+    }
 }

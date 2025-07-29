@@ -87,4 +87,18 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
         $user->setIsReady($isReady);
         $this->getEntityManager()->flush();
     }
+
+    public function updateStats(int $userId, array $statsData): void {
+        $user = $this->find($userId);
+        if (!$user) {
+            return;
+        }
+        $user->setCountGames($user->getCountGames() + 1);
+        if ($statsData["winner"] !== null) {
+            $user->setCountWins($user->getCountWins() + 1);
+        }
+        $user->setCountKills($user->getCountKills() + $statsData["countKills"]);
+        $user->setCountDeaths($user->getCountDeaths() + $statsData["countDeaths"]);
+        $this->getEntityManager()->flush();
+    }
 }

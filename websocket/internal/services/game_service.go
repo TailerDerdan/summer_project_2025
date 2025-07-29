@@ -109,7 +109,7 @@ func (gs *GameService) CreateGame(roomID, gameType string) *models.Game {
 		Players:   make(map[*websocket.Conn]*models.PlayerInfo),
 		Stats:     make(map[string]*models.PlayerStats),
 		StartTime: time.Now(),
-		Duration:  2 * time.Minute,
+		Duration:  1 * time.Minute,
 	}
 
 	gs.activeGames[gameID] = game
@@ -255,7 +255,7 @@ func (gs *GameService) generateGameID(gameType string) string {
 	return fmt.Sprintf("%s-%s", gameType, string(idPart))
 }
 
-func (gs *GameService) EndGame(gameID string) error {
+func (gs *GameService) endGame(gameID string) error {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
 
@@ -264,8 +264,6 @@ func (gs *GameService) EndGame(gameID string) error {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
 
-	winnerID := gs.determineWinner(gameID)
-	game.State.Winner = winnerID
 	players := make([]models.PlayerInfo, 0, len(game.Players))
 	for _, player := range game.Players {
 		players = append(players, models.PlayerInfo{
@@ -277,7 +275,7 @@ func (gs *GameService) EndGame(gameID string) error {
 		"type": "game_end_server",
 		"data": map[string]interface{}{
 			"gameId":  gameID,
-			"winner":  winnerID,
+			"winner":  game.State.Winner,
 			"stats":   game.Stats,
 			"players": players,
 		},
@@ -286,6 +284,8 @@ func (gs *GameService) EndGame(gameID string) error {
 		fmt.Println("error sending end message")
 		return err
 	}
+	fmt.Println("EEE")
+	fmt.Println("GGG")
 	for conn := range game.Players {
 		if err := conn.Close(); err != nil {
 			fmt.Println("error closing to client")
@@ -335,8 +335,8 @@ func (gs *GameService) sendGameStatsUpdate(gameID string) error {
 	}
 
 	type playerScore struct {
-		ID    string
-		Score int
+		ID    string `json:"id"`
+		Score int    `json:"score"`
 	}
 
 	var rankings []playerScore
@@ -467,7 +467,7 @@ func (gs *GameService) GetGameState(gameID string) ([]models.PlayerInfo, error) 
 	return players, nil
 }
 
-func (gs *GameService) StartTimer(gameID string) {
+func (gs *GameService) StartTimer(conn *websocket.Conn, gameID string) {
 	gs.mu.Lock()
 	game, exists := gs.activeGames[gameID]
 	gs.mu.Unlock()
@@ -485,8 +485,12 @@ func (gs *GameService) StartTimer(gameID string) {
 				elapsed := time.Since(game.StartTime)
 				remaining := game.Duration - elapsed
 				if remaining <= 0 {
-					if err := gs.EndGame(gameID); err != nil {
-						fmt.Printf("error sending end message: %v\n", err)
+					if err := gs.saveGameStats(conn, gameID); err != nil {
+						fmt.Printf("123 error saving stats message: %v\n", err)
+						return
+					}
+					if err := gs.endGame(gameID); err != nil {
+						fmt.Printf("123 error sending end message: %v\n", err)
 						return
 					}
 					return
@@ -499,7 +503,7 @@ func (gs *GameService) StartTimer(gameID string) {
 					},
 				}
 				if err := gs.SendMessageInsideGameToAll(gameID, msg); err != nil {
-					fmt.Printf("error sending time message: %v\n", err)
+					fmt.Printf("123 error sending time message: %v\n", err)
 					return
 				}
 			}
@@ -570,4 +574,66 @@ func (gs *GameService) SendInitialGameState(conn *websocket.Conn, gameID string)
 			"players": players,
 		},
 	})
+}
+
+func (gs *GameService) saveGameStats(conn *websocket.Conn, gameID string) error {
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
+	fmt.Println("CCC")
+	game, exists := gs.activeGames[gameID]
+	if !exists {
+		return fmt.Errorf("game %s does not exist", gameID)
+	}
+
+	winnerID := gs.determineWinner(gameID)
+	game.State.Winner = winnerID
+
+	fmt.Println("DDD")
+	player := game.Players[conn]
+	statsMsg := map[string]interface{}{
+		"type": "save_stats_server",
+		"data": map[string]interface{}{
+			"winner": winnerID,
+			"stats": map[string]interface{}{
+				"countKills":  game.Stats[player.PlayerID].Kills,
+				"countDeaths": game.Stats[player.PlayerID].Deaths,
+			},
+		},
+	}
+
+	fmt.Printf("qwe %+v\n", statsMsg)
+	if err := conn.WriteJSON(statsMsg); err != nil {
+		fmt.Printf("error sending stats message: %+v\n", statsMsg)
+		return err
+	}
+	fmt.Println("11111")
+	return nil
+	//jsonData, err := json.Marshal(stats)
+	//if err != nil {
+	//	return err
+	//}
+	//fmt.Println("AAA")
+	//req, err := http.NewRequest(
+	//	http.MethodPost,
+	//	"http://mochilovo-avi.ru:82/main/profile/updateStats",
+	//	bytes.NewBuffer(jsonData),
+	//)
+	//fmt.Println("BBB")
+	//if err != nil {
+	//	return err
+	//}
+	//req.Header.Set("Content-Type", "application/json")
+	//client := &http.Client{Timeout: 15 * time.Second}
+	//resp, err := client.Do(req)
+	//if err != nil {
+	//	return err
+	//}
+	//fmt.Println("EEE")
+	//defer resp.Body.Close()
+	//if resp.StatusCode != http.StatusOK {
+	//	body, _ := io.ReadAll(resp.Body)
+	//	return fmt.Errorf("unexpected status: %d, body: %s", resp.StatusCode, string(body))
+	//}
+	//fmt.Println("FFF")
+	//return nil
 }
