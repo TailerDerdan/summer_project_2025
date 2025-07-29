@@ -1,7 +1,8 @@
 export const TYPE_WEAPON = {
-    ASSAULT_RIFLE: 0,
-    SNIPER_RIFLE: 1,
-    SHOTGUN: 2,
+    NONE: 0,
+    ASSAULT_RIFLE: 1,
+    SNIPER_RIFLE: 2,
+    SHOTGUN: 3,
 }
 
 const TYPE_SHOOTING = {
@@ -20,7 +21,12 @@ export const InitAssaultRifle = {
     timeReload: 4,
     damage: 1,
     speedBullet: 20,
-    typeShooting: TYPE_SHOOTING.AUTOMATIC
+    typeShooting: TYPE_SHOOTING.AUTOMATIC,
+    sprite: (() => {
+        const img = new Image();
+        img.src = "./spriteWeapon/assaultRifle.png";
+        return img;
+    }),
 }
 
 export const InitSniperRifle = {
@@ -33,7 +39,12 @@ export const InitSniperRifle = {
     timeReload: 6,
     damage: 2,
     speedBullet: 8,
-    typeShooting: TYPE_SHOOTING.SINGLE
+    typeShooting: TYPE_SHOOTING.SINGLE,
+    sprite: (() => {
+        const img = new Image();
+        img.src = "./spriteWeapon/sniperRifle.png";
+        return img;
+    }),
 }
 
 export const InitShotgun = {
@@ -46,12 +57,17 @@ export const InitShotgun = {
     timeReload: 5,
     damage: 2,
     speedBullet: 15,
-    typeShooting: TYPE_SHOOTING.FIRING_A_BURST
+    typeShooting: TYPE_SHOOTING.FIRING_A_BURST,
+    sprite: (() => {
+        const img = new Image();
+        img.src = "./spriteWeapon/shotgun.png";
+        return img;
+    }),
 }
 
 export class Weapon
 {
-    constructor(InitValues, typeWeapon)
+    constructor(InitValues, typeWeapon, x, y)
     {
         this.ammoCapacity = InitValues.ammoCapacity;
         this.totalAmmo = InitValues.totalAmmo;
@@ -63,5 +79,7 @@ export class Weapon
         this.damage = InitValues.damage;
         this.type = typeWeapon;
         this.speedBullet = InitValues.speedBullet;
+        this.x = x;
+        this.y = y;
     }
 }
