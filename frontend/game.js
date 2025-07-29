@@ -319,6 +319,10 @@ export function sendBullets()
                 }
             });
 
+            for (const playerBullet of playerBullets) {
+                console.log(playerBullet);
+            }
+
             lastSentTimeForBullets = now;
 
             playerBullets.length = 0;
