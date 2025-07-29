@@ -12,7 +12,7 @@ import { stateForWS } from './websocketGame.js';
 // import { checkAndSendPosition } from './game.js';
 import { sendBullets, updateAllBullets } from './game.js';
 import { drawRemainingBlood } from './blood/blood.js';
-import {playerDeath} from "./player/KillAndDeath";
+import {playerDeath} from "./player/KillAndDeath.js";
 
 const clock = new Clock();
 
