@@ -169,7 +169,7 @@ function handleUpdateTimer(seconds) {
     }
 }
 
-function showResultsAfterBattle(endData, userId) {
+function showResultsAfterBattle(endData) {
     if (gameTimer) {
         clearInterval(gameTimer);
     }
@@ -192,6 +192,7 @@ function showResultsAfterBattle(endData, userId) {
     `)
 
     console.log("endData.winner", typeof endData.winner)
+    const userId = stateForWS.userId
     console.log("userId", typeof userId)
     const winnerNickname = findPlayerNickname(endData.winner);
     const isWinner = parseInt(endData.winner) === userId;
