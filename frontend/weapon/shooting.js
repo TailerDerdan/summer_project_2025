@@ -238,7 +238,7 @@ export function updateMovementBullets()
     });
 }
 
-let throttleUpd = throttle(updateBullets, player.weapon.timeBetweenBul * 1000);
+
 
 // export let throttleBotsShoot = [];
 // for (const bot of arrBot) {
@@ -253,6 +253,8 @@ for (const bot of arrBot) {
         throttleBotsShoot.push(throttleBotShoot);
     }
 }
+
+let throttleUpd = throttle(updateBullets, player.weapon.timeBetweenBul * 1000);
 
 function throttleUpdateBullets(event)
 {

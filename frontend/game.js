@@ -31,25 +31,25 @@ document.addEventListener('DOMContentLoaded', async () => {
             const msg = JSON.parse(event.data);
 
             switch (msg.type) {
-                case "init_players":
+                case "init_players_server":
                     handleInitPlayers(msg.data.players);
                     break;
-                case "join_player":
+                case "join_player_server":
                     handleJoinPlayer(msg.data);
                     break;
-                case "time_update":
+                case "time_update_server":
                     handleUpdateTimer(msg.data.remaining);
                     break;
-                case "game_end":
+                case "game_end_server":
                     handleGameEnd(msg.data);
                     break;
-                case "stats_update":
+                case "stats_update_server":
                     handleUpdateStats(msg.data);
                     break;
-                case "player_move":
+                case "player_move_server":
                     handlePlayerMove(msg.data);
                     break;
-                case "update_bullets":
+                case "update_bullets_server":
                     updateEnemyBullets(msg.data);
                     break;
             }
@@ -71,7 +71,6 @@ function handleInitPlayers(players)
         {
             const newEnemy = new Enemy(player.playerId, player.x, player.y, WIDTH_ENEMY, HEIGHT_ENEMY, player.dir);
             arrEnemy.set(player.playerId, newEnemy);
-            console.log("Enemy", arrEnemy);
         }
     })
 }
@@ -82,7 +81,6 @@ function handleJoinPlayer(player)
     {
         const newEnemy = new Enemy(player.userId, player.x, player.y, WIDTH_ENEMY, HEIGHT_ENEMY, player.dir);
         arrEnemy.set(player.userId, newEnemy);
-        console.log(arrEnemy);
     }
 }
 
@@ -92,7 +90,7 @@ function handlePlayerMove(data)
     {
         arrEnemy.get(data.palyerId).x = data.x;
         arrEnemy.get(data.palyerId).y = data.y;
-        arrEnemy.get(data.palyerId).dir = data.dir;
+        arrEnemy.get(data.palyerId).dir = data.angle;
     }
 }
 
@@ -281,7 +279,7 @@ export function checkAndSendPosition()
             )
             {
                 sendWebSocketMessage(JSON.stringify({
-                    type: "update_position",
+                    type: "player_move",
                     data: {
                         userId: stateForWS.userId.toString(),
                         x: currentPos.x,
@@ -299,27 +297,31 @@ export function checkAndSendPosition()
 
 function getCurrentPosition()
 {
-    return {x: player.x, y: player.y};
+    return {x: player.x, y: player.y, dir: player.dir};
 }
+
+let lastSentTimeForBullets = 0;
 
 export function sendBullets()
 {
-    const now = Date.now();
 
-    //console.log(now - lastSentTime);
+    setInterval(() => {
 
-    if ((now - lastSentTime > 100) && (playerBullets.length !== 0))
-    {
-        sendWebSocketMessage({
-            type: "update_bullets",
-            data: {
-                userId: stateForWS.userId.toString(),
-                bullets: playerBullets
-            }
-        });
+        const now = Date.now();
 
-        let lastSentTime = now;
-    }
+        if ((now - lastSentTimeForBullets > 100) && (playerBullets.length !== 0))
+        {
+            sendWebSocketMessage({
+                type: "update_bullets",
+                data: {
+                    userId: stateForWS.userId.toString(),
+                    bullets: playerBullets
+                }
+            });
+
+            lastSentTimeForBullets = now;
+        }
+    }, 20);
 }
 
 let enemyBullets = [];
