@@ -73,13 +73,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     updateTimer(msg.data.remaining);
                     break;
                 case "game_end":
-                    // endGame();
-                    // stateForWS.gameSocket.send(JSON.stringify({
-                    //     type: "game_ended",
-                    //     data: { gameId: msg.data.gameId }
-                    // }));
-                    // stateForWS.gameSocket.close();
-                    // break;
                     console.log("end game, show results: ")
                     showResultsAfterBattle(msg.data, data.userId);
                     stateForWS.gameSocket.send(JSON.stringify({
@@ -106,13 +99,11 @@ function handleInitPlayers(players)
 
         console.log("playerData(init_players): ", playerData)
 
-        console.log("oooo")
         const enemy = arrEnemyForWS.find((elem) => {
             if (elem.playerId === playerData.playerId) return true;
         });
         if (!enemy)
         {
-            console.log("pppp")
             arrEnemyForWS.push({
                 x: playerData.x,
                 y: playerData.y,
@@ -121,15 +112,13 @@ function handleInitPlayers(players)
             })
             const newEnemy = new Enemy(playerData.playerId, playerData.x, playerData.y, WIDTH_ENEMY, HEIGHT_ENEMY, playerData.angle);
             arrEnemy.push(newEnemy);
-            console.log("arrEnemy: ++++", arrEnemy);
         }
     })
 }
 
 function handleJoinPlayer(data)
 {
-    console.log("playerData(join room): ", data)
-
+    // console.log("playerData(join room): ", data)
     const enemy = arrEnemyForWS.find((elem) => {
         if (elem.userId === data.userId) return true;
     });
@@ -150,7 +139,6 @@ function handleJoinPlayer(data)
 
 function handlePlayerMove(data)
 {
-    console.log("playerMove: ", data);
     updateEnemyPosition(data.userId, data.x, data.y);
 }
 // async function connectToWSGame(data) {
@@ -402,20 +390,15 @@ function getCurrentPosition()
 
 function updateEnemyPosition(userId, x, y)
 {
-
     const enemy = arrEnemyForWS.find(e => e.userId === userId);
-    console.log('WWW: ', arrEnemyForWS, typeof arrEnemyForWS[0].userId)
     if (enemy) {
         enemy.x = x;
         enemy.y = y;
         const gameEnemy = arrEnemy.find(e => e.id === userId);
-        console.log('RRR: ', arrEnemy, typeof arrEnemy[0].id)
         if (gameEnemy) {
             gameEnemy.x = x;
             gameEnemy.y = y;
-            console.log('FFF')
         }
-        console.log('TTT')
     }
 }
 
