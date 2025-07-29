@@ -132,13 +132,13 @@ function handleUpdateStats(data)
     gameStats.position = data.stats[stateForWS.userId]?.position || 0;
 
     gameStats.leaderboard = data.leaderboard.map((item, index) => ({
-        id: item.ID,
-        nickname: findPlayerNickname(item.ID),
-        kills: data.stats[item.ID]?.kills || 0,
-        deaths: data.stats[item.ID]?.deaths || 0,
-        score: data.stats[item.ID]?.score || 0,
+        id: item.id,
+        nickname: findPlayerNickname(item.id),
+        kills: data.stats[item.id]?.kills || 0,
+        deaths: data.stats[item.id]?.deaths || 0,
+        score: data.stats[item.id]?.score || 0,
         position: index + 1,
-        isCurrent: item.ID === data.userId
+        isCurrent: item.id === data.userId
     }));
 
     updateStats();
@@ -365,6 +365,7 @@ export function updateAllBullets(ctx, xView, yView) {
 }
 
 async function saveStats(data) {
+    console.log("data RRRRRR: ", data)
     const formData = {
         winner: data["winner"],
         stats: data["stats"],
@@ -377,11 +378,11 @@ async function saveStats(data) {
             body: JSON.stringify(formData)
         })
 
-        const result = await response.json();
-        return result.map;
+        if (!response.ok) {
+            console.log("@ Ошибка")
+        }
     }
     catch (error) {
         console.error('Ошибка:', error);
-        return null
     }
 }

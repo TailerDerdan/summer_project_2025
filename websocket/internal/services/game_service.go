@@ -337,8 +337,8 @@ func (gs *GameService) sendGameStatsUpdate(gameID string) error {
 	}
 
 	type playerScore struct {
-		ID    string
-		Score int
+		ID    string `json:"id"`
+		Score int    `json:"score"`
 	}
 
 	var rankings []playerScore
@@ -488,11 +488,11 @@ func (gs *GameService) StartTimer(conn *websocket.Conn, gameID string) {
 				remaining := game.Duration - elapsed
 				if remaining <= 0 {
 					if err := gs.saveGameStats(conn, gameID); err != nil {
-						fmt.Println("error saving stats message")
+						fmt.Printf("123 error saving stats message: %v\n", err)
 						return
 					}
 					if err := gs.endGame(gameID); err != nil {
-						fmt.Printf("error sending end message: %v\n", err)
+						fmt.Printf("123 error sending end message: %v\n", err)
 						return
 					}
 					return
@@ -505,7 +505,7 @@ func (gs *GameService) StartTimer(conn *websocket.Conn, gameID string) {
 					},
 				}
 				if err := gs.SendMessageInsideGameToAll(gameID, msg); err != nil {
-					fmt.Printf("error sending time message: %v\n", err)
+					fmt.Printf("123 error sending time message: %v\n", err)
 					return
 				}
 			}
@@ -599,6 +599,7 @@ func (gs *GameService) saveGameStats(conn *websocket.Conn, gameID string) error 
 		},
 	}
 
+	fmt.Print("qwe %+v\n", statsMsg)
 	if err := conn.WriteJSON(statsMsg); err != nil {
 		fmt.Printf("error sending stats message: %+v\n", statsMsg)
 		return err
