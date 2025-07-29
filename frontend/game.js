@@ -107,6 +107,7 @@ function updateStats() {
     document.getElementById('position-count').textContent = gameStats.position;
 
     const leaderboardElement = document.getElementById('leaderboard-body');
+    leaderboardElement.setAttribute("style", "font-size: 25px;")
     leaderboardElement.innerHTML = gameStats.leaderboard.map(player => `
         <tr ${player.isCurrent ? 'class="highlight"' : ''}>
             <td>${player.position}. ${player.nickname}</td>
@@ -181,7 +182,7 @@ function showResultsAfterBattle(endData) {
         padding: 30px;
         background-color: rgba(0, 0, 0, 0.9);
         color: white;
-        font-size: 100px;
+        font-size: 70px;
         border-radius: 10px;
         text-align: center;
         z-index: 1000;
@@ -210,7 +211,7 @@ function showResultsAfterBattle(endData) {
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 70px;
+            font-size: 60px;
         ">Выйти</button>
     `
 

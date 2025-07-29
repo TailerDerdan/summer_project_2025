@@ -113,7 +113,7 @@ func (gs *GameService) CreateGame(roomID, gameType string) *models.Game {
 		Players:   make(map[*websocket.Conn]*models.PlayerInfo),
 		Stats:     make(map[string]*models.PlayerStats),
 		StartTime: time.Now(),
-		Duration:  2 * time.Minute,
+		Duration:  1 * time.Minute,
 	}
 
 	gs.activeGames[gameID] = game
@@ -602,7 +602,7 @@ func (gs *GameService) saveGameStats(gameID string) error {
 	fmt.Println("AAA")
 	req, err := http.NewRequest(
 		http.MethodPost,
-		"http://mochilovo-avi.ru:9000/main/profile/updateStats",
+		"http://mochilovo-avi.ru:82/main/profile/updateStats",
 		bytes.NewBuffer(jsonData),
 	)
 	fmt.Println("BBB")
