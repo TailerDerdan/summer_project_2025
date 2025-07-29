@@ -24,7 +24,7 @@ function addUserLocal(user) {
     const userList = document.querySelector(`.room-info__main-indicator-bar`)
     if (userList &&  !document.getElementById(`user-${user.userId}`)) {
         const userElt = document.createElement("p")
-        if (user.isReady === 1) {
+        if (user.isReady) {
             userElt.setAttribute("style", "background-color: green;")
         } else {
             userElt.setAttribute("style", "background-color: red;")

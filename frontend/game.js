@@ -281,7 +281,7 @@ export function checkAndSendPosition()
                 sendWebSocketMessage(JSON.stringify({
                     type: "player_move",
                     data: {
-                        userId: stateForWS.userId.toString(),
+                        userId: (stateForWS.userId).toString(),
                         x: currentPos.x,
                         y: currentPos.y,
                         dir: currentPos.dir,
