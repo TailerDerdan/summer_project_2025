@@ -75,7 +75,7 @@ function handleInitPlayers(players)
     Object.values(players).forEach(player => {
         if (!arrEnemy.has(player.playerId))
         {
-            const newEnemy = new Enemy(player.playerId, player.x, player.y, WIDTH_ENEMY, HEIGHT_ENEMY, player.dir, player.nickname);
+            const newEnemy = new Enemy(player.playerId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir, player.nickname);
             arrEnemy.set(player.playerId, newEnemy);
         }
     })
@@ -85,7 +85,7 @@ function handleJoinPlayer(player)
 {
     if (!arrEnemy.has(player.userId))
     {
-        const newEnemy = new Enemy(player.userId, player.x, player.y, WIDTH_ENEMY, HEIGHT_ENEMY, player.dir, player.nickname);
+        const newEnemy = new Enemy(player.userId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir, player.nickname);
         arrEnemy.set(player.userId, newEnemy);
     }
 }
