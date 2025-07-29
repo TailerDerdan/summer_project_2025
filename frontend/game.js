@@ -289,6 +289,7 @@ function showResultsAfterBattle(endData, userId) {
         padding: 30px;
         background-color: rgba(0, 0, 0, 0.9);
         color: white;
+        font-size: 25px;
         border-radius: 10px;
         text-align: center;
         z-index: 1000;

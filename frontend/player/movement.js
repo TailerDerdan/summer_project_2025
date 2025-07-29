@@ -46,7 +46,7 @@ export const updateMovementPlayer = (xView, yView, deltaTime) => {
 
     player.changeDistXYByPhysic(dist);
 
-    console.log('duyqwduyqw', dist);
+    //console.log('duyqwduyqw', dist);
     let isWasMovement = player.updatePosition(dist.distX, dist.distY, keyDict);
 
     if (isWasMovement)

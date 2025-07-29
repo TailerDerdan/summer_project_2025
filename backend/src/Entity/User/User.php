@@ -37,7 +37,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
     public function getNickName(): string {
         return $this->nickName;
     }
-    public function getIsReady(): bool {
+    public function getIsReady(): ?bool {
         return $this->isReady;
     }
     public function getPassword(): string {

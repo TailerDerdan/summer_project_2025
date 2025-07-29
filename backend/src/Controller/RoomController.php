@@ -33,7 +33,7 @@ class RoomController extends AbstractController {
         $roomData = [
             "playersCount" => 1,
             "maxPlayers" => 5,
-            "nickname" => $user->getNickname(),
+            "nickname" => $user->getNickName(),
             "userId" => $user->getUserId() ?? null,
             "name" => $data['name'],
             "gamemode" => $data['gamemode'],
@@ -64,7 +64,7 @@ class RoomController extends AbstractController {
         return $this->json([
             'roomId' => $jsonContent['roomId'],
             'userId' => $user->getUserId() ?? null,
-            'nickname' => $user->getNickname() ?? null,
+            'nickname' => $user->getNickName() ?? null,
             //'isReady' => $user->getIsReady() ?? false,
         ]);
     }
@@ -80,8 +80,8 @@ class RoomController extends AbstractController {
         }
         return $this->json([
             'userId' => $user->getUserId() ?? null,
-            'nickname' => $user->getNickname() ?? null,
-            //'isReady' => $user->getIsReady(),
+            'nickname' => $user->getNickName() ?? null,
+            'isReady' => $user->getIsReady() ?? null,
         ]);
     }
 
