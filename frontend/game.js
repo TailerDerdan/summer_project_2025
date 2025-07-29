@@ -320,6 +320,8 @@ export function sendBullets()
             });
 
             lastSentTimeForBullets = now;
+
+            playerBullets.length = 0;
         }
     }, 20);
 }
@@ -331,12 +333,12 @@ function updateEnemyBullets(data) {
         return new Bullet(
             bullet.x,
             bullet.y,
-            100,// bullet.speed,
-            50,//bullet.dir,
+            // 100,// bullet.speed,
+            // 50,//bullet.dir,
             bullet.distX,
             bullet.distY,
-            500,//bullet.fireRange,
-            { id: data.userId }
+            // 500,//bullet.fireRange,
+            // { id: data.userId }
         );
     });
 }
