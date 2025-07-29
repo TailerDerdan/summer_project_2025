@@ -6,6 +6,7 @@ import { camera } from '../camera/camera.js';
 import { getDir, inverseDir } from '../player/changeDir.js';
 
 const bullets = [];
+export const playerBullets = [];
 
 function randomMinMax(min, max)
 {
@@ -40,7 +41,6 @@ const updateBullets = (event) => {
         distY: 0
     }
 
-    export const playerBullets = [];
 
     if (player.weapon.type === TYPE_WEAPON.SHOTGUN)
     {

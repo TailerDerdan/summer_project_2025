@@ -66,8 +66,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 case "player_move":
                     handlePlayerMove(msg.data);
                     break;
-                case "bullets_update":
-                    updateEnemyBullets(msg.data.bullets);
+                case "update_bullets":
+                    updateEnemyBullets(msg.data);
                     break;
                 case "time_update":
                     updateTimer(msg.data.remaining);
@@ -427,7 +427,7 @@ export function sendBullets()
     if ((now - lastSentTime > 100) && (playerBullets.length !== 0))
     {
         sendWebSocketMessage({
-            type: "player_shot",
+            type: "update_bullets",
             data: {
                 userId: stateForWS.userId.toString(),
                 userBullets: playerBullets
@@ -440,17 +440,17 @@ export function sendBullets()
 
 let enemyBullets = [];
 
-function updateEnemyBullets(bulletsData) {
-    enemyBullets = bulletsData.map(bullet => {
+function updateEnemyBullets(data) {
+    enemyBullets = data.bullets.map(bullet => {
         return new Bullet(
             bullet.x,
             bullet.y,
-            bullet.speed,
-            bullet.dir,
+            10,// bullet.speed,
+            10,//bullet.dir,
             bullet.distX,
             bullet.distY,
-            bullet.fireRange,
-            { id: bullet.ownerId }
+            10,//bullet.fireRange,
+            { id: data.userId }
         );
     });
 }
