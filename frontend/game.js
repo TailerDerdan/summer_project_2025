@@ -42,7 +42,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     break;
                 case "game_end_server":
                     console.log("players: ", gameStats.leaderboard);
-                    gameStats.leaderboard.map(player => console.log("player: ", player))
+                    gameStats.leaderboard.map(player => {
+                        console.log("player: ", player)
+                        console.log("userId:", stateForWS.userId)
+                    })
                     handleGameEnd(msg.data);
                     break;
                 case "stats_update_server":
@@ -115,7 +118,7 @@ function updateStats() {
     const leaderboardElement = document.getElementById('leaderboard-body');
     leaderboardElement.setAttribute("style", "font-size: 25px;")
     leaderboardElement.innerHTML = gameStats.leaderboard.map(player => `
-        <tr ${player.isCurrent ? 'class="highlight"' : ''}>
+        <tr ${player.isCurrent ? 'class="highlight" style="color: red"' : 'style="color: blue"'}>
             <td>${player.position}. ${player.nickname}</td>
             <td>${player.kills}</td>
             <td>${player.deaths}</td>
@@ -258,6 +261,7 @@ function findPlayerNickname(playerId)
 {
     console.log("arrEnemy.has(playerId.toString())", arrEnemy.get(playerId.toString()))
     if (arrEnemy.has(playerId.toString())) {
+        console.log("--===---", arrEnemy.get(playerId.toString()))
         return arrEnemy.get(playerId.toString()).nickname;
     }
     return stateForWS.nickname;
