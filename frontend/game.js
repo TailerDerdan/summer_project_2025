@@ -1,5 +1,5 @@
 import { Enemy, HEIGHT_ENEMY, WIDTH_ENEMY } from "./enemy/enemy.js";
-import { arrEnemy, arrEnemyForWS, player } from "./player/player.js";
+import { arrEnemy, player } from "./player/player.js";
 import { playerBullets, updateMovementBullets } from "./weapon/shooting.js";
 import { Bullet } from "./weapon/bullet.js";
 import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         setMessageHandler((event) => {
             const msg = JSON.parse(event.data);
-            // console.log("msg: ", msg);
 
             switch (msg.type) {
                 case "init_players":
@@ -50,6 +49,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 case "player_move":
                     handlePlayerMove(msg.data);
                     break;
+                case "update_bullets":
+                    updateEnemyBullets(msg.data);
+                    break;
             }
         });
 
@@ -66,6 +68,16 @@ function handleInitPlayers(players)
     console.log(players);
     Object.values(players).forEach(player => {
         
+        gameStats.leaderboard = data.leaderboard.map((item, index) => ({
+            id: item.ID,
+            nickname: findPlayerNickname(item.ID),
+            kills: data.stats[item.ID]?.kills || 0,
+            deaths: data.stats[item.ID]?.deaths || 0,
+            score: data.stats[item.ID]?.score || 0,
+            position: index + 1,
+            isCurrent: item.ID === data.userId
+        }));
+
         if (!arrEnemy.has(player.playerId))
         {
             const newEnemy = new Enemy(player.playerId, player.x, player.y, WIDTH_ENEMY, HEIGHT_ENEMY, player.dir);
@@ -122,67 +134,12 @@ function updateStatsUI() {
     `).join('');
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-    const data = JSON.parse(sessionStorage.getItem('gameSession'))
-    console.log("DATA: ", data)
-
-    if (!data) {
-        window.location.href = `/main`
-        return
-    }
-    sessionStorage.removeItem('gameSession');
-
-    try
-    {
-        await initGameWebsocket(data);
-        //await startTimer();
-
-        setMessageHandler((event) => {
-            //console.log("event.data: ", event.data);
-            const msg = JSON.parse(event.data);
-            //console.log("msg: ", msg);
-
-            switch (msg.type) {
-                case "init_players":
-                    console.log(msg);
-                    handleInitPlayers(msg.data.players);
-                    break;
-                case "join_player":
-                    handleJoinPlayer(msg.data);
-                    break;
-                case "player_move":
-                    handlePlayerMove(msg.data);
-                    break;
-                case "update_bullets":
-                    updateEnemyBullets(msg.data);
-                    break;
-                case "time_update":
-                    updateTimer(msg.data.remaining);
-                    break;
-                case "game_end":
-                    console.log("end game, show results: ")
-                    showResultsAfterBattle(msg.data, data.userId);
-                    stateForWS.gameSocket.send(JSON.stringify({
-                        type: "game_end",
-                        data: { gameId: msg.data.gameId }
-                    }));
-                    stateForWS.gameSocket.close();
-                    break;
-            }
-        });
-
-        checkAndSendPosition();
-    }
-    catch (error) {
-        console.error("WebSocket error:", error);
-        window.location.href = '/main';
-    }
-});
-
-function handleInitPlayers(players)
+function handleUpdateStats(data)
 {
-    console.log("players: ", players)
-    players.forEach(playerData => {
+    gameStats.kills = data.stats[stateForWS.userId]?.kills || 0;
+    gameStats.deaths = data.stats[stateForWS.userId]?.deaths || 0;
+    gameStats.score = data.stats[stateForWS.userId]?.score || 0;
+    gameStats.position = data.stats[stateForWS.userId]?.position || 0;
 
     gameStats.leaderboard = data.leaderboard.map((item, index) => ({
         id: item.ID,
@@ -194,127 +151,18 @@ function handleInitPlayers(players)
         isCurrent: item.ID === data.userId
     }));
 
-        const enemy = arrEnemyForWS.find((elem) => {
-            if (elem.playerId === playerData.playerId) return true;
-        });
-        if (!enemy)
-        {
-            arrEnemyForWS.push({
-                x: playerData.x,
-                y: playerData.y,
-                userId: playerData.playerId,
-                dir: playerData.angle
-            })
-            const newEnemy = new Enemy(playerData.playerId, playerData.x, playerData.y, WIDTH_ENEMY, HEIGHT_ENEMY, playerData.angle);
-            arrEnemy.push(newEnemy);
-        }
-    })
-}
-
-function handleJoinPlayer(data)
-{
-    // console.log("playerData(join room): ", data)
-    const enemy = arrEnemyForWS.find((elem) => {
-        if (elem.userId === data.userId) return true;
-    });
-
-    if (!enemy)
-    {
-        arrEnemyForWS.push({
-            x: data.x,
-            y: data.y,
-            userId: data.userId,
-            dir: data.angle,
-        })
-        const newEnemy = new Enemy(data.userId, data.x, data.y, WIDTH_ENEMY, HEIGHT_ENEMY, data.angle);
-        arrEnemy.push(newEnemy);
-        console.log("arrEnemy: ====", arrEnemy);
-    }
+    updateStatsUI();
 }
 
 function handlePlayerMove(data)
 {
     updateEnemyPosition(data.userId, data.x, data.y);
 }
-// async function connectToWSGame(data) {
-//     gameData = data
-//     gameSocket = new WebSocket(`ws://mochilovo-avi.ru:8080/ws/game/${data.gameId}`)
-//     gameSocket.onopen = (e) => {
-//         gameSocket.send(JSON.stringify({
-//             type: "game_auth",
-//             data: {
-//                 userId: (data.userId).toString(),
-//                 nickname: data.nickname,
-//             }
-//         }))
-//     }
-//     gameSocket.onmessage = (event) => {
-//         const msg = JSON.parse(event.data);
-//         switch (msg.type) {
-//             case "init_players":
-//                 Object.values(msg.data.players).forEach(playerData => {
-//                     arrEnemy.push({
-//                         x: playerData.x,
-//                         y: playerData.y,
-//                         id: playerData.playerId,
-//                     })
-//                     playersCache[playerData.playerId] = {
-//                         nickname: playerData.nickname
-//                     };
-//                 })
-//                 break;
-//             case "join_player":
-//                 arrEnemy.push({
-//                     x: msg.data.x,
-//                     y: msg.data.y,
-//                     id: msg.data.userId,
-//                 })
-//                 playersCache[msg.data.userId] = {
-//                     nickname: msg.data.nickname
-//                 };
-//                 break;
-//             case "time_update":
-//                 updateTimer(msg.data.remaining);
-//                 break;
-//             case "game_end":
-//                 showResultsAfterBattle(msg.data);
-//                 gameSocket.send(JSON.stringify({
-//                     type: "game_ended",
-//                     data: { gameId: msg.data.gameId }
-//                 }));
-//                 gameSocket.close();
-//                 break;
-//             case "stats_update":
-//                 Object.keys(msg.data.stats).forEach(playerId => {
-//                     if (!playersCache[playerId]) {
-//                         playersCache[playerId] = {
-//                             nickname: `Player_${playerId.substring(0, 4)}`
-//                         };
-//                     }
-//                 });
-//
-//                 gameStats.kills = msg.data.stats[data.userId]?.kills || 0;
-//                 gameStats.deaths = msg.data.stats[data.userId]?.deaths || 0;
-//                 gameStats.score = msg.data.stats[data.userId]?.score || 0;
-//                 gameStats.position = msg.data.stats[data.userId]?.position || 0;
-//
-//                 gameStats.leaderboard = msg.data.leaderboard.map((item, index) => ({
-//                     id: item.ID,
-//                     nickname: findPlayerNickname(item.ID),
-//                     kills: msg.data.stats[item.ID]?.kills || 0,
-//                     deaths: msg.data.stats[item.ID]?.deaths || 0,
-//                     score: msg.data.stats[item.ID]?.score || 0,
-//                     position: index + 1,
-//                     isCurrent: item.ID === data.userId
-//                 }));
-//
-//                 updateStatsUI();
-//                 break;
-//         }
-//     };
-// }
 
-function updateTimer(seconds) {
+let gameTimer = null;
+let remainingTime = 0;
+
+function handleUpdateTimer(seconds) {
     remainingTime = seconds;
 
     if (!gameTimer) {
@@ -338,23 +186,6 @@ function updateTimer(seconds) {
         }, 1000);
     }
 }
-
-// async function startTimer() {
-//     let countStart = 10
-//     const countStartElt = document.createElement("div")
-//     countStartElt.setAttribute("style", "position: fixed; padding: 20px; font-size: 20px;")
-//     document.body.prepend(countStartElt)
-//     const timer = setInterval(() => {
-//         countStartElt.textContent = `Игра завершится через: ${countStart}`
-//         countStart--
-//         if (countStart < 0) {
-//             clearInterval(timer)
-//             console.log("111")
-//             showResultsAfterBattle()
-//             console.log("222")
-//         }
-//     }, 1000)
-// }
 
 function showResultsAfterBattle(endData, userId) {
     if (gameTimer) {
