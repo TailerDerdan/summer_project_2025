@@ -35,13 +35,13 @@ const updateBullets = (event) => {
 
     player.soundShoot.stop();
 
+    playerBullets.length = 0;
+
     const objForMovement = {
         dir: 0,
         distX: 0,
         distY: 0
     }
-
-    playerBullets.length = 0;
 
     if (player.weapon.type === TYPE_WEAPON.SHOTGUN)
     {
