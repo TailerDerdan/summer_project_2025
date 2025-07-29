@@ -67,22 +67,11 @@ function handleInitPlayers(players)
 {
     console.log(players);
     Object.values(players).forEach(player => {
-        
-        gameStats.leaderboard = data.leaderboard.map((item, index) => ({
-            id: item.ID,
-            nickname: findPlayerNickname(item.ID),
-            kills: data.stats[item.ID]?.kills || 0,
-            deaths: data.stats[item.ID]?.deaths || 0,
-            score: data.stats[item.ID]?.score || 0,
-            position: index + 1,
-            isCurrent: item.ID === data.userId
-        }));
-
         if (!arrEnemy.has(player.playerId))
         {
             const newEnemy = new Enemy(player.playerId, player.x, player.y, WIDTH_ENEMY, HEIGHT_ENEMY, player.dir);
             arrEnemy.set(player.playerId, newEnemy);
-            console.log(arrEnemy);
+            console.log("Enemy", arrEnemy);
         }
     })
 }
@@ -152,11 +141,6 @@ function handleUpdateStats(data)
     }));
 
     updateStatsUI();
-}
-
-function handlePlayerMove(data)
-{
-    updateEnemyPosition(data.userId, data.x, data.y);
 }
 
 let gameTimer = null;
@@ -316,20 +300,6 @@ export function checkAndSendPosition()
 function getCurrentPosition()
 {
     return {x: player.x, y: player.y};
-}
-
-function updateEnemyPosition(userId, x, y)
-{
-    const enemy = arrEnemyForWS.find(e => e.userId === userId);
-    if (enemy) {
-        enemy.x = x;
-        enemy.y = y;
-        const gameEnemy = arrEnemy.find(e => e.id === userId);
-        if (gameEnemy) {
-            gameEnemy.x = x;
-            gameEnemy.y = y;
-        }
-    }
 }
 
 export function sendBullets()

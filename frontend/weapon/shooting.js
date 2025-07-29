@@ -201,7 +201,7 @@ export function updateMovementBullets()
             bullets.splice(index, 1);
         }
 
-        for (const enemy of arrEnemy) {
+        for (const [id, enemy] of arrEnemy) {
             if (enemy.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) &&
                 enemy.isCharacterLive &&
                 (elem.owner !== enemy)
