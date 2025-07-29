@@ -52,6 +52,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 case "update_bullets_server":
                     updateEnemyBullets(msg.data);
                     break;
+                case "save_stats_server":
+                    console.log("save stats: ")
+                    saveStats(msg.data);
+                    break;
             }
         });
 
@@ -356,4 +360,26 @@ export function updateAllBullets(ctx, xView, yView) {
 
         bullet.drawBullet(ctx, xView, yView);
     });
+}
+
+async function saveStats(data) {
+    const formData = {
+        winner: data["winner"],
+        stats: data["stats"],
+    };
+    try
+    {
+        const response = await fetch("/main/profile/updateStats", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData)
+        })
+
+        const result = await response.json();
+        return result.map;
+    }
+    catch (error) {
+        console.error('Ошибка:', error);
+        return null
+    }
 }
