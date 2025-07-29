@@ -63,39 +63,39 @@ function connectToWSRoom(dataUser)   {
 
     socket.onmessage = async (event) => {
         const data = JSON.parse(event.data);
-        if (data.type === 'user_joined') {
+        if (data.type === 'user_joined_server') {
             addUserToList(data.data);
             showNotification(` присоединился к комнате`);
-        } else if (data.type === 'init_users') {
+        } else if (data.type === 'init_users_server') {
             data.data.users.forEach(user => {
                 addUserToList(user);
             });
         }
-        if (data.type === 'leave_ack' || data.type === 'user_leaved_l') {
+        if (data.type === 'leave_ack_server' || data.type === 'user_leaved_l_server') {
             removeUserFromList(data.data.userId)
             showNotification(`${data.data.userId}: ${data.data.nickname} вызодит из комнаты...`);
-            if (data.type === 'leave_ack') {
+            if (data.type === 'leave_ack_server') {
                 await deleteUserFromRoom(data.data.roomId)
                 socket.close()
                 window.location.href = '/main';
             }
         }
-        if (data.type === 'start_game') {
+        if (data.type === 'start_game_server') {
             handleGameStart(data.data, dataUser.data)
             await deleteUserFromRoom(data.data.roomId)
             await deleteRoom(data.data.roomId)
             socket.close()
         }
-        if (data.type === "not_all_ready") {
+        if (data.type === "not_all_ready_server") {
             showNotification(`Не все игроки нажали кнопку "ГОТОВ"`);
         }
-        if (data.type === "delete_room_l") {
+        if (data.type === "delete_room_l_server") {
             await deleteUserFromRoom(data.data.roomId)
             await deleteRoom(data.data.roomId)
             socket.close()
             window.location.href = ("/main")
         }
-        if (data.type === "update_ready_state") {
+        if (data.type === "update_ready_state_server") {
             await updateReadyState(data.data)
         }
     }

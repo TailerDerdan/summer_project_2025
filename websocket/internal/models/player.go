@@ -3,7 +3,7 @@ package models
 type PlayerInfo struct {
 	X        float64 `json:"x"`
 	Y        float64 `json:"y"`
-	Angle    float64 `json:"angle"`
+	Dir      float64 `json:"dir"`
 	PlayerID string  `json:"playerId"`
 	Nickname string  `json:"nickname"`
 }

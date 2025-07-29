@@ -210,7 +210,7 @@ func (gh *GameHandler) HandleGameConnection2(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	fmt.Println("/-333-/")
-	if err := gh.sendInitialGameState(conn, gameID); err != nil {
+	if err := gh.gameService.SendInitialGameState(conn, gameID); err != nil {
 		log.Printf("Game WS send initial game state failed: %v", err)
 		gh.sendError(conn, "Game WS send initial game state failed")
 		return
@@ -238,21 +238,8 @@ func (gh *GameHandler) authenticatePlayer(conn *websocket.Conn) (*models.PlayerI
 		Nickname: msg.Data["nickname"].(string),
 		X:        internal.GeneratePosition(),
 		Y:        internal.GeneratePosition(),
-		Angle:    0,
+		Dir:      0,
 	}, nil
-}
-
-func (gh *GameHandler) sendInitialGameState(conn *websocket.Conn, gameID string) error {
-	players, err := gh.gameService.GetGameState(gameID)
-	if err != nil {
-		return err
-	}
-	return conn.WriteJSON(map[string]interface{}{
-		"type": "init_players",
-		"data": map[string]interface{}{
-			"players": players,
-		},
-	})
 }
 
 func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID string) {
@@ -302,6 +289,14 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 	case "update_bullets":
 		fmt.Println("/-00000_99999_0000-/")
 		err := gh.gameService.UpdateBullets(conn, gameID, msg.Data)
+		return err
+	case "player_kill":
+		fmt.Println("player kill")
+		err := gh.gameService.PlayerKill(gameID, playerID)
+		return err
+	case "player_death":
+		fmt.Println("player_death")
+		err := gh.gameService.PlayerDeath(gameID, playerID)
 		return err
 	}
 	return nil

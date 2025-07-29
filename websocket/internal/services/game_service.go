@@ -2,6 +2,7 @@ package services
 
 import (
 	"crypto/rand"
+	"sort"
 	"time"
 
 	//"errors"
@@ -223,9 +224,9 @@ func (gs *GameService) RemovePlayerFromGame(gameID string, conn *websocket.Conn)
 	if !ok {
 		return
 	}
-	fmt.Println("<-123->")
+
 	leaveMsg := map[string]interface{}{
-		"type": "player_left",
+		"type": "player_left_server",
 		"data": map[string]string{
 			"playerId": player.PlayerID,
 		},
@@ -234,10 +235,6 @@ func (gs *GameService) RemovePlayerFromGame(gameID string, conn *websocket.Conn)
 		fmt.Println("error sending leave message")
 		return
 	}
-	//if err := conn.Close(); err != nil {
-	//	fmt.Println("TYT error closing to client")
-	//	return
-	//}
 	conn.Close()
 	delete(game.Players, conn)
 }
@@ -277,7 +274,7 @@ func (gs *GameService) EndGame(gameID string) error {
 		})
 	}
 	endMsg := map[string]interface{}{
-		"type": "game_end",
+		"type": "game_end_server",
 		"data": map[string]interface{}{
 			"gameId":  gameID,
 			"winner":  winnerID,
@@ -331,77 +328,85 @@ func (gs *GameService) determineWinner(gameID string) string {
 	return winnerID
 }
 
-func (gs *GameService) SendGameStatsUpdate(gameID string) {
-	//game, exists := gs.activeGames[gameID]
-	//if !exists {
-	//	return
-	//}
-	//
-	//type playerScore struct {
-	//	ID    string
-	//	Score int
-	//}
-	//
-	//var rankings []playerScore
-	//for id, stats := range game.Stats {
-	//	rankings = append(rankings, playerScore{ID: id, Score: stats.Score})
-	//}
-	//
-	//sort.Slice(rankings, func(i, j int) bool {
-	//	return rankings[i].Score > rankings[j].Score
-	//})
-	//
-	//for i, rank := range rankings {
-	//	game.Stats[rank.ID].Position = i + 1
-	//}
-	//
-	//msg := map[string]interface{}{
-	//	"type": "stats_update",
-	//	"data": map[string]interface{}{
-	//		"stats":       game.Stats,
-	//		"gameId":      gameID,
-	//		"leaderboard": rankings,
-	//	},
-	//}
-	//
-	//gs.SendMessageInsideGameToAll(gameID, msg)
+func (gs *GameService) sendGameStatsUpdate(gameID string) error {
+	game, exists := gs.activeGames[gameID]
+	if !exists {
+		return fmt.Errorf("game %s does not exist", gameID)
+	}
+
+	type playerScore struct {
+		ID    string
+		Score int
+	}
+
+	var rankings []playerScore
+	for playerId, stats := range game.Stats {
+		rankings = append(rankings, playerScore{ID: playerId, Score: stats.Score})
+	}
+
+	sort.Slice(rankings, func(i, j int) bool {
+		return rankings[i].Score > rankings[j].Score
+	})
+
+	for i, rank := range rankings {
+		game.Stats[rank.ID].Position = i + 1
+	}
+
+	msg := map[string]interface{}{
+		"type": "stats_update_server",
+		"data": map[string]interface{}{
+			"stats":       game.Stats,
+			"gameId":      gameID,
+			"leaderboard": rankings,
+		},
+	}
+
+	if err := gs.SendMessageInsideGameToAll(gameID, msg); err != nil {
+		fmt.Println("error sending stats message")
+		return err
+	}
+	return nil
 }
 
-func (gs *GameService) PlayerKill(gameID, killerID, victimID string) {
+func (gs *GameService) PlayerKill(gameID, playerID string) error {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
-	//
-	//game, exists := gs.activeGames[gameID]
-	//if !exists {
-	//	return
-	//}
-	//
-	//if stats, ok := game.Stats[killerID]; ok {
-	//	stats.Kills++
-	//	stats.Score += 100
-	//}
-	//
-	//if stats, ok := game.Stats[victimID]; ok {
-	//	stats.Deaths++
-	//}
-	//
-	//gs.SendGameStatsUpdate(gameID)
+
+	game, exists := gs.activeGames[gameID]
+	if !exists {
+		return fmt.Errorf("game %s does not exist", gameID)
+	}
+
+	if stats, ok := game.Stats[playerID]; ok {
+		stats.Kills++
+		stats.Score += 100
+	}
+
+	if err := gs.SendGameStatsUpdate(gameID); err != nil {
+		fmt.Println("error sending stats message")
+		return err
+	}
+	return nil
 }
 
-func (gs *GameService) PlayerDeath(gameID, playerID string) {
+func (gs *GameService) PlayerDeath(gameID, playerID string) error {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
-	//
-	//game, exists := gs.activeGames[gameID]
-	//if !exists {
-	//	return
-	//}
-	//
-	//if stats, ok := game.Stats[playerID]; ok {
-	//	stats.Deaths++
-	//}
-	//
-	//gs.SendGameStatsUpdate(gameID)
+
+	game, exists := gs.activeGames[gameID]
+	if !exists {
+		return fmt.Errorf("game %s does not exist", gameID)
+	}
+
+	if stats, ok := game.Stats[playerID]; ok {
+		stats.Deaths++
+	}
+
+	if err := gs.SendGameStatsUpdate(gameID); err != nil {
+		fmt.Println("error sending stats message")
+		return err
+	}
+	return nil
 }
 
 //func (gs *GameService) CreateGame(gameID, roomID, gameType string, duration time.Duration) *models.Game {
@@ -423,12 +428,12 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 	game.Players[conn] = player
 	game.Stats[player.PlayerID] = &models.PlayerStats{}
 	joinMsg := map[string]interface{}{
-		"type": "join_player",
+		"type": "join_player_server",
 		"data": map[string]interface{}{
 			"userId": player.PlayerID,
 			"x":      player.X,
 			"y":      player.Y,
-			"angle":  player.Angle,
+			"dir":    player.Dir,
 		},
 	}
 	if err := gs.SendMessageInsideGame(conn, gameID, joinMsg); err != nil {
@@ -455,7 +460,7 @@ func (gs *GameService) GetGameState(gameID string) ([]models.PlayerInfo, error) 
 			Nickname: player.Nickname,
 			X:        player.X,
 			Y:        player.Y,
-			Angle:    player.Angle,
+			Dir:      player.Dir,
 		})
 	}
 
@@ -488,12 +493,13 @@ func (gs *GameService) StartTimer(gameID string) {
 				}
 
 				msg := map[string]interface{}{
-					"type": "time_update",
+					"type": "time_update_server",
 					"data": map[string]interface{}{
 						"remaining": int(remaining.Seconds()),
 					},
 				}
 				if err := gs.SendMessageInsideGameToAll(gameID, msg); err != nil {
+					fmt.Printf("error sending time message: %v\n", err)
 					return
 				}
 			}
@@ -510,24 +516,22 @@ func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID str
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
 
-	fmt.Println("()_0_0_()")
 	player := game.Players[conn]
 	player.X = x.(float64)
 	player.Y = y.(float64)
 
-	fmt.Println("()_1_1_()")
 	positionMsg := map[string]interface{}{
-		"type": "player_move",
+		"type": "player_move_server",
 		"data": map[string]interface{}{
 			"userId": playerID,
 			"x":      player.X,
 			"y":      player.Y,
-			"angle":  player.Angle,
+			"dir":    player.Dir,
 		},
 	}
-	fmt.Println("()_2_2_()")
+
 	if err := gs.SendMessageInsideGame(conn, gameID, positionMsg); err != nil {
-		fmt.Println("()_3_3_()")
+		fmt.Println("error sending position message")
 		return err
 	}
 	return nil
@@ -543,12 +547,26 @@ func (gs *GameService) UpdateBullets(conn *websocket.Conn, gameID string, data m
 	}
 
 	bulletsMsg := map[string]interface{}{
-		"type": "update_bullets",
+		"type": "update_bullets_server",
 		"data": data,
 	}
 
 	if err := gs.SendMessageInsideGame(conn, gameID, bulletsMsg); err != nil {
+		fmt.Println("error sending bullets message")
 		return err
 	}
 	return nil
+}
+
+func (gs *GameService) SendInitialGameState(conn *websocket.Conn, gameID string) error {
+	players, err := gs.GetGameState(gameID)
+	if err != nil {
+		return err
+	}
+	return conn.WriteJSON(map[string]interface{}{
+		"type": "init_players_server",
+		"data": map[string]interface{}{
+			"players": players,
+		},
+	})
 }

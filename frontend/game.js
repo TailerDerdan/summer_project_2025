@@ -117,7 +117,7 @@ function handleGameEnd(data)
     stateForWS.gameSocket.close();
 }
 
-function updateStatsUI() {
+function updateStats() {
     document.getElementById('kills-count').textContent = gameStats.kills;
     document.getElementById('deaths-count').textContent = gameStats.deaths;
     document.getElementById('score-count').textContent = gameStats.score;
@@ -151,7 +151,7 @@ function handleUpdateStats(data)
         isCurrent: item.ID === data.userId
     }));
 
-    updateStatsUI();
+    updateStats();
 }
 
 function handlePlayerMove(data)

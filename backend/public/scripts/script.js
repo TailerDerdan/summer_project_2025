@@ -3,18 +3,18 @@ function connectWebSocket() {
 
     socket.onmessage = async (event) => {
         const data = JSON.parse(event.data);
-        if (data.type === 'room_create') {
+        if (data.type === 'room_create_server') {
             addRoomToList(data.room, data.user);
             addUser(data.user)
         }
-        if (data.type === "add_user") {
+        if (data.type === "add_user_server") {
             addUser(data.data)
             incCounterUsers(data.data.roomId)
         }
-        if (data.type === "user_leaved_g") {
+        if (data.type === "user_leaved_g_server") {
             await deleteUser(data.data)
         }
-        if (data.type === "delete_room_g") {
+        if (data.type === "delete_room_g_server") {
             await deleteRoom(data.data.roomId)
             const room = document.getElementById(`room-menu__room-list-item-${data.data.roomId}`)
             if (room) {

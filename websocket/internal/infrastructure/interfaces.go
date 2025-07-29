@@ -14,14 +14,15 @@ type IGameService interface {
 	CheckGameEndConditions(gameID string)
 	RemovePlayerFromGame(gameID string, conn *websocket.Conn)
 	EndGame(gameID string) error
-	SendGameStatsUpdate(gameID string)
-	PlayerKill(gameID, killerID, victimID string)
-	PlayerDeath(gameID, playerID string)
+	//SendGameStatsUpdate(gameID string)
+	PlayerKill(gameID, playerID string) error
+	PlayerDeath(gameID, playerID string) error
 	StartTimer(gameID string)
 	RegisterPlayer(conn *websocket.Conn, gameID string, player *models.PlayerInfo) error
 	GetGameState(gameID string) ([]models.PlayerInfo, error)
 	UpdatePosition(conn *websocket.Conn, gameID, playerID string, x, y interface{}) error
 	UpdateBullets(conn *websocket.Conn, gameID string, data map[string]interface{}) error
+	SendInitialGameState(conn *websocket.Conn, gameID string) error
 }
 
 type IRoomService interface {
