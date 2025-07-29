@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 case "player_move":
                     handlePlayerMove(msg.data);
                     break;
-                case "bullets_update":
+                case "update_bullets":
                     updateEnemyBullets(msg.data.bullets);
                     break;
                 case "time_update":
