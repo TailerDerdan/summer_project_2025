@@ -6,6 +6,7 @@ import { camera } from '../camera/camera.js';
 import { getDir, inverseDir } from '../player/changeDir.js';
 
 const bullets = [];
+export const playerBullets = [];
 
 function randomMinMax(min, max)
 {
@@ -40,6 +41,7 @@ const updateBullets = (event) => {
         distY: 0
     }
 
+
     if (player.weapon.type === TYPE_WEAPON.SHOTGUN)
     {
         for (let iter = 0; iter < 6; iter++)
@@ -63,6 +65,12 @@ const updateBullets = (event) => {
                 player
             );
             bullets.push(bullet);
+            playerBullets.push({
+                x: bullet.x,
+                y: bullet.y,
+                distX: bullet.distX,
+                distY: bullet.distY,
+            });
         }
     }
     else
@@ -84,6 +92,12 @@ const updateBullets = (event) => {
             player
         );
         bullets.push(bullet);
+        playerBullets.push({
+            x: bullet.x,
+            y: bullet.y,
+            distX: bullet.distX,
+            distY: bullet.distY,
+        });
     }
 
     player.soundShoot.play();
@@ -192,7 +206,10 @@ export function updateMovementBullets()
         }
 
         for (const enemy of arrEnemy) {
-            if (enemy.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) && enemy.isCharacterLive && (elem.owner !== enemy))
+            if (enemy.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) &&
+                enemy.isCharacterLive &&
+                (elem.owner !== enemy)
+            )
             {
                 bullets.splice(index, 1);
                 enemy.wasCharacterWounded = true;
@@ -200,13 +217,19 @@ export function updateMovementBullets()
         }
 
         for (const bot of arrBot) {
-            if (bot.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) && bot.isCharacterLive && (elem.owner !== bot)) {
+            if (bot.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) &&
+                bot.isCharacterLive &&
+                elem.owner !== bot
+            ) {
                 bullets.splice(index, 1);
                 bot.wasCharacterWounded = true;
             }
         }
 
-        if (player.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) && player.isCharacterLive && (elem.owner !== player))
+        if (player.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) &&
+            player.isCharacterLive &&
+            elem.owner !== player
+        )
         {
             bullets.splice(index, 1);
             player.wasCharacterWounded = true;
