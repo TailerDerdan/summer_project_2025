@@ -587,19 +587,23 @@ func (gs *GameService) saveGameStats(conn *websocket.Conn, gameID string) error 
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
 	fmt.Println("DDD")
+	player := game.Players[conn]
 	statsMsg := map[string]interface{}{
 		"type": "save_stats_server",
 		"data": map[string]interface{}{
 			"winner": game.State.Winner,
-			"stats":  game.Stats,
+			"stats": map[string]interface{}{
+				"countKills":  game.Stats[player.PlayerID].Kills,
+				"countDeaths": game.Stats[player.PlayerID].Deaths,
+			},
 		},
 	}
 
 	if err := conn.WriteJSON(statsMsg); err != nil {
-		fmt.Println("error sending stats message")
+		fmt.Printf("error sending stats message: %+v\n", statsMsg)
 		return err
 	}
-
+	fmt.Println("11111")
 	return nil
 	//jsonData, err := json.Marshal(stats)
 	//if err != nil {

@@ -41,6 +41,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     handleUpdateTimer(msg.data.remaining);
                     break;
                 case "game_end_server":
+                    console.log("players: ", gameStats.leaderboard);
+                    gameStats.leaderboard.map(player => console.log("player: ", player))
                     handleGameEnd(msg.data);
                     break;
                 case "stats_update_server":
