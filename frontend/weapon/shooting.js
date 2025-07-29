@@ -7,6 +7,7 @@ import { getDir, inverseDir } from '../player/changeDir.js';
 import { randomMinMax } from '../random.js';
 import { playerKill } from '../player/KillAndDeath.js';
 import { stateForWS } from '../websocketGame.js';
+import { enemyBullets } from "../game.js";
 
 const bullets = [];
 export const playerBullets = [];
@@ -265,6 +266,22 @@ function throttleUpdateBullets(event)
 }
 
 document.addEventListener('mousedown', throttleUpdateBullets);
+
+export function updateAllBullets(ctx, xView, yView) {
+    updateMovementBullets();
+
+    enemyBullets.forEach((bullet, index) => {
+        bullet.setX(bullet.getX() + bullet.getDistX());
+        bullet.setY(bullet.getY() - bullet.getDistY());
+
+        const remainingDist = bullet.getRemainingDist(bullet.getFireRange());
+        if (remainingDist >= -4 && remainingDist <= 4) {
+            enemyBullets.splice(index, 1);
+        }
+
+        bullet.drawBullet(ctx, xView, yView);
+    });
+}
 
 // let intervalId = 0;
 // document.addEventListener('mousedown', (event) => {

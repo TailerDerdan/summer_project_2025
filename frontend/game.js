@@ -1,6 +1,6 @@
 import { Enemy, HEIGHT_ENEMY, WIDTH_ENEMY } from "./enemy/enemy.js";
 import { arrEnemy, player } from "./player/player.js";
-import { playerBullets, updateMovementBullets } from "./weapon/shooting.js";
+import { playerBullets } from "./weapon/shooting.js";
 import { Bullet } from "./weapon/bullet.js";
 import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
 
@@ -69,7 +69,7 @@ function handleInitPlayers(players)
     Object.values(players).forEach(player => {
         if (!arrEnemy.has(player.playerId))
         {
-            const newEnemy = new Enemy(player.playerId, player.x, player.y, WIDTH_ENEMY, HEIGHT_ENEMY, player.dir);
+            const newEnemy = new Enemy(player.playerId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir);
             arrEnemy.set(player.playerId, newEnemy);
         }
     })
@@ -79,7 +79,7 @@ function handleJoinPlayer(player)
 {
     if (!arrEnemy.has(player.userId))
     {
-        const newEnemy = new Enemy(player.userId, player.x, player.y, WIDTH_ENEMY, HEIGHT_ENEMY, player.dir);
+        const newEnemy = new Enemy(player.userId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir);
         arrEnemy.set(player.userId, newEnemy);
     }
 }
@@ -324,7 +324,7 @@ export function sendBullets()
     }, 20);
 }
 
-let enemyBullets = [];
+export let enemyBullets = [];
 
 function updateEnemyBullets(data) {
     enemyBullets = data.bullets.map(bullet => {
@@ -338,21 +338,5 @@ function updateEnemyBullets(data) {
             500,//bullet.fireRange,
             { id: data.userId }
         );
-    });
-}
-
-export function updateAllBullets(ctx, xView, yView) {
-    updateMovementBullets();
-
-    enemyBullets.forEach((bullet, index) => {
-        bullet.setX(bullet.getX() + bullet.getDistX());
-        bullet.setY(bullet.getY() - bullet.getDistY());
-
-        const remainingDist = bullet.getRemainingDist(bullet.getFireRange());
-        if (remainingDist >= -4 && remainingDist <= 4) {
-            enemyBullets.splice(index, 1);
-        }
-
-        bullet.drawBullet(ctx, xView, yView);
     });
 }
