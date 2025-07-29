@@ -11,9 +11,9 @@ export const HEIGHT_ENEMY = 80;
 
 export class Enemy extends Character
 {
-    constructor(id, x, y, width, height, dir)
+    constructor(id, x, y, width, height, dir, nickname)
     {
-        super(id, x, y, width, height, dir);
+        super(id, x, y, width, height, dir, nickname);
 
         this.soundShoot = new Sound('sounds/Hotline_Miami_2_Wrong_Number/M16.wav');
     }

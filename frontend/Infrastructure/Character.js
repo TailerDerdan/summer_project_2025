@@ -12,7 +12,7 @@ const COUNT_FRAMES = 8;
 
 export class Character
 {
-    constructor(id, x, y, width, height, dir)
+    constructor(id, x, y, width, height, dir, nickname)
     {
         console.log('Bot created with:', {id, x, y, width, height, dir});
 
@@ -23,6 +23,7 @@ export class Character
         this.height = height;
         this.dir = dir;
         this.container = new Container(width, height, x, y, dir);
+        this.nickname = nickname;
 
         this.speed = 0;
 
