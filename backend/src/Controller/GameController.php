@@ -23,7 +23,7 @@ class GameController extends AbstractController {
         $mapsJson = file_get_contents("./mapEditor/maps/maps.json");
         $maps = json_decode($mapsJson, true)["maps"];
         foreach ($maps as $map) {
-            if ($mapName === $maps["nameMap"]) {
+            if ($mapName === $map["nameMap"]) {
                 return $this->json(["success"=> true, "map" => $map]);
             }
         }
