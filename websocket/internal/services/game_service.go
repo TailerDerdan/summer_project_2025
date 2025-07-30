@@ -146,7 +146,6 @@ func (gs *GameService) SendMessageInsideGameToAll(gameID string, msg map[string]
 	}
 	fmt.Printf("Sending message to all players: %v\n", msg)
 	for conn := range game.Players {
-		fmt.Printf("qwerty, msg: %v\n", msg)
 		if err := conn.WriteJSON(msg); err != nil {
 			fmt.Printf("asdfg\n")
 			if err := conn.Close(); err != nil {
@@ -284,8 +283,7 @@ func (gs *GameService) endGame(gameID string) error {
 		fmt.Println("error sending end message")
 		return err
 	}
-	fmt.Println("EEE")
-	fmt.Println("GGG")
+
 	for conn := range game.Players {
 		if err := conn.Close(); err != nil {
 			fmt.Println("error closing to client")
@@ -580,7 +578,7 @@ func (gs *GameService) SendInitialGameState(conn *websocket.Conn, gameID string)
 func (gs *GameService) saveGameStats(conn *websocket.Conn, gameID string) error {
 	gs.mu.Lock()
 	defer gs.mu.Unlock()
-	fmt.Println("CCC")
+
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
@@ -589,7 +587,6 @@ func (gs *GameService) saveGameStats(conn *websocket.Conn, gameID string) error 
 	winnerID := gs.determineWinner(gameID)
 	game.State.Winner = winnerID
 
-	fmt.Println("DDD")
 	player := game.Players[conn]
 	statsMsg := map[string]interface{}{
 		"type": "save_stats_server",
@@ -602,39 +599,9 @@ func (gs *GameService) saveGameStats(conn *websocket.Conn, gameID string) error 
 		},
 	}
 
-	fmt.Printf("qwe %+v\n", statsMsg)
 	if err := conn.WriteJSON(statsMsg); err != nil {
 		fmt.Printf("error sending stats message: %+v\n", statsMsg)
 		return err
 	}
-	fmt.Println("11111")
 	return nil
-	//jsonData, err := json.Marshal(stats)
-	//if err != nil {
-	//	return err
-	//}
-	//fmt.Println("AAA")
-	//req, err := http.NewRequest(
-	//	http.MethodPost,
-	//	"http://mochilovo-avi.ru:82/main/profile/updateStats",
-	//	bytes.NewBuffer(jsonData),
-	//)
-	//fmt.Println("BBB")
-	//if err != nil {
-	//	return err
-	//}
-	//req.Header.Set("Content-Type", "application/json")
-	//client := &http.Client{Timeout: 15 * time.Second}
-	//resp, err := client.Do(req)
-	//if err != nil {
-	//	return err
-	//}
-	//fmt.Println("EEE")
-	//defer resp.Body.Close()
-	//if resp.StatusCode != http.StatusOK {
-	//	body, _ := io.ReadAll(resp.Body)
-	//	return fmt.Errorf("unexpected status: %d, body: %s", resp.StatusCode, string(body))
-	//}
-	//fmt.Println("FFF")
-	//return nil
 }
