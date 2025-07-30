@@ -3,17 +3,18 @@
 {% block title %}Вход{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" href="/styles/login.css">
+<link rel="stylesheet" href="../styles/login.css">
 {% endblock %}
 
 {% block body %}
-<div>
-    <h1>#MOCHILOVO-avi</h1>
-    <form method="POST" action="{{ path('login_Proc') }}" enctype="multipart/form-data">
-        <input type="text" name="nickName" value="{{ last_name }}" required placeholder="NickName">
-        <input type="password" name="password" required placeholder="Password">
-        <button type="submit">Играть</button>
-        <a href="{{ path('registry') }}">Зарегаться</a>
+<div class="back">
+    <h1 class="game-name">MOCHILOVO</h1>
+    <form method="POST" action="{{ path('login_Proc') }}" enctype="multipart/form-data" class="form-auth">
+        <input type="text" name="nickName" value="{{ last_name }}" required placeholder="NickName" class="form-auth__input">
+        <input type="password" name="password" required placeholder="Password" class="form-auth__input">
+        <button type="submit" class="form-auth__button-submit">Войти</button>
+        <hr class="form-auth__hr">
+        <a href="{{ path('registry') }}" class="form-auth__href">Зарегистрироваться</a>
     </form>
 </div>
 {% endblock %}

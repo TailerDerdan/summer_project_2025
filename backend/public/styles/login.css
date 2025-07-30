@@ -1,3 +1,69 @@
-body {
-    background: #ffffff;/*url("/summer_project_2025/backend/public/images/"); */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.back {
+    background-image: url("./../images/backgroundAuth.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-name {
+    font-family: "Montserrat", sans-serif;
+    font-weight: bold;
+    font-size: 64px;
+    color: #A10003;
+}
+
+.form-auth {
+    display: flex;
+    width: 30%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5% 0;
+}
+
+.form-auth__input {
+    background-color: #FFF;
+    font-family: "Inter", sans-serif;
+    font-size: 30px;
+    color: #000;
+    padding-left: 3.163763216%;
+    padding-bottom: 4%;
+    padding-top: 4%;
+    border-radius: 20px;
+    margin-bottom: 5%;
+}
+
+.form-auth__href {
+    font-family: "Montserrat", sans-serif;
+    font-weight: bold;
+    font-size: 64px;
+    color: #A10003;
+    text-decoration: none;
+}
+
+.form-auth__hr {
+    border: none;
+    background-color: #A10003;
+    height: 3px;
+    width: 100%;
+}
+
+.form-auth__button-submit {
+    font-family: "Montserrat", sans-serif;
+    font-weight: bold;
+    font-size: 50px;
+    padding: 2% 3%;
+    border-radius: 20px;
+    margin-bottom: 3%;
+    cursor: pointer;
 }
