@@ -42,57 +42,57 @@ const updateBullets = (event) => {
             distX: 0,
             distY: 0
         }
-    }
 
-    if (player.weapon.type === TYPE_WEAPON.SHOTGUN)
-    {
-        for (let iter = 0; iter < 6; iter++)
+        if (player.weapon.type === TYPE_WEAPON.SHOTGUN)
         {
-            objForMovement.dir = randomMinMax(player.dir - 6, player.dir + 6);
+            for (let iter = 0; iter < 6; iter++)
+            {
+                objForMovement.dir = randomMinMax(player.dir - 6, player.dir + 6);
+
+                getNormalizeShootingVect(objForMovement);
+
+                inverseDir(objForMovement);
+
+                let speedBullet = randomMinMax(player.weapon.speedBullet + 3, player.weapon.speedBullet + 7);
+
+                changeDistXYBySpeedBullet(objForMovement, speedBullet);
+
+                const bullet = new Bullet(
+                    player.x, player.y,
+                    speedBullet,
+                    objForMovement.dir,
+                    objForMovement.distX, objForMovement.distY,
+                    player.weapon.fireRange,
+                    player
+                );
+                playerBullets.push(bullet);
+            }
+            player.weapon.currentAmmo--;
+        }
+        else
+        {
+            objForMovement.dir = player.dir;
 
             getNormalizeShootingVect(objForMovement);
 
             inverseDir(objForMovement);
 
-            let speedBullet = randomMinMax(player.weapon.speedBullet + 3, player.weapon.speedBullet + 7);
-
-            changeDistXYBySpeedBullet(objForMovement, speedBullet);
+            changeDistXYBySpeedBullet(objForMovement, player.weapon.speedBullet);
 
             const bullet = new Bullet(
                 player.x, player.y,
-                speedBullet,
+                player.weapon.speedBullet,
                 objForMovement.dir,
                 objForMovement.distX, objForMovement.distY,
                 player.weapon.fireRange,
                 player
             );
             playerBullets.push(bullet);
+            player.weapon.currentAmmo--;
         }
-        player.weapon.currentAmmo--;
+
+        player.soundShoot.play();
     }
-    else
-    {
-        objForMovement.dir = player.dir;
-
-        getNormalizeShootingVect(objForMovement);
-
-        inverseDir(objForMovement);
-
-        changeDistXYBySpeedBullet(objForMovement, player.weapon.speedBullet);
-
-        const bullet = new Bullet(
-            player.x, player.y,
-            player.weapon.speedBullet,
-            objForMovement.dir,
-            objForMovement.distX, objForMovement.distY,
-            player.weapon.fireRange,
-            player
-        );
-        playerBullets.push(bullet);
-        player.weapon.currentAmmo--;
-    }
-
-    player.soundShoot.play();
 }
 
 export function updateBotShooting(bot) {
