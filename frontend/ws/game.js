@@ -3,7 +3,7 @@ import { arrEnemy, player } from "../player/player.js";
 import { playerBullets, updateMovementBullets } from "../weapon/shooting.js";
 import { Bullet } from "../weapon/bullet.js";
 import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
-
+export let mapName
 export const gameStats = {
     kills: 0,
     deaths: 0,
@@ -13,13 +13,13 @@ export const gameStats = {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-
     const data = JSON.parse(sessionStorage.getItem('gameSession'))
 
     if (!data) {
         window.location.href = `/main`
         return
     }
+    mapName = data.mapName
     sessionStorage.removeItem('gameSession');
 
     try

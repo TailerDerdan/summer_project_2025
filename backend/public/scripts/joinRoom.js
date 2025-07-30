@@ -165,7 +165,10 @@ function showNotification(message) {
 }
 
 function handleGameStart(data, user) {
+    const mapNameLocal = document.getElementById("room_map").value
+
     sessionStorage.setItem('gameSession', JSON.stringify({
+        mapName: mapNameLocal,
         gameId: data.gameId,
         userId: user.userId,
         nickname: user.nickname,

@@ -14,16 +14,19 @@ class GameController extends AbstractController {
     public function __construct(
         private GameServiceInterface $gameService
     ) {}
-    
+
     public function index(): Response {
         return $this->render("asdf.html.twig");
     }
 
-    public function getMap(): JsonResponse {
-
+    public function getMap(string $mapName): JsonResponse {
         $mapsJson = file_get_contents("./mapEditor/maps/maps.json");
-        $map = json_decode($mapsJson, true)["maps"][0];
-
-        return $this->json(["success"=> true, "map" => $map]);
+        $maps = json_decode($mapsJson, true)["maps"];
+        foreach ($maps as $map) {
+            if ($mapName === $maps["name"]) {
+                return $this->json(["success"=> true, "map" => $map]);
+            }
+        }
+        return $this->json(["success"=> false, "map" => null]);
     }
 }

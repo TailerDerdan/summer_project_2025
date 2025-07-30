@@ -1,9 +1,8 @@
-export const getMap = async () => {
-
+export const getMap = async (name) => {
     try 
     {
         //const response = await fetch(`http://mochilovo-avi.ru:82/gameMap/getMap/map1`, {
-        const response = await fetch("/gameMap/getMap/map1", {
+        const response = await fetch(`/gameMap/getMap/${name}`, {
                 // const response = await fetch("http://localhost:82/gameMap/getMap/map1", {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },

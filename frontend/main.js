@@ -13,7 +13,7 @@ import { getMap } from './requests/requests.js';
 import { drawRemainingBlood } from './blood/blood.js';
 import {playerDeath} from "./player/KillAndDeath.js";
 import { stateForWS } from './ws/websocketGame.js';
-import { sendBullets, updateAllBullets } from './ws/game.js';
+import { sendBullets, updateAllBullets, mapName } from './ws/game.js';
 
 const clock = new Clock();
 
@@ -76,7 +76,7 @@ function gameLoop()
 }
 
 const initGame = async () => {
-    const gettedMap = await getMap();
+    const gettedMap = await getMap(mapName);
     const imgMap = new Image();
     imgMap.src = gettedMap.image;
     map.image = imgMap;
