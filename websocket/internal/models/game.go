@@ -17,7 +17,10 @@ type Game struct {
 	Duration  time.Duration
 	Deaths    []PlayerDeathEvent
 	Bullets   map[string]*BulletInfo
-	mu        sync.RWMutex
+
+	Weapons       map[string]*Weapon
+	LastSpawnTime time.Time
+	mu            sync.RWMutex
 }
 type GameState struct {
 	Winner string `json:"winner,omitempty"`
@@ -37,4 +40,34 @@ type BulletInfo struct {
 	Speed    float64 `json:"speed"`
 	OwnerID  string  `json:"ownerId"`
 	Lifetime int     `json:"lifetime"`
+}
+
+type WeaponType string
+
+const (
+	WeaponPistol  WeaponType = "pistol"
+	WeaponRifle   WeaponType = "rifle"
+	WeaponShotgun WeaponType = "shotgun"
+	WeaponSniper  WeaponType = "sniper"
+)
+
+type Weapon struct {
+	ID    string     `json:"id"`
+	Type  WeaponType `json:"type"`
+	Ammo  int        `json:"ammo"`
+	X     float64    `json:"x"`
+	Y     float64    `json:"y"`
+	IsUse bool       `json:"isUse"`
+}
+
+type PlayerWeapon struct {
+	ID       string     `json:"id"`
+	PlayerID string     `json:"playerId"`
+	Type     WeaponType `json:"type"`
+	Ammo     int        `json:"ammo"`
+}
+
+type SpawnPoint struct {
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
 }

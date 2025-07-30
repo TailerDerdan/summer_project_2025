@@ -7,7 +7,7 @@ import (
 )
 
 type IGameService interface {
-	CreateGame(roomID, gameType string) *models.Game
+	CreateGame(roomID string, data map[string]interface{}) *models.Game
 	//StartGame(roomID, gameType string)
 	SendMessageInsideGame(playerConn *websocket.Conn, gameID string, msg map[string]interface{}) error
 	SendMessageInsideGameToAll(gameID string, msg map[string]interface{}) error
@@ -20,6 +20,8 @@ type IGameService interface {
 	UpdatePosition(conn *websocket.Conn, gameID, playerID string, data map[string]interface{}) error
 	UpdateBullets(conn *websocket.Conn, gameID string, data map[string]interface{}) error
 	SendInitialGameState(conn *websocket.Conn, gameID string) error
+	ChangeWeapon(conn *websocket.Conn, gameID string, data map[string]interface{}) error
+	DropWeapon(conn *websocket.Conn, gameID string) error
 }
 
 type IRoomService interface {
@@ -35,7 +37,7 @@ type IRoomService interface {
 
 	RegisterUser(conn *websocket.Conn, roomID string, user *models.UserInfo) error
 	GetRoomState(roomID string) ([]models.UserInfo, error)
-	StartGame(conn *websocket.Conn, roomID, userID, gameType string) error
+	StartGame(conn *websocket.Conn, roomID, userID string, data map[string]interface{}) error
 	UserReady(conn *websocket.Conn, roomID string) error
 	UserLeave(conn *websocket.Conn, roomID, userID string) error
 	//UserJoin() error
