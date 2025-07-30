@@ -109,7 +109,7 @@ func (gs *GameService) CreateGame(roomID, gameType string) *models.Game {
 		Players:   make(map[*websocket.Conn]*models.PlayerInfo),
 		Stats:     make(map[string]*models.PlayerStats),
 		StartTime: time.Now(),
-		Duration:  1 * time.Minute,
+		Duration:  3 * time.Minute,
 	}
 
 	gs.activeGames[gameID] = game

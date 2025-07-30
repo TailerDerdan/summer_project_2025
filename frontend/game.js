@@ -12,6 +12,8 @@ export const gameStats = {
     leaderboard: []
 };
 
+export let enemyBullets = [];
+
 document.addEventListener('DOMContentLoaded', async () => {
 
     const data = JSON.parse(sessionStorage.getItem('gameSession'))
@@ -62,6 +64,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         checkAndSendPosition();
+
+        sendBullets();
     }
     catch (error) {
         console.error("WebSocket error:", error);
@@ -326,30 +330,28 @@ export function sendBullets()
                 }
             });
 
-            for (const playerBullet of playerBullets) {
-                console.log(playerBullet);
-            }
+            // for (const playerBullet of playerBullets) {
+            //     console.log(playerBullet);
+            // }
 
             lastSentTimeForBullets = now;
 
-            playerBullets.length = 0;
+            //playerBullets.length = 0;
         }
-    }, 20);
+    }, 25);
 }
-
-export let enemyBullets = [];
 
 function updateEnemyBullets(data) {
     enemyBullets = data.bullets.map(bullet => {
         return new Bullet(
             bullet.x,
             bullet.y,
-            // 100,// bullet.speed,
-            // 50,//bullet.dir,
+            bullet.speedBullet,
+            bullet.dir,
             bullet.distX,
             bullet.distY,
-            // 500,//bullet.fireRange,
-            // { id: data.userId }
+            bullet.fireRange,
+            null
         );
     });
 }

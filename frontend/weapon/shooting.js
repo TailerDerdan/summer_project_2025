@@ -40,7 +40,6 @@ const updateBullets = (event) => {
         distY: 0
     }
 
-
     if (player.weapon.type === TYPE_WEAPON.SHOTGUN)
     {
         for (let iter = 0; iter < 6; iter++)
@@ -63,13 +62,7 @@ const updateBullets = (event) => {
                 player.weapon.fireRange,
                 player
             );
-            bullets.push(bullet);
-            playerBullets.push({
-                x: bullet.x,
-                y: bullet.y,
-                distX: bullet.distX,
-                distY: bullet.distY,
-            });
+            playerBullets.push(bullet);
         }
     }
     else
@@ -90,13 +83,7 @@ const updateBullets = (event) => {
             player.weapon.fireRange,
             player
         );
-        bullets.push(bullet);
-        playerBullets.push({
-            x: bullet.x,
-            y: bullet.y,
-            distX: bullet.distX,
-            distY: bullet.distY,
-        });
+        playerBullets.push(bullet);
     }
 
     player.soundShoot.play();
@@ -242,14 +229,6 @@ export function updateMovementBullets()
     });
 }
 
-
-
-// export let throttleBotsShoot = [];
-// for (const bot of arrBot) {
-//     const throttleBotShoot = throttle(updateBotShooting(bot), bot.weapon.timeBetweenBul * 1000);
-//     throttleBotsShoot.push(throttleBotShoot);
-// }
-
 export let throttleBotsShoot = [];
 for (const bot of arrBot) {
     if (bot.weapon) {
@@ -267,10 +246,8 @@ function throttleUpdateBullets(event)
 
 document.addEventListener('mousedown', throttleUpdateBullets);
 
-export function updateAllBullets(ctx, xView, yView) {
-    updateMovementBullets();
-
-    enemyBullets.forEach((bullet, index) => {
+function updateBulletsOnMap(ctx, xView, yView, bullets) {
+    bullets.forEach((bullet, index) => {
         bullet.setX(bullet.getX() + bullet.getDistX());
         bullet.setY(bullet.getY() - bullet.getDistY());
 
@@ -281,6 +258,11 @@ export function updateAllBullets(ctx, xView, yView) {
 
         bullet.drawBullet(ctx, xView, yView);
     });
+}
+
+export function updateAllBullets(ctx, xView, yView) {
+    updateBulletsOnMap(ctx, xView, yView, enemyBullets);
+    updateBulletsOnMap(ctx, xView, yView, playerBullets);
 }
 
 // let intervalId = 0;
