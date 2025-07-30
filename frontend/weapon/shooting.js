@@ -63,7 +63,7 @@ const updateBullets = (event) => {
                     objForMovement.dir,
                     objForMovement.distX, objForMovement.distY,
                     player.weapon.fireRange,
-                    player
+                    player.id
                 );
                 playerBullets.push(bullet);
             }
@@ -85,7 +85,7 @@ const updateBullets = (event) => {
                 objForMovement.dir,
                 objForMovement.distX, objForMovement.distY,
                 player.weapon.fireRange,
-                player
+                player.id
             );
             playerBullets.push(bullet);
             player.weapon.currentAmmo--;
@@ -124,7 +124,7 @@ export function updateBotShooting(bot) {
                 objForMovement.dir,
                 objForMovement.distX, objForMovement.distY,
                 bot.weapon.fireRange,
-                bot
+                null
             );
             bullets.push(bullet);
         }
@@ -146,7 +146,7 @@ export function updateBotShooting(bot) {
             objForMovement.distX,
             objForMovement.distY,
             bot.weapon.fireRange,
-            bot
+            null
         );
 
         bullets.push(bullet);
@@ -200,7 +200,7 @@ export function updateMovementBullets()
         for (const [id, enemy] of arrEnemy) {
             if (enemy.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) &&
                 enemy.isCharacterLive &&
-                (elem.owner !== enemy)
+                (elem.ownerId !== enemy.id)
             )
             {
                 bullets.splice(index, 1);
@@ -212,7 +212,7 @@ export function updateMovementBullets()
         for (const bot of arrBot) {
             if (bot.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) &&
                 bot.isCharacterLive &&
-                elem.owner !== bot
+                elem.ownerId !== null
             ) {
                 bullets.splice(index, 1);
                 bot.wasCharacterWounded = true;
@@ -221,7 +221,7 @@ export function updateMovementBullets()
 
         if (player.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) &&
             player.isCharacterLive &&
-            elem.owner !== player
+            elem.ownerId !== player.id
         )
         {
             bullets.splice(index, 1);

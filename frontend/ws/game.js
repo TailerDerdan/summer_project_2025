@@ -338,7 +338,7 @@ function updateEnemyBullets(data) {
             bullet.distX,
             bullet.distY,
             bullet.fireRange,
-            null
+            bullet.ownerId
         );
     });
 }
