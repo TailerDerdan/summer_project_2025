@@ -16,7 +16,6 @@ class MapController extends AbstractController {
     ) {}
 
     public function saveMap(Request $request): JsonResponse {
-
         if ($_SERVER['CONTENT_TYPE'] !== 'application/json') {
             http_response_code(502);
             die(json_encode([

@@ -35,6 +35,14 @@
     margin: 0 0 0 0;
 }
 
+.room-menu__create-map {
+    color: #240502;
+    border-radius: 25px;
+    background-color: #A78058;
+    padding: 20px 30px;
+    font-size: 48px;
+}
+
 .room-menu__create-room {
     width: 436px;
     height: 84px;
@@ -43,7 +51,6 @@
     border-radius: 25px;
     background-color: #A78058;
     border: none;
-    position: relative;
     left: 174px;
     display: flex;
     justify-content: center;
