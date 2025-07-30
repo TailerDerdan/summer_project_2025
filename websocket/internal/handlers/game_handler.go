@@ -189,33 +189,32 @@ func NewGameHandler(gs infrastructure.IGameService, ws infrastructure.IWebSocket
 //}
 
 func (gh *GameHandler) HandleGameConnection2(w http.ResponseWriter, r *http.Request, gameID string) {
-	fmt.Println("/-000-/")
 	conn, err := gh.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("Game WS upgrade failed: %v", err)
 		return
 	}
 	//defer conn.Close()
-	fmt.Println("/-111-/")
+
 	player, err := gh.authenticatePlayer(conn)
 	if err != nil {
 		log.Printf("Game WS authenticate failed: %v", err)
 		gh.sendError(conn, "Game WS authenticate failed")
 		return
 	}
-	fmt.Println("/-222-/")
+
 	if err := gh.gameService.RegisterPlayer(conn, gameID, player); err != nil {
 		log.Printf("Game WS register failed: %v", err)
 		gh.sendError(conn, "Game WS register failed")
 		return
 	}
-	fmt.Println("/-333-/")
+
 	if err := gh.gameService.SendInitialGameState(conn, gameID); err != nil {
 		log.Printf("Game WS send initial game state failed: %v", err)
 		gh.sendError(conn, "Game WS send initial game state failed")
 		return
 	}
-	fmt.Println("/-444-/")
+
 	gh.gameService.StartTimer(conn, gameID)
 	//if err := gh.gameService.StartTimer(gameID); err != nil {
 	//	log.Printf("Game WS start timer failed: %v", err)
@@ -225,14 +224,14 @@ func (gh *GameHandler) HandleGameConnection2(w http.ResponseWriter, r *http.Requ
 
 func (gh *GameHandler) authenticatePlayer(conn *websocket.Conn) (*models.PlayerInfo, error) {
 	var msg models.Msg
-	fmt.Println("@-000-@")
+
 	if err := conn.ReadJSON(&msg); err != nil {
 		return nil, err
 	}
 	if msg.Type != "game_auth" {
 		return nil, fmt.Errorf("not a game_auth")
 	}
-	fmt.Println("@-111-@")
+
 	return &models.PlayerInfo{
 		PlayerID: msg.Data["userId"].(string),
 		Nickname: msg.Data["nickname"].(string),
@@ -255,13 +254,13 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 			//gh.gameService.RemovePlayerFromGame(gameID, conn)
 			break
 		}
-		log.Printf("G Raw message: %s", string(messageBytes))
+
 		if err := json.Unmarshal(messageBytes, &msg); err != nil {
 			log.Printf("G Failed to parse JSON: %v\nRaw data: %s", err, string(messageBytes))
 			//gh.gameService.RemovePlayerFromGame(gameID, conn)
 			break
 		}
-		fmt.Println("/-555-/")
+
 		//gh.processGameMessage(conn, gameID, playerID, msg)
 		if err := gh.processGameMessage(conn, gameID, playerID, msg); err != nil {
 			log.Printf("$$ Game WS process message failed: %v", err)

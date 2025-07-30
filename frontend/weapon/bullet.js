@@ -2,7 +2,7 @@ import { Container } from "../collisions/collisions.js";
 
 export class Bullet
 {
-    constructor(x, y, speed, dir, distX, distY, fireRange, owner)
+    constructor(x, y, speed, dir, distX, distY, fireRange, ownerId)
     {
         this.x = x;
         this.y = y;
@@ -15,7 +15,7 @@ export class Bullet
         this.width = 10;
         this.height = 10;
         this.fireRange = fireRange;
-        this.owner = owner;
+        this.ownerId = ownerId;
         this.container = new Container(this.width, this.height, x - this.width, y - this.height, dir);
     }
 

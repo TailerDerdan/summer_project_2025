@@ -7,6 +7,7 @@ import { getDir, inverseDir } from '../player/changeDir.js';
 import { randomMinMax } from '../random.js';
 import { playerKill } from '../player/KillAndDeath.js';
 import { stateForWS } from '../ws/websocketGame.js';
+import { enemyBullets } from "../ws/game.js";
 
 const bullets = [];
 export const playerBullets = [];
@@ -29,11 +30,10 @@ function changeDistXYBySpeedBullet(objForMovement, speedBullet) {
 
 const updateBullets = (event) => {
 
-    if (event.button == 0)
-    {
+    if (event.button === 0) {
         if ((!player.weapon) || (!player.isCharacterLive)) return;
 
-        if (player.weapon.currentAmmo == 0) return;
+        if (player.weapon.currentAmmo === 0) return;
 
         player.soundShoot.stop();
 
@@ -63,15 +63,9 @@ const updateBullets = (event) => {
                     objForMovement.dir,
                     objForMovement.distX, objForMovement.distY,
                     player.weapon.fireRange,
-                    player
+                    player.id
                 );
-                bullets.push(bullet);
-                playerBullets.push({
-                    x: bullet.x,
-                    y: bullet.y,
-                    distX: bullet.distX,
-                    distY: bullet.distY,
-                });
+                playerBullets.push(bullet);
             }
             player.weapon.currentAmmo--;
         }
@@ -91,15 +85,9 @@ const updateBullets = (event) => {
                 objForMovement.dir,
                 objForMovement.distX, objForMovement.distY,
                 player.weapon.fireRange,
-                player
+                player.id
             );
-            bullets.push(bullet);
-            playerBullets.push({
-                x: bullet.x,
-                y: bullet.y,
-                distX: bullet.distX,
-                distY: bullet.distY,
-            });
+            playerBullets.push(bullet);
             player.weapon.currentAmmo--;
         }
 
@@ -136,7 +124,7 @@ export function updateBotShooting(bot) {
                 objForMovement.dir,
                 objForMovement.distX, objForMovement.distY,
                 bot.weapon.fireRange,
-                bot
+                null
             );
             bullets.push(bullet);
         }
@@ -158,7 +146,7 @@ export function updateBotShooting(bot) {
             objForMovement.distX,
             objForMovement.distY,
             bot.weapon.fireRange,
-            bot
+            null
         );
 
         bullets.push(bullet);
@@ -212,7 +200,7 @@ export function updateMovementBullets()
         for (const [id, enemy] of arrEnemy) {
             if (enemy.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) &&
                 enemy.isCharacterLive &&
-                (elem.owner !== enemy)
+                (elem.ownerId !== enemy.id)
             )
             {
                 bullets.splice(index, 1);
@@ -224,7 +212,7 @@ export function updateMovementBullets()
         for (const bot of arrBot) {
             if (bot.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) &&
                 bot.isCharacterLive &&
-                elem.owner !== bot
+                elem.ownerId !== null
             ) {
                 bullets.splice(index, 1);
                 bot.wasCharacterWounded = true;
@@ -233,7 +221,7 @@ export function updateMovementBullets()
 
         if (player.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) &&
             player.isCharacterLive &&
-            elem.owner !== player
+            elem.ownerId !== player.id
         )
         {
             bullets.splice(index, 1);
@@ -246,14 +234,6 @@ export function updateMovementBullets()
         elem.drawBullet(ctx, camera.xView, camera.yView);
     });
 }
-
-
-
-// export let throttleBotsShoot = [];
-// for (const bot of arrBot) {
-//     const throttleBotShoot = throttle(updateBotShooting(bot), bot.weapon.timeBetweenBul * 1000);
-//     throttleBotsShoot.push(throttleBotShoot);
-// }
 
 export let throttleBotsShoot = [];
 for (const bot of arrBot) {
@@ -271,6 +251,25 @@ function throttleUpdateBullets(event)
 }
 
 document.addEventListener('mousedown', throttleUpdateBullets);
+
+function updateBulletsOnMap(ctx, xView, yView, bullets) {
+    bullets.forEach((bullet, index) => {
+        bullet.setX(bullet.getX() + bullet.getDistX());
+        bullet.setY(bullet.getY() - bullet.getDistY());
+
+        const remainingDist = bullet.getRemainingDist(bullet.getFireRange());
+        if (remainingDist >= -4 && remainingDist <= 4) {
+            enemyBullets.splice(index, 1);
+        }
+
+        bullet.drawBullet(ctx, xView, yView);
+    });
+}
+
+export function updateAllBullets(ctx, xView, yView) {
+    updateBulletsOnMap(ctx, xView, yView, enemyBullets);
+    updateBulletsOnMap(ctx, xView, yView, playerBullets);
+}
 
 // let intervalId = 0;
 // document.addEventListener('mousedown', (event) => {

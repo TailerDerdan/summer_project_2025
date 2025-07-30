@@ -1,5 +1,5 @@
 import { updateMovementPlayer } from './player/movement.js';
-import {throttleBotsShoot, updateMovementBullets} from './weapon/shooting.js';
+import {throttleBotsShoot, updateAllBullets } from './weapon/shooting.js';
 import { canvas, ctx, gl, state } from './canvas.js';
 import { map } from './map/map.js';
 import { camera } from './camera/camera.js';
@@ -13,7 +13,8 @@ import { getMap } from './requests/requests.js';
 import { drawRemainingBlood } from './blood/blood.js';
 import {playerDeath} from "./player/KillAndDeath.js";
 import { stateForWS } from './ws/websocketGame.js';
-import { sendBullets, updateAllBullets } from './ws/game.js';
+import { mapName } from './ws/game.js';
+
 import { drawAllWeaponOnMap, updateAllWeaponOnMap } from './weapon/spawnWeapon.js';
 import {} from "./player/changeWeapon.js";
 
@@ -40,7 +41,7 @@ function gameLoop()
 
     arrBot.forEach((bot, index) => {
         if (bot.isCharacterLive && bot.weapon) {
-            // throttleBotsShoot[index]();
+            //throttleBotsShoot[index]();
         }
     });
 
@@ -52,13 +53,11 @@ function gameLoop()
 
     // checkAndSendPosition();
 
-    sendBullets();
+    // sendBullets();
 
     updateAllBullets(ctx, camera.xView, camera.yView);
 
     drawRemainingBlood(ctx, camera.xView, camera.yView);
-
-    updateMovementBullets();
 
     updateMovementPlayer(camera.xView, camera.yView, deltaTime);
     player.updateCharacter();
@@ -82,7 +81,19 @@ function gameLoop()
 }
 
 const initGame = async () => {
-    const gettedMap = await getMap();
+    console.log('$', mapName)
+    console.log('%', stateForWS.mapName)
+    if (!stateForWS?.mapName) {
+        await new Promise(resolve => {
+            const checkInterval = setInterval(() => {
+                if (stateForWS?.mapName) {
+                    clearInterval(checkInterval);
+                    resolve();
+                }
+            }, 2000);
+        });
+    }
+    const gettedMap = await getMap(stateForWS.mapName);
     const imgMap = new Image();
     imgMap.src = gettedMap.image;
     map.image = imgMap;

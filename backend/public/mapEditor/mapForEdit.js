@@ -110,7 +110,7 @@ export class MapEditor
                 const wall = this.buldingsObject.find((elem) => {
                     if (elem.x == iterX && elem.y == iterY) return true;
                 });
-        
+
                 if (wall)
                 {
                     if (wall.rotation == 90 || wall.rotation == 270)
@@ -121,7 +121,7 @@ export class MapEditor
                     {
                         this.verticalWalls[iterY * COUNT_TILE_Y + iterX] = 1;
                     }
-                } 
+                }
             }
         }
     }
@@ -143,42 +143,42 @@ export class MapEditor
                     this.tileMap[iterY * COUNT_TILE_Y + iterX] <= TypeBuilding.Floor1 + CountOfBuildings.Floor - 1)
                 {
                     let iter = this.tileMap[iterY * COUNT_TILE_Y + iterX] - TypeBuilding.Floor1;
-                    ctx.drawImage(this.imageFloor,
-                        rectForFloor[iter].sx,
-                        rectForFloor[iter].sy,
-                        rectForFloor[iter].sWidth,
-                        rectForFloor[iter].sHeight,
+                    ctx.drawImage(floor.image,
+                        floor.rectsForSprite[iter].sx,
+                        floor.rectsForSprite[iter].sy,
+                        floor.rectsForSprite[iter].sWidth,
+                        floor.rectsForSprite[iter].sHeight,
                         tileX,
                         tileY,
-                        rectForFloor[iter].dWidth,
-                        rectForFloor[iter].dHeight
+                        floor.rectsForSprite[iter].dWidth,
+                        floor.rectsForSprite[iter].dHeight
                     );
                 }
                 if (this.buldings[iterY * COUNT_TILE_Y + iterX] >= TypeBuilding.Wall1 &&
                     this.buldings[iterY * COUNT_TILE_Y + iterX] <= TypeBuilding.Wall1 + CountOfBuildings.Wall - 1)
                 {
-                    const wall = this.buldingsObject.find((elem) => {
+                    const wallObj = this.buldingsObject.find((elem) => {
                         if (elem.x == iterX && elem.y == iterY) return true;
                     })
                     let rotation = 0;
-                    if (wall)
+                    if (wallObj)
                     {
-                        rotation = wall.rotation;
+                        rotation = wallObj.rotation;
                     }
                     let iter = this.buldings[iterY * COUNT_TILE_Y + iterX] - TypeBuilding.Wall1;
                     ctx.save();
                     ctx.translate(iterX * TILE_WIDTH + TILE_WIDTH / 2,
                                     iterY * TILE_HEIGHT + TILE_HEIGHT / 2);
                     ctx.rotate(rotation * Math.PI / 180);
-                    ctx.drawImage(this.imageWall,
-                        rectForWall[iter].sx,
-                        rectForWall[iter].sy,
-                        rectForWall[iter].sWidth,
-                        rectForWall[iter].sHeight,
-                        -TILE_WIDTH / 2 + 12,
-                        -TILE_HEIGHT / 2,
-                        rectForWall[iter].dWidth,
-                        rectForWall[iter].dHeight
+                    ctx.drawImage(wall.image,
+                        wall.rectsForSprite[iter].sx,
+                        wall.rectsForSprite[iter].sy,
+                        wall.rectsForSprite[iter].sWidth,
+                        wall.rectsForSprite[iter].sHeight,
+                        -wall.widthOnMap,
+                        -wall.heightOnMap,
+                        wall.rectsForSprite[iter].dWidth,
+                        wall.rectsForSprite[iter].dHeight
                     );
                     ctx.restore();
                 }
@@ -193,7 +193,7 @@ export class MapEditor
         this.containers = [];
 
         let isWallStartedHoriz = false;
-        let horWall = null; 
+        let horWall = null;
 
         for (let iterY = 0; iterY < COUNT_TILE_Y; iterY++)
         {
@@ -228,7 +228,7 @@ export class MapEditor
                         isWallStartedHoriz = true;
                     }
                     continue;
-                    
+
                 }
             }
         }
@@ -281,7 +281,7 @@ export class MapEditor
             image: imageMap,
             walls: this.containers,
         }
-        fetch("saveMap", {
+        fetch("/main/saveMap", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(newMap),
