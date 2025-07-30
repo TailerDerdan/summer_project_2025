@@ -13,7 +13,7 @@ export async function initGameWebsocket(data) {
         stateForWS.gameSocket.close();
     }
 
-    stateForWS.mapName = data.mapName
+    stateForWS.mapName = data.mapName;
     stateForWS.userId = data.userId;
     stateForWS.gameId = data.gameId;
     stateForWS.nickname = data.nickname;

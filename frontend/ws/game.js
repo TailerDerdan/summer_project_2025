@@ -14,13 +14,13 @@ export const gameStats = {
 
 document.addEventListener('DOMContentLoaded', async () => {
     const data = JSON.parse(sessionStorage.getItem('gameSession'))
-
+    console.log("gameSession", data)
     if (!data) {
         window.location.href = `/main`
         return
     }
-    console.log("mapName = data.mapName", mapName, data.mapName)
     mapName = data.mapName
+    console.log("mapName, data.mapName", mapName, data.mapName)
     sessionStorage.removeItem('gameSession');
 
     try
