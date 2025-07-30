@@ -13,7 +13,7 @@ import { getMap } from './requests/requests.js';
 import { drawRemainingBlood } from './blood/blood.js';
 import {playerDeath} from "./player/KillAndDeath.js";
 import { stateForWS } from './ws/websocketGame.js';
-import { sendBullets, updateAllBullets, mapName } from './ws/game.js';
+import { mapName } from './ws/game.js';
 import { sendBullets } from './ws/game.js';
 import { drawAllWeaponOnMap, updateAllWeaponOnMap } from './weapon/spawnWeapon.js';
 import {} from "./player/changeWeapon.js";
