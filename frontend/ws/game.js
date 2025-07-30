@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.location.href = `/main`
         return
     }
+    console.log("mapName = data.mapName", mapName, data.mapName)
     mapName = data.mapName
     sessionStorage.removeItem('gameSession');
 

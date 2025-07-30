@@ -76,7 +76,9 @@ function gameLoop()
 }
 
 const initGame = async () => {
-    const gettedMap = await getMap(mapName);
+    console.log(mapName)
+    console.log(stateForWS.mapName)
+    const gettedMap = await getMap(stateForWS.mapName);
     const imgMap = new Image();
     imgMap.src = gettedMap.image;
     map.image = imgMap;
