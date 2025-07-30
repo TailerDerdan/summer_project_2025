@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
                         userId: (dataJson.data.userId).toString(),
                         nickname: dataJson.data.nickname,
                         gameType: gameType,
+                        //weaponsPoints: weaponsPoints,
                     }
                 }));
             }

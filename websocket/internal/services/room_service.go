@@ -324,7 +324,7 @@ func (rs *RoomService) UserReady(conn *websocket.Conn, roomID string) error {
 //	func (rs *RoomService) DeleteRoom() error {
 //		return nil
 //	}
-func (rs *RoomService) StartGame(conn *websocket.Conn, roomID, userID, gameType string) error {
+func (rs *RoomService) StartGame(conn *websocket.Conn, roomID, userID string, data map[string]interface{}) error {
 	//rs.mu.Lock()
 	//defer rs.mu.Unlock()
 	room, exists := rs.rooms[roomID]
@@ -348,7 +348,7 @@ func (rs *RoomService) StartGame(conn *websocket.Conn, roomID, userID, gameType 
 		}
 	}
 
-	game := rs.gameService.CreateGame(roomID, gameType)
+	game := rs.gameService.CreateGame(roomID, data)
 	msg := map[string]interface{}{
 		"type": "start_game_server",
 		"data": map[string]interface{}{

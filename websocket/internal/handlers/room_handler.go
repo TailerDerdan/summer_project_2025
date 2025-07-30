@@ -304,8 +304,7 @@ func (rh *RoomHandler) processRoomMessage(conn *websocket.Conn, roomID, userID s
 		err := rh.roomService.UserReady(conn, roomID)
 		return err
 	case "start_game":
-		gameType, _ := msg.Data["gameType"].(string)
-		err := rh.roomService.StartGame(conn, roomID, userID, gameType)
+		err := rh.roomService.StartGame(conn, roomID, userID, msg.Data)
 		return err
 	}
 	return nil
