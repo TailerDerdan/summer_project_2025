@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
             name: document.getElementById("room_name").value,
             gamemode: document.getElementById("room_playmode").value,
             isOpen: document.getElementById("room_open").value === "open",
-            map: document.getElementById("room_map").value,
         };
         const response = await fetch('/room/create', {
             method: "POST",
