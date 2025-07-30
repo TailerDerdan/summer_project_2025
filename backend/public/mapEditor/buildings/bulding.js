@@ -15,10 +15,18 @@ export class Building
         this.countSprite = countSprite;
         this.isItPutThisBuildingOnAnother = isItPutThisBuildingOnAnother;
         this.rotation = rotation;
-        this.image = new Image();
-        this.image.src = srcImage;
         this.rectsForSprite = [];
         this.nameOfBuilding = nameOfBuilding;
+
+        if (src != "")
+        {
+            this.image = new Image();
+            this.image.src = srcImage;
+        }
+        else
+        {
+            
+        }
     }
 
     fillSprite(lastTypeOfBuilding, TypeBuilding, countSpriteInLine, countSpriteInLineInCanvas)
