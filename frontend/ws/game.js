@@ -307,6 +307,8 @@ export function sendBullets()
 
         if ((now - lastSentTimeForBullets > 100) && (playerBullets.length !== 0))
         {
+            console.log(playerBullets);
+
             sendWebSocketMessage({
                 type: "update_bullets",
                 data: {
