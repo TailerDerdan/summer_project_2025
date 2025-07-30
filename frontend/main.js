@@ -76,8 +76,18 @@ function gameLoop()
 }
 
 const initGame = async () => {
-    console.log(mapName)
-    console.log(stateForWS.mapName)
+    console.log('$', mapName)
+    console.log('%', stateForWS.mapName)
+    if (!stateForWS?.mapName) {
+        await new Promise(resolve => {
+            const checkInterval = setInterval(() => {
+                if (stateForWS?.mapName) {
+                    clearInterval(checkInterval);
+                    resolve();
+                }
+            }, 2000);
+        });
+    }
     const gettedMap = await getMap(stateForWS.mapName);
     const imgMap = new Image();
     imgMap.src = gettedMap.image;
