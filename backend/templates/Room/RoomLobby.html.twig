@@ -31,7 +31,18 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="timer-down"></div>
+                <div class="create-room__parameters-room-list-item">
+                    <label class="parameters-room-list-item__header-room-maps" for="room_map">Выберите карту</label>
+                    <select class="room-maps-list" id="room_map" name="room_map">
+                        {{ if maps }}
+                        {% for map in maps %}
+                            <option class="room-maps-list-item" value="{{ map.name }}">{{ map.name }}</option>
+                        {% endfor %}
+                        {{ endif }}
+                    </select>
+                    <br><br>
+                </div>
+                <div class="timer-down" style="display: inline"></div>
                 <div class="room-info__main-indicator-bar"></div>
             </div>
             <div class="room-info__decorations">
