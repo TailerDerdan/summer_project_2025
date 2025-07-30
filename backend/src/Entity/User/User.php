@@ -68,4 +68,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
     public function setIsReady(bool $isReady): void {
         $this->isReady = $isReady;
     }
+    public function setCountGames(int $countGames): void {
+        $this->countGames = $countGames;
+    }
+    public function setCountKills(int $countKills): void {
+        $this->countKills = $countKills;
+    }
+    public function setCountDeaths(int $countDeaths): void {
+        $this->countDeaths = $countDeaths;
+    }
+    public function setCountWins(int $countWins): void {
+        $this->countWins = $countWins;
+    }
 }

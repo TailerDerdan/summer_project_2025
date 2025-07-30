@@ -430,10 +430,11 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 	joinMsg := map[string]interface{}{
 		"type": "join_player_server",
 		"data": map[string]interface{}{
-			"userId": player.PlayerID,
-			"x":      player.X,
-			"y":      player.Y,
-			"dir":    player.Dir,
+			"userId":   player.PlayerID,
+			"x":        player.X,
+			"y":        player.Y,
+			"dir":      player.Dir,
+			"nickname": player.Nickname,
 		},
 	}
 	if err := gs.SendMessageInsideGame(conn, gameID, joinMsg); err != nil {
@@ -443,7 +444,7 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 	return nil
 }
 
-func (gs *GameService) GetGameState(gameID string) ([]models.PlayerInfo, error) {
+func (gs *GameService) getGameState(gameID string) ([]models.PlayerInfo, error) {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
 
@@ -564,7 +565,7 @@ func (gs *GameService) UpdateBullets(conn *websocket.Conn, gameID string, data m
 }
 
 func (gs *GameService) SendInitialGameState(conn *websocket.Conn, gameID string) error {
-	players, err := gs.GetGameState(gameID)
+	players, err := gs.getGameState(gameID)
 	if err != nil {
 		return err
 	}

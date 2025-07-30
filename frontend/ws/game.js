@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         setMessageHandler((event) => {
             const msg = JSON.parse(event.data);
-
+            console.log("msg.type: ", msg.type)
             switch (msg.type) {
                 case "init_players_server":
                     handleInitPlayers(msg.data.players);
@@ -41,7 +41,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     break;
                 case "game_end_server":
                     console.log("players: ", gameStats.leaderboard);
-                    gameStats.leaderboard.map(player => console.log("player: ", player))
+                    gameStats.leaderboard.map(player => {
+                        console.log("player: ", player)
+                        console.log("userId:", stateForWS.userId)
+                    })
                     handleGameEnd(msg.data);
                     break;
                 case "stats_update_server":
@@ -70,6 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function handleInitPlayers(players)
 {
+    console.log("==>", players)
     Object.values(players).forEach(player => {
         if (!arrEnemy.has(player.playerId))
         {
@@ -120,7 +124,7 @@ function updateStats() {
     const leaderboardElement = document.getElementById('leaderboard-body');
     leaderboardElement.setAttribute("style", "font-size: 25px;")
     leaderboardElement.innerHTML = gameStats.leaderboard.map(player => `
-        <tr ${player.isCurrent ? 'class="highlight"' : ''}>
+        <tr ${player.isCurrent ? 'class="highlight" style="color: red"' : 'style="color: blue"'}>
             <td>${player.position}. ${player.nickname}</td>
             <td>${player.kills}</td>
             <td>${player.deaths}</td>
@@ -135,7 +139,6 @@ function handleUpdateStats(data)
     gameStats.deaths = data.stats[stateForWS.userId]?.deaths || 0;
     gameStats.score = data.stats[stateForWS.userId]?.score || 0;
     gameStats.position = data.stats[stateForWS.userId]?.position || 0;
-
     gameStats.leaderboard = data.leaderboard.map((item, index) => ({
         id: item.id,
         nickname: findPlayerNickname(item.id),
@@ -145,6 +148,7 @@ function handleUpdateStats(data)
         position: index + 1,
         isCurrent: item.id === data.userId
     }));
+    console.log("ghdfghdfg: ",data.userId, typeof data.userId)
 
     updateStats();
 }
@@ -236,9 +240,10 @@ function showResultsAfterBattle(endData) {
 
 function findPlayerNickname(playerId) 
 {
-    console.log("arrEnemy.has(playerId.toString())", arrEnemy.get(playerId.toString()))
-    if (arrEnemy.has(playerId.toString())) {
-        return arrEnemy.get(playerId.toString()).nickname;
+    console.log("arrEnemy.has(playerId.toString())", arrEnemy.get(playerId))
+    if (arrEnemy.has(playerId)) {
+        console.log("--===---", arrEnemy.get(playerId).nickname)
+        return arrEnemy.get(playerId).nickname;
     }
     return stateForWS.nickname;
 }
