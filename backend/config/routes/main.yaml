@@ -11,9 +11,9 @@ get_all_users:
 save_map:
     path: /main/saveMap
     methods: POST
-    controller: App\Controller\MainController::saveMap
+    controller: App\Controller\MapController::saveMap
 
 map_redactor:
     path: /main/mapRedactor
     methods: GET
-    controller: App\Controller\MainController::mapRedactor
+    controller: App\Controller\MapController::mapRedactor

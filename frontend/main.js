@@ -13,6 +13,7 @@ import { getMap } from './requests/requests.js';
 import { drawRemainingBlood } from './blood/blood.js';
 import {playerDeath} from "./player/KillAndDeath.js";
 import { stateForWS } from './ws/websocketGame.js';
+import { sendBullets, updateAllBullets, mapName } from './ws/game.js';
 import { sendBullets } from './ws/game.js';
 import { drawAllWeaponOnMap, updateAllWeaponOnMap } from './weapon/spawnWeapon.js';
 import {} from "./player/changeWeapon.js";
@@ -80,7 +81,19 @@ function gameLoop()
 }
 
 const initGame = async () => {
-    const gettedMap = await getMap();
+    console.log('$', mapName)
+    console.log('%', stateForWS.mapName)
+    if (!stateForWS?.mapName) {
+        await new Promise(resolve => {
+            const checkInterval = setInterval(() => {
+                if (stateForWS?.mapName) {
+                    clearInterval(checkInterval);
+                    resolve();
+                }
+            }, 2000);
+        });
+    }
+    const gettedMap = await getMap(stateForWS.mapName);
     const imgMap = new Image();
     imgMap.src = gettedMap.image;
     map.image = imgMap;

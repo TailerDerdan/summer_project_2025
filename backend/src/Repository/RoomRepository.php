@@ -4,8 +4,6 @@ declare (strict_types= 1);
 namespace App\Repository;
 
 use App\Entity\Room\Room;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use App\Infrastructure\Room\RoomRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;

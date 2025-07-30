@@ -5,6 +5,7 @@ namespace App\Controller;
 
 use App\Infrastructure\Room\RoomServiceInterface;
 use App\Infrastructure\User\UserServiceInterface;
+use App\Services\MapService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,13 +16,16 @@ class RoomController extends AbstractController {
     public function __construct(
         private RoomServiceInterface $roomService,
         private UserServiceInterface $userService,
+        private MapService $mapService,
         private httpClientInterface $httpClient,
     ) {}
 
     public function createPage(): Response
     {
         $user = $this->getUser();
-        return $this->render('Room/RoomCreate.html.twig', ["user" => $user]);
+        return $this->render('Room/RoomCreate.html.twig', [
+            "user" => $user,
+        ]);
     }
     public function create(Request $request): Response
     {
@@ -89,7 +93,12 @@ class RoomController extends AbstractController {
     {
         $user = $this->getUser();
         $room = $this->roomService->get($id);
-        return $this->render("Room/RoomLobby.html.twig", ["room" => $room, "user" => $user]);
+        $maps = $this->mapService->getAll();
+        return $this->render("Room/RoomLobby.html.twig", [
+            "room" => $room,
+            "user" => $user,
+            "maps" => $maps,
+            ]);
     }
 
     public function edit(): Response
