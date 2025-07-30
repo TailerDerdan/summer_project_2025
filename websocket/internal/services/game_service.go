@@ -27,95 +27,24 @@ func NewGameService() *GameService {
 }
 
 var weaponSpawnPoints = []models.SpawnPoint{
-	{X: 100, Y: 100},   // Точка 1
-	{X: 500, Y: 100},   // Точка 2
-	{X: 100, Y: 300},   // Точка 3
-	{X: 500, Y: 300},   // Точка 4
-	{X: 300, Y: 200},   // Точка 5
-	{X: 200, Y: 400},   // Точка 6
-	{X: 400, Y: 400},   // Точка 7
-	{X: 100, Y: 500},   // Точка 8
-	{X: 500, Y: 500},   // Точка 9
-	{X: 300, Y: 300},   // Точка 10
-	{X: 1000, Y: 1000}, // Точка 6
-	{X: 1100, Y: 1100}, // Точка 7
-	{X: 1200, Y: 1200}, // Точка 8
-	{X: 1300, Y: 1300}, // Точка 9
+	{X: 100, Y: 100},
+	{X: 500, Y: 100},
+	{X: 100, Y: 300},
+	{X: 500, Y: 300},
+	{X: 300, Y: 200},
+	{X: 200, Y: 400},
+	{X: 400, Y: 400},
+	{X: 100, Y: 500},
+	{X: 500, Y: 500},
+	{X: 300, Y: 300},
+	{X: 1000, Y: 1000},
+	{X: 1100, Y: 1100},
+	{X: 1200, Y: 1200},
+	{X: 1300, Y: 1300},
 	{X: 1400, Y: 1400},
 }
 
 const maxWeaponsOnMap = 10
-
-//func (gs *GameService) StartGame(conn *websocket.Conn, roomID, userID, gameType string) {
-//if ok := gs.roomService.CheckAuthToStartGame(conn, roomID, userID); !ok {
-//	return
-//}
-//
-//if ok := gs.roomService.CheckUsersReadyToStartGame(conn, roomID); !ok {
-//	return
-//}
-//
-//gameID := gs.generateGameID(gameType)
-//
-//players := make(map[string]*models.PlayerInfo)
-//for _, user := range gs.rooms[roomID].Clients {
-//	players[user.UserID] = &models.PlayerInfo{
-//		PlayerID: user.UserID,
-//		Nickname: user.Nickname,
-//	}
-//}
-//
-//startMsg := map[string]interface{}{
-//	"type": "start_game",
-//	"data": map[string]interface{}{
-//		"userId":   userID,
-//		"roomId":   roomID,
-//		"gameId":   gameID,
-//		"gameType": gameType,
-//		"players":  players,
-//	},
-//}
-//gs.roomService.SendMessageInsideRoomToAll(roomID, startMsg)
-//
-//game := &models.Game{
-//	GameID:    gameID,
-//	RoomID:    roomID,
-//	Type:      gameType,
-//	Players:   make(map[*websocket.Conn]*models.PlayerInfo),
-//	Stats:     make(map[string]*models.PlayerStats),
-//	StartTime: time.Now(),
-//	Duration:  1 * time.Hour,
-//}
-//
-//gs.activeGames[gameID] = game
-//
-//go func() {
-//	ticker := time.NewTicker(1 * time.Second)
-//	defer ticker.Stop()
-//	fmt.Println("3333333")
-//	for {
-//		select {
-//		case <-ticker.C:
-//			elapsed := time.Since(game.StartTime)
-//			remaining := game.Duration - elapsed
-//			fmt.Println("4444444444")
-//			if remaining <= 0 {
-//				gs.EndGame(gameID)
-//				return
-//			}
-//
-//			msg := map[string]interface{}{
-//				"type": "time_update",
-//				"data": map[string]interface{}{
-//					"remaining": int(remaining.Seconds()),
-//				},
-//			}
-//
-//			gs.SendMessageInsideGameToAll(gameID, msg)
-//		}
-//	}
-//}()
-//}
 
 func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *models.Game {
 	//gs.mu.Lock()
@@ -131,6 +60,11 @@ func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *m
 		Weapons:   make(map[string]*models.Weapon),
 		StartTime: time.Now(),
 		Duration:  3 * time.Minute,
+		State: models.GameState{
+			CountDown: 0,
+			Status:    "waiting",
+		},
+		ReadyCheck: make(map[string]bool),
 	}
 	gs.activeGames[gameID] = game
 	//if points, ok := data["weaponsPoints"].([]interface{}); ok {
@@ -149,7 +83,108 @@ func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *m
 	if err := gs.generateWeapons(gameID); err != nil {
 		fmt.Printf("Ошибка инициализации оружия%v", err)
 	}
+	go gs.waitingPlayers(gameID)
 	return game
+}
+
+func (gs *GameService) waitForPlayers(gameID string) {
+	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
+
+	timeout := time.After(1 * time.Minute)
+
+	for {
+		select {
+		case <-ticker.C:
+			gs.mu.Lock()
+			game, exists := gs.activeGames[gameID]
+			if !exists {
+				gs.mu.Unlock()
+				return
+			}
+
+			allConnected := true
+			for _, player := range game.Players {
+				if !game.ReadyCheck[player.PlayerID] {
+					allConnected = false
+					break
+				}
+			}
+
+			if allConnected {
+				game.State.Status = "countdown"
+				game.State.CountDown = 3
+				gs.notifyGameState(gameID)
+				gs.mu.Unlock()
+
+				go gs.startCountdown(gameID)
+				return
+			}
+
+			elapsed := time.Since(game.StartTime)
+			remainingWait := 1*time.Minute - elapsed
+			if remainingWait < 0 {
+				remainingWait = 0
+			}
+
+			msg := map[string]interface{}{
+				"type": "waiting_update",
+				"data": map[string]interface{}{
+					"remaining": int(remainingWait.Seconds()),
+					"connected": len(game.Players),
+					"waiting":   true,
+				},
+			}
+			gs.SendMessageInsideGameToAll(gameID, msg)
+			gs.mu.Unlock()
+
+		case <-timeout:
+			gs.mu.Lock()
+			game, exists := gs.activeGames[gameID]
+			if !exists {
+				gs.mu.Unlock()
+				return
+			}
+
+			game.State.Status = "countdown"
+			game.State.CountDown = 3
+			gs.notifyGameState(gameID)
+			gs.mu.Unlock()
+
+			// Запускаем обратный отсчет
+			go gs.startCountdown(gameID)
+			return
+		}
+	}
+}
+
+func (gs *GameService) startCountdown(gameID string) {
+	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		gs.mu.Lock()
+		game, exists := gs.activeGames[gameID]
+		if !exists {
+			gs.mu.Unlock()
+			return
+		}
+
+		game.State.CountDown--
+
+		gs.notifyGameState(gameID)
+
+		if game.State.CountDown <= 0 {
+			game.State.Status = "playing"
+			game.StartTime = time.Now()
+			gs.notifyGameState(gameID)
+
+			go gs.startGameTimer(gameID)
+			gs.mu.Unlock()
+			return
+		}
+		gs.mu.Unlock()
+	}
 }
 
 func (gs *GameService) SendMessageInsideGame(playerConn *websocket.Conn, gameID string, msg map[string]interface{}) error {
@@ -197,56 +232,6 @@ func (gs *GameService) SendMessageInsideGameToAll(gameID string, msg map[string]
 	return nil
 }
 
-func (gs *GameService) CheckGameEndConditions(gameID string) {
-	//game, exists := gs.activeGames[gameID]
-	//if !exists {
-	//	return
-	//}
-	//
-	//game.mu.RLock()
-	//defer game.mu.RUnlock()
-	//
-	//alivePlayers := make([]string, 0)
-	//for _, player := range game.Players {
-	//	isAlive := true
-	//	for _, death := range game.Deaths {
-	//		if death.PlayerID == player.PlayerID {
-	//			isAlive = false
-	//			break
-	//		}
-	//	}
-	//	if isAlive {
-	//		alivePlayers = append(alivePlayers, player.PlayerID)
-	//	}
-	//}
-	//
-	//if len(alivePlayers) <= 1 {
-	//	winner := ""
-	//	if len(alivePlayers) == 1 {
-	//		winner = alivePlayers[0]
-	//	}
-	//
-	//	endMsg := map[string]interface{}{
-	//		"type": "game_end",
-	//		"data": map[string]interface{}{
-	//			"winner": winner,
-	//			"deaths": game.Deaths,
-	//			"gameId": gameID,
-	//		},
-	//	}
-	//	fmt.Printf("Game End: %s\n", endMsg)
-	//	for conn := range game.Players {
-	//		if err := conn.WriteJSON(endMsg); err != nil {
-	//			log.Printf("Error sending game end message: %v", err)
-	//		}
-	//		conn.Close()
-	//	}
-	//
-	//	gs.mu.Lock()
-	//	delete(gs.activeGames, gameID)
-	//	gs.mu.Unlock()
-	//}
-}
 func (gs *GameService) RemovePlayerFromGame(gameID string, conn *websocket.Conn) {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
@@ -443,15 +428,6 @@ func (gs *GameService) PlayerDeath(gameID, playerID string) error {
 	return nil
 }
 
-//func (gs *GameService) CreateGame(gameID, roomID, gameType string, duration time.Duration) *models.Game {
-//	return &models.Game{
-//		GameID:   gs.generateGameID(gameID),
-//		RoomID:   roomID,
-//		Type:     gameType,
-//		Duration: duration,
-//	}
-//}
-
 func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, player *models.PlayerInfo) error {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
@@ -478,7 +454,7 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 	return nil
 }
 
-func (gs *GameService) getGameState(gameID string) ([]models.PlayerInfo, error) {
+func (gs *GameService) getGameState(gameID string) ([]models.PlayerInfo, , error) {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
 
@@ -615,6 +591,7 @@ func (gs *GameService) SendInitialGameState(conn *websocket.Conn, gameID string)
 		"type": "init_players_server",
 		"data": map[string]interface{}{
 			"players": players,
+			"weapons": weapons,
 		},
 	})
 }

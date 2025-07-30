@@ -33,112 +33,6 @@ func NewRoomHandler(rs infrastructure.IRoomService, gs infrastructure.IGameServi
 	}
 }
 
-//func (rh *RoomHandler) HandleConnectionInRoom(w http.ResponseWriter, r *http.Request, roomID string) {
-//	conn, err := rh.upgrader.Upgrade(w, r, nil)
-//	if err != nil {
-//		log.Printf("WebSocket upgrade failed: %v", err)
-//		return
-//	}
-//
-//	var authMsg struct {
-//		Type string            `json:"type"`
-//		Data map[string]string `json:"data"`
-//	}
-//
-//	if err := conn.ReadJSON(&authMsg); err != nil || authMsg.Type != "auth" {
-//		conn.WriteJSON(map[string]string{"error": "Authentication required"})
-//		conn.Close()
-//		return
-//	}
-//
-//	userID := authMsg.Data["userId"]
-//	nickname := authMsg.Data["nickname"]
-//
-//	if roomID == "" || userID == "" {
-//		http.Error(w, "room_id and user_id are required", http.StatusBadRequest)
-//		return
-//	}
-//	if _, exists := rh.rooms[roomID]; !exists {
-//		conn.WriteJSON(map[string]string{"error": "Room does not exist"})
-//		return
-//	}
-//	fmt.Printf("Room %s user %s\n", roomID, userID)
-//	rh.roomService.RegisterConnection(conn, roomID, userID, nickname)
-//
-//	msg := map[string]interface{}{
-//		"type": "user_joined",
-//		"data": map[string]string{
-//			"userId":   userID,
-//			"nickname": nickname,
-//		},
-//	}
-//	rh.roomService.SendMessageInsideRoom(conn, roomID, msg)
-//	rh.roomService.SendRoomInfo(conn, roomID)
-//
-//	msg = map[string]interface{}{
-//		"type": "add_user",
-//		"data": map[string]string{
-//			"roomId":   roomID,
-//			"userId":   userID,
-//			"nickname": nickname,
-//		},
-//	}
-//	rh.wsService.SendMessageGlobal(msg)
-//
-//	for {
-//		var msg struct {
-//			Type string            `json:"type"`
-//			Data map[string]string `json:"data"`
-//		}
-//
-//		if err := conn.ReadJSON(&msg); err != nil {
-//			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
-//				log.Printf("WebSocket error: %v", err)
-//			}
-//			break
-//		}
-//
-//		switch msg.Type {
-//		case "leave_room":
-//			log.Printf("User %s requested to leave room %s", msg.Data["userId"], roomID)
-//			msgResponse := map[string]interface{}{
-//				"type": "leave_ack",
-//				"data": map[string]string{
-//					"roomId":   roomID,
-//					"userId":   msg.Data["userId"],
-//					"nickname": msg.Data["nickname"],
-//				},
-//			}
-//			if err := conn.WriteJSON(msgResponse); err != nil {
-//				log.Printf("WebSocket error: %v", err)
-//			}
-//			rh.roomService.UnregisterConnection(conn, roomID, userID)
-//		case "start_game":
-//			log.Printf("Attempt to start game from user: %s", userID)
-//			rh.gameService.StartGame(conn, roomID, msg.Data["userId"], msg.Data["gameType"])
-//			msg := map[string]interface{}{
-//				"type": "delete_room_g",
-//				"data": map[string]string{
-//					"roomId": roomID,
-//				},
-//			}
-//			rh.wsService.SendMessageGlobal(msg)
-//			rh.roomService.SendMessageInsideRoomToAll(roomID, msg)
-//			//h.unregisterConnection(conn, roomID, userID)
-//		case "ready_state":
-//			rh.roomService.UpdateReadyState(conn, roomID)
-//			msg := map[string]interface{}{
-//				"type": "update_ready_state",
-//				"data": map[string]interface{}{
-//					"isReady": rh.rooms[roomID].Clients[conn].IsReady,
-//					"userId":  userID,
-//				},
-//			}
-//			rh.roomService.SendMessageInsideRoomToAll(roomID, msg)
-//		}
-//	}
-//}
-
 func (rh *RoomHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -303,7 +197,7 @@ func (rh *RoomHandler) processRoomMessage(conn *websocket.Conn, roomID, userID s
 	case "user_ready":
 		err := rh.roomService.UserReady(conn, roomID)
 		return err
-	case "start_game":
+	case "start_waiting":
 		err := rh.roomService.StartGame(conn, roomID, userID, msg.Data)
 		return err
 	}

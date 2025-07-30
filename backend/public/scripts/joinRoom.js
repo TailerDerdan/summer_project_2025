@@ -1,3 +1,5 @@
+import {mapName} from "../../../frontend/ws/game";
+
 document.addEventListener("DOMContentLoaded", async (e) => {
     //const usersArr = await loadUsersData()
     const dataJson = JSON.parse(sessionStorage.getItem('ws_join_data'));
@@ -21,12 +23,14 @@ document.addEventListener("DOMContentLoaded", async (e) => {
         startBtn.addEventListener('click', () => {
             if (socket && socket.readyState === WebSocket.OPEN) {
                 const gameType = document.getElementById("room-gamemode").textContent
+                const mapNameLocal = document.getElementById("room_map").value
                 socket.send(JSON.stringify({
-                    type: "start_game",
+                    type: "start_waiting",
                     data: {
                         userId: (dataJson.data.userId).toString(),
                         nickname: dataJson.data.nickname,
                         gameType: gameType,
+                        mapName: mapNameLocal,
                         //weaponsPoints: weaponsPoints,
                     }
                 }));
@@ -81,7 +85,7 @@ function connectToWSRoom(dataUser)   {
                 window.location.href = '/main';
             }
         }
-        if (data.type === 'start_game_server') {
+        if (data.type === 'start_waiting_server') {
             handleGameStart(data.data, dataUser.data)
             await deleteUserFromRoom(data.data.roomId)
             await deleteRoom(data.data.roomId)
@@ -166,12 +170,12 @@ function showNotification(message) {
 }
 
 function handleGameStart(data, user) {
-    const mapNameLocal = document.getElementById("room_map").value
-
+    console.log("data.mapName: ", data.mapName)
     sessionStorage.setItem('gameSession', JSON.stringify({
-        mapName: mapNameLocal,
+        mapName: data.mapName,
         gameId: data.gameId,
         userId: user.userId,
+        hostId: data.hostId,
         nickname: user.nickname,
     }))
     let countStart = 2

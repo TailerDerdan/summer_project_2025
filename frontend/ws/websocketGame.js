@@ -2,6 +2,7 @@ export const stateForWS = {
     gameIsRun: true,
     gameSocket: null,
     userId: -1,
+    hostId: -1,
     gameId: null,
     nickname: null,
     mapName: null,
@@ -15,6 +16,7 @@ export async function initGameWebsocket(data) {
 
     stateForWS.mapName = data.mapName;
     stateForWS.userId = data.userId;
+    stateForWS.hostId = data.hostId;
     stateForWS.gameId = data.gameId;
     stateForWS.nickname = data.nickname;
 
