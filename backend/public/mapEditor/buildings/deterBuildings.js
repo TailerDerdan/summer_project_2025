@@ -82,6 +82,8 @@ export const car2 = new Building(
     "Car2"
 );
 
+export const spawnWeapon = new Building(TILE_WIDTH, TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT, 1, false, 0, "", "spawnWeapon");
+
 floor.fillSprite(1, TypeBuilding, 7, 4);
 wall.fillSprite(TypeBuilding.Floor1 + CountOfBuildings.Floor + 1, TypeBuilding, 1, 2);
 car1.fillSprite(TypeBuilding.Wall1 + CountOfBuildings.Wall + 1, TypeBuilding, 1, 1);
