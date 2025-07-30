@@ -69,7 +69,7 @@ class MapController extends AbstractController {
 
         $maps['maps'][] = $data;
         file_put_contents("./mapEditor/maps/maps.json", json_encode($maps, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-        $this->mapService->save($data);
+        $this->mapService->save($data["nameMap"]);
         return $this->json(["success"=> true]);
     }
 
