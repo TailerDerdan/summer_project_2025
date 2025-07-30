@@ -110,7 +110,7 @@ export class MapEditor
                 const wall = this.buldingsObject.find((elem) => {
                     if (elem.x == iterX && elem.y == iterY) return true;
                 });
-        
+
                 if (wall)
                 {
                     if (wall.rotation == 90 || wall.rotation == 270)
@@ -121,7 +121,7 @@ export class MapEditor
                     {
                         this.verticalWalls[iterY * COUNT_TILE_Y + iterX] = 1;
                     }
-                } 
+                }
             }
         }
     }
@@ -193,7 +193,7 @@ export class MapEditor
         this.containers = [];
 
         let isWallStartedHoriz = false;
-        let horWall = null; 
+        let horWall = null;
 
         for (let iterY = 0; iterY < COUNT_TILE_Y; iterY++)
         {
@@ -228,7 +228,7 @@ export class MapEditor
                         isWallStartedHoriz = true;
                     }
                     continue;
-                    
+
                 }
             }
         }
@@ -281,7 +281,7 @@ export class MapEditor
             image: imageMap,
             walls: this.containers,
         }
-        fetch("saveMap", {
+        fetch("/main/saveMap", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(newMap),
