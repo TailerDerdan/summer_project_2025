@@ -7,6 +7,7 @@ import { getDir, inverseDir } from '../player/changeDir.js';
 import { randomMinMax } from '../random.js';
 import { playerKill } from '../player/KillAndDeath.js';
 import { stateForWS } from '../ws/websocketGame.js';
+import { enemyBullets } from "../ws/game.js";
 
 const bullets = [];
 export const playerBullets = [];
@@ -39,7 +40,6 @@ const updateBullets = (event) => {
         distY: 0
     }
 
-
     if (player.weapon.type === TYPE_WEAPON.SHOTGUN)
     {
         for (let iter = 0; iter < 6; iter++)
@@ -62,13 +62,7 @@ const updateBullets = (event) => {
                 player.weapon.fireRange,
                 player
             );
-            bullets.push(bullet);
-            playerBullets.push({
-                x: bullet.x,
-                y: bullet.y,
-                distX: bullet.distX,
-                distY: bullet.distY,
-            });
+            playerBullets.push(bullet);
         }
     }
     else
@@ -89,13 +83,7 @@ const updateBullets = (event) => {
             player.weapon.fireRange,
             player
         );
-        bullets.push(bullet);
-        playerBullets.push({
-            x: bullet.x,
-            y: bullet.y,
-            distX: bullet.distX,
-            distY: bullet.distY,
-        });
+        playerBullets.push(bullet);
     }
 
     player.soundShoot.play();
@@ -241,14 +229,6 @@ export function updateMovementBullets()
     });
 }
 
-
-
-// export let throttleBotsShoot = [];
-// for (const bot of arrBot) {
-//     const throttleBotShoot = throttle(updateBotShooting(bot), bot.weapon.timeBetweenBul * 1000);
-//     throttleBotsShoot.push(throttleBotShoot);
-// }
-
 export let throttleBotsShoot = [];
 for (const bot of arrBot) {
     if (bot.weapon) {
@@ -265,6 +245,25 @@ function throttleUpdateBullets(event)
 }
 
 document.addEventListener('mousedown', throttleUpdateBullets);
+
+function updateBulletsOnMap(ctx, xView, yView, bullets) {
+    bullets.forEach((bullet, index) => {
+        bullet.setX(bullet.getX() + bullet.getDistX());
+        bullet.setY(bullet.getY() - bullet.getDistY());
+
+        const remainingDist = bullet.getRemainingDist(bullet.getFireRange());
+        if (remainingDist >= -4 && remainingDist <= 4) {
+            enemyBullets.splice(index, 1);
+        }
+
+        bullet.drawBullet(ctx, xView, yView);
+    });
+}
+
+export function updateAllBullets(ctx, xView, yView) {
+    updateBulletsOnMap(ctx, xView, yView, enemyBullets);
+    updateBulletsOnMap(ctx, xView, yView, playerBullets);
+}
 
 // let intervalId = 0;
 // document.addEventListener('mousedown', (event) => {

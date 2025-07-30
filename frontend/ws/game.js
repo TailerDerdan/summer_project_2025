@@ -1,6 +1,6 @@
 import { Enemy, HEIGHT_ENEMY, WIDTH_ENEMY } from "../enemy/enemy.js";
 import { arrEnemy, player } from "../player/player.js";
-import { playerBullets, updateMovementBullets } from "../weapon/shooting.js";
+import { playerBullets } from "../weapon/shooting.js";
 import { Bullet } from "../weapon/bullet.js";
 import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
 
@@ -11,6 +11,8 @@ export const gameStats = {
     position: 0,
     leaderboard: []
 };
+
+export let enemyBullets = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
 
@@ -64,6 +66,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         checkAndSendPosition();
+
+        sendBullets();
     }
     catch (error) {
         console.error("WebSocket error:", error);
@@ -77,7 +81,7 @@ function handleInitPlayers(players)
     Object.values(players).forEach(player => {
         if (!arrEnemy.has(player.playerId))
         {
-            const newEnemy = new Enemy(player.playerId, player.x, player.y, WIDTH_ENEMY, HEIGHT_ENEMY, player.dir, player.nickname);
+            const newEnemy = new Enemy(player.playerId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir, player.nickname);
             arrEnemy.set(player.playerId, newEnemy);
         }
     })
@@ -87,7 +91,7 @@ function handleJoinPlayer(player)
 {
     if (!arrEnemy.has(player.userId))
     {
-        const newEnemy = new Enemy(player.userId, player.x, player.y, WIDTH_ENEMY, HEIGHT_ENEMY, player.dir, player.nickname);
+        const newEnemy = new Enemy(player.userId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir, player.nickname);
         arrEnemy.set(player.userId, newEnemy);
     }
 }
@@ -311,41 +315,29 @@ export function sendBullets()
                 }
             });
 
-            lastSentTimeForBullets = now;
-        }
-    }, 20);
-}
+            // for (const playerBullet of playerBullets) {
+            //     console.log(playerBullet);
+            // }
 
-let enemyBullets = [];
+            lastSentTimeForBullets = now;
+
+            //playerBullets.length = 0;
+        }
+    }, 25);
+}
 
 function updateEnemyBullets(data) {
     enemyBullets = data.bullets.map(bullet => {
         return new Bullet(
             bullet.x,
             bullet.y,
-            100,// bullet.speed,
-            50,//bullet.dir,
+            bullet.speedBullet,
+            bullet.dir,
             bullet.distX,
             bullet.distY,
-            500,//bullet.fireRange,
-            { id: data.userId }
+            bullet.fireRange,
+            null
         );
-    });
-}
-
-export function updateAllBullets(ctx, xView, yView) {
-    updateMovementBullets();
-
-    enemyBullets.forEach((bullet, index) => {
-        bullet.setX(bullet.getX() + bullet.getDistX());
-        bullet.setY(bullet.getY() - bullet.getDistY());
-
-        const remainingDist = bullet.getRemainingDist(bullet.getFireRange());
-        if (remainingDist >= -4 && remainingDist <= 4) {
-            enemyBullets.splice(index, 1);
-        }
-
-        bullet.drawBullet(ctx, xView, yView);
     });
 }
 
