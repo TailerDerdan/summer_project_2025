@@ -32,53 +32,12 @@ export class Sprite
 
     makeFrames(widthImage, heightImage, x)
     {
-        const frame1 = new IntRect(x, 0, widthImage, heightImage);
-        this.frames.push(frame1);
-
-        x += widthImage;
-
-        const frame2 = new IntRect(x, 0, widthImage, heightImage);
-        this.frames.push(frame2);
-
-        x += widthImage;
-
-        const frame3 = new IntRect(x, 0, widthImage, heightImage);
-        this.frames.push(frame3);
-
-        x += widthImage;
-
-        const frame4 = new IntRect(x, 0, widthImage, heightImage);
-        this.frames.push(frame4);
-
-        x += widthImage;
-
-        const frame5 = new IntRect(x, 0, widthImage, heightImage);
-        this.frames.push(frame5);
-
-        x += widthImage;
-
-        const frame6 = new IntRect(x, 0, widthImage, heightImage);
-        this.frames.push(frame6);
-
-        x += widthImage;
-
-        const frame7 = new IntRect(x, 0, widthImage, heightImage);
-        this.frames.push(frame7);
-
-        x += widthImage;
-
-        const frame8 = new IntRect(x, 0, widthImage, heightImage);
-        this.frames.push(frame8);
-
-        x += widthImage;
-
-        const frame9 = new IntRect(x, 0, widthImage, heightImage);
-        this.frames.push(frame9);
-
-        x += widthImage;
-
-        const frame10 = new IntRect(x, 0, widthImage, heightImage);
-        this.frames.push(frame10);
+        for (let iter = 0; iter < 10; iter++)
+        {
+            const frame = new IntRect(x, 0, widthImage, heightImage);
+            this.frames.push(frame);
+            x += widthImage;
+        }
     }
 
     applyToSpriteMovement(ctx, dx, dy, dWidth, dHeight)

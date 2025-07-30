@@ -14,6 +14,8 @@ import { drawRemainingBlood } from './blood/blood.js';
 import {playerDeath} from "./player/KillAndDeath.js";
 import { stateForWS } from './ws/websocketGame.js';
 import { sendBullets, updateAllBullets } from './ws/game.js';
+import { drawAllWeaponOnMap, updateAllWeaponOnMap } from './weapon/spawnWeapon.js';
+import {} from "./player/changeWeapon.js";
 
 const clock = new Clock();
 
@@ -41,6 +43,10 @@ function gameLoop()
             // throttleBotsShoot[index]();
         }
     });
+
+    updateAllWeaponOnMap();
+    drawAllWeaponOnMap(ctx, camera.xView, camera.yView);
+    player.drawCurrentAmmo();
 
     //updateMovementBullets();
 
