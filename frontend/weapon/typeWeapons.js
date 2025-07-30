@@ -1,3 +1,5 @@
+import { Container } from "../collisions/collisions.js"
+
 export const TYPE_WEAPON = {
     NONE: 0,
     ASSAULT_RIFLE: 1,
@@ -22,11 +24,9 @@ export const InitAssaultRifle = {
     damage: 1,
     speedBullet: 20,
     typeShooting: TYPE_SHOOTING.AUTOMATIC,
-    sprite: (() => {
-        const img = new Image();
-        img.src = "./spriteWeapon/assaultRifle.png";
-        return img;
-    }),
+    sprite: "./weapon/spriteWeapon/assaultRifle.png",
+    widthSprite: 11 * 2,
+    heightSprite: 31 * 2,
 }
 
 export const InitSniperRifle = {
@@ -40,11 +40,9 @@ export const InitSniperRifle = {
     damage: 2,
     speedBullet: 8,
     typeShooting: TYPE_SHOOTING.SINGLE,
-    sprite: (() => {
-        const img = new Image();
-        img.src = "./spriteWeapon/sniperRifle.png";
-        return img;
-    }),
+    sprite: "./weapon/spriteWeapon/sniperRifle.png",
+    widthSprite: 10 * 2,
+    heightSprite: 39 * 2,
 }
 
 export const InitShotgun = {
@@ -58,11 +56,9 @@ export const InitShotgun = {
     damage: 2,
     speedBullet: 15,
     typeShooting: TYPE_SHOOTING.FIRING_A_BURST,
-    sprite: (() => {
-        const img = new Image();
-        img.src = "./spriteWeapon/shotgun.png";
-        return img;
-    }),
+    sprite: "./weapon/spriteWeapon/shotgun.png",
+    widthSprite: 9 * 2,
+    heightSprite: 27 * 2,
 }
 
 export class Weapon
@@ -81,5 +77,14 @@ export class Weapon
         this.speedBullet = InitValues.speedBullet;
         this.x = x;
         this.y = y;
+        this.sprite = new Image();
+        this.sprite.src = InitValues.sprite;
+        this.widthSprite = InitValues.widthSprite;
+        this.heightSprite = InitValues.heightSprite;
+        this.owner = null;
+        this.container = new Container(this.widthSprite, this.heightSprite, x, y, 0);
+        this.container.fillVertices();
+        this.isExpired = false;
+        this.expireTime = null;
     }
 }

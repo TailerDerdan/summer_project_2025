@@ -111,7 +111,7 @@ async function setup()
         shadowFrameBuffer,
         sceneFramebuffer,
         sceneProgram,
-        sceneTexture
+        sceneTexture,
     };
 }
 
@@ -127,7 +127,7 @@ export function render(state)
         shadowFrameBuffer,
         sceneFramebuffer,
         sceneProgram,
-        sceneTexture
+        sceneTexture,
     } = state;
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);

@@ -30,15 +30,19 @@ function changeDistXYBySpeedBullet(objForMovement, speedBullet) {
 
 const updateBullets = (event) => {
 
-    if ((!player.weapon) || (!player.isCharacterLive)) return;
+    if (event.button === 0)
+    {
+        if ((!player.weapon) || (!player.isCharacterLive)) return;
 
-    player.soundShoot.stop();
+        if (player.weapon.currentAmmo === 0) return;
 
-    const objForMovement = {
-        dir: 0,
-        distX: 0,
-        distY: 0
-    }
+        player.soundShoot.stop();
+
+        const objForMovement = {
+            dir: 0,
+            distX: 0,
+            distY: 0
+        }
 
     if (player.weapon.type === TYPE_WEAPON.SHOTGUN)
     {
@@ -64,6 +68,7 @@ const updateBullets = (event) => {
             );
             playerBullets.push(bullet);
         }
+        player.weapon.currentAmmo--;
     }
     else
     {
@@ -84,6 +89,7 @@ const updateBullets = (event) => {
             player
         );
         playerBullets.push(bullet);
+        player.weapon.currentAmmo--;
     }
 
     player.soundShoot.play();

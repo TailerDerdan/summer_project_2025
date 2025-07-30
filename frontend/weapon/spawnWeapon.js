@@ -1,8 +1,7 @@
 import { randomMinMax, randomPosition } from "../random.js";
-import { InitAssaultRifle, TYPE_WEAPON, Weapon } from "./typeWeapons.js";
+import { InitAssaultRifle, InitShotgun, InitSniperRifle, TYPE_WEAPON, Weapon } from "./typeWeapons.js";
 
-const MIN_COUNT = 1;
-const MAX_COUNT = 6;
+const MAX_COUNT_WEAPON_ON_MAP = 10;
 
 const tableOfWeightOfWeapon = new Map();
 let sumOfAllWeight = 0;
@@ -21,38 +20,55 @@ function MakeTableOfWeight()
 
 MakeTableOfWeight();
 
-export const allWeapon = [];
+export let allWeapon = [];
 
-export function spawnWeapon()
+function spawnWeapon()
 {
-    setInterval(() => {
-        
-        let random = randomMinMax(0, sumOfAllWeight);
-        let currentWeight = 0;
+    for (let iter = 0; iter < MAX_COUNT_WEAPON_ON_MAP; iter++)
+    {
+        const weapon = new Weapon(InitShotgun, TYPE_WEAPON.SHOTGUN, iter * 100, 500);
+        allWeapon.push(weapon);
+    }
+}
 
-        for (const [typeWeapon, weight] of tableOfWeightOfWeapon)
+spawnWeapon();
+
+export function drawAllWeaponOnMap(ctx, xView, yView)
+{
+    ctx.save();
+
+    for (const weapon of allWeapon)
+    {
+        if (weapon.owner) continue;
+
+        let screenX = weapon.x - xView;
+        let screenY = weapon.y - yView;
+
+        weapon.container.updateX(weapon.x);
+        weapon.container.updateY(weapon.y);
+
+        ctx.drawImage(weapon.sprite, screenX, screenY, weapon.widthSprite, weapon.heightSprite);
+        weapon.container.drawContainer(ctx, screenX, screenY);
+    };
+    
+    ctx.restore();
+}
+
+export function updateAllWeaponOnMap()
+{
+    for (const weapon of allWeapon)
+    {
+        if (weapon.currentAmmo <= 0 && !weapon.owner)
         {
-            currentWeight += weight;
-            if (currentWeight > random)
+            if (!weapon.expireTime)
             {
-                if (typeWeapon == TYPE_WEAPON.NONE) break;
-                let initValues;
-                switch (typeWeapon) {
-                    case TYPE_WEAPON.ASSAULT_RIFLE:
-                        initValues = InitAssaultRifle;
-                        break;
-                    case TYPE_WEAPON.SHOTGUN:
-                        initValues = InitAssaultRifle;
-                        break;
-                    case TYPE_WEAPON.SNIPER_RIFLE:
-                        initValues = InitAssaultRifle;
-                        break;
-                    default:
-                        break;
-                }
-                const randPos = randomPosition();
-                const weapon = new Weapon(initValues, typeWeapon, randPos.x, randPos.y);
+                weapon.expireTime = Date.now() + 2000;
+            }
+            else if (Date.now() >= weapon.expireTime)
+            {
+                weapon.isExpired = true;
             }
         }
-    }, 3000)
+    }
+    allWeapon = allWeapon.filter(weapon => !weapon.isExpired);
 }

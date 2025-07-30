@@ -68,6 +68,11 @@ export class Player extends Character
             this.x -= distY;
             isWasMovement = true;
         }
+        if (this.weapon)
+        {
+            this.weapon.x = player.x;
+            this.weapon.y = player.y;
+        }
         return isWasMovement;
     }
 
@@ -79,8 +84,19 @@ export class Player extends Character
         // dist.distX /= this.weapon.weight * 2;
         // dist.distY /= this.weapon.weight * 2;
     }
+
+    drawCurrentAmmo()
+    {
+        let currentAmmo = 0;
+        if (this.weapon)
+        {
+            currentAmmo = this.weapon.currentAmmo;
+        }
+        const spanCurrentAmmo = document.getElementById("currentAmmoPlayer");
+        spanCurrentAmmo.textContent = currentAmmo;
+    }
 }
 
-const weapon1 = new Weapon(InitShotgun, TYPE_WEAPON.ASSAULT_RIFLE);
+const weapon1 = new Weapon(InitAssaultRifle, TYPE_WEAPON.ASSAULT_RIFLE, 0, 0);
 
 export const player = new Player(null, 400, 400, 0, 75, 48, 14, weapon1);
