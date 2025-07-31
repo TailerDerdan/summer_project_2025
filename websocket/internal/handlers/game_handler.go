@@ -52,7 +52,7 @@ func (gh *GameHandler) HandleGameConnection(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	fmt.Println("2222")
-	go gh.gameService.StartWaitingPlayers(gameID)
+	//go gh.gameService.StartWaitingPlayers(gameID)
 	fmt.Println("3333")
 	if err := gh.gameService.SendInitialGameState(conn, gameID); err != nil {
 		log.Printf("Game WS send initial game state failed: %v", err)

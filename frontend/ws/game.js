@@ -81,6 +81,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 case "change_weapon_server":
                     handleChangeWeapon(msg.data);
                     break;
+                case "game_state_update_server":
+                    console.log("BLA BLA BLA")
+                    break;
             }
         });
 

@@ -63,6 +63,9 @@ export function sendWebSocketMessage(message)
 {
     if (stateForWS.gameSocket && stateForWS.gameSocket.readyState === WebSocket.OPEN) 
     {
+        console.log("message", message)
         stateForWS.gameSocket.send(JSON.stringify(message));
     }
 }
+
+// 172.18.0.3

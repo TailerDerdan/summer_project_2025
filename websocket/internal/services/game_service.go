@@ -52,6 +52,7 @@ func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *m
 	}
 	gs.activeGames[gameID] = game
 	//go gs.waitingPlayers(gameID)
+	go gs.StartWaitingPlayers(gameID)
 	return game
 }
 
@@ -158,9 +159,13 @@ func (gs *GameService) startCountDown(gameID string) {
 }
 
 func (gs *GameService) notifyGameState(gameID string) {
-	game := gs.activeGames[gameID]
+	game, exists := gs.activeGames[gameID]
+	if !exists {
+		fmt.Println("Error notifyGameState")
+		return
+	}
 	msg := map[string]interface{}{
-		"type": "game_state_server",
+		"type": "game_state_update_server",
 		"data": map[string]interface{}{
 			"status":    game.State.Status,
 			"countdown": game.State.CountDown,
@@ -176,11 +181,11 @@ func (gs *GameService) SendMessageInsideGame(playerConn *websocket.Conn, gameID 
 	if !exists {
 		return fmt.Errorf("game not exists")
 	}
-	fmt.Printf("%v, %v", game.Players, game.State.Status)
+	fmt.Printf("%v, %v\n", game.Players, game.State.Status)
 	for conn := range game.Players {
 		fmt.Println("!!!!!!")
 		if conn != playerConn {
-			fmt.Println("######")
+			fmt.Printf("######, %v\n", msg)
 			if err := conn.WriteJSON(msg); err != nil {
 				fmt.Println("PPPPP")
 				if err := conn.Close(); err != nil {
