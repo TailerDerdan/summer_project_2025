@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         setMessageHandler((event) => {
             const msg = JSON.parse(event.data);
-            console.log(msg)
+            console.log("msg: === ", msg)
             switch (msg.type) {
                 case "init_players_server":
                     handleInitPlayers(msg.data.players);
