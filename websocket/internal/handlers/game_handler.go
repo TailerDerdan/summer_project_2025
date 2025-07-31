@@ -113,7 +113,7 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 }
 
 func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID string, msg models.Msg) error {
-	gameState, err := gh.gameService.GetGameState(gameID)
+	_, err := gh.gameService.GetGameState(gameID)
 	if err != nil {
 		return err
 	}
