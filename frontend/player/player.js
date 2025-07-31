@@ -41,8 +41,70 @@ export class Player extends Character
     setX(x) { this.x = x; }
     setY(y) { this.y = y; }
 
+    lineIntersection(a, b, c, d) 
+    {
+        const denominator = (b.x - a.x) * (d.y - c.y) - (b.y - a.y) * (d.x - c.x);
+        const numerator1 = (a.y - c.y) * (d.x - c.x) - (a.x - c.x) * (d.y - c.y);
+        const numerator2 = (a.y - c.y) * (b.x - a.x) - (a.x - c.x) * (b.y - a.y);
+
+        if (denominator === 0) return numerator1 === 0 && numerator2 === 0;
+
+        const r = numerator1 / denominator;
+        const s = numerator2 / denominator;
+
+        return r >= 0 && r <= 1 && s >= 0 && s <= 1;
+    }
+
+    checkWallCollision(wall)
+    {
+        const playerLeft = this.x;
+        const playerRight = this.x + this.width;
+        const playerTop = this.y;
+        const playerBottom = this.y + this.height;
+
+        const wallLeft = wall.x;
+        const wallRight = wall.x + wall.width;
+        const wallTop = wall.y;
+        const wallBottom = wall.y + wall.height;
+
+        if (playerRight < wallLeft || playerLeft > wallRight || playerBottom < wallTop || playerTop > wallBottom) 
+        {
+            return false;
+        }
+
+        const playerSides = [
+            { a: { x: playerLeft, y: playerTop }, b: { x: playerRight, y: playerTop } },
+            { a: { x: playerRight, y: playerTop }, b: { x: playerRight, y: playerBottom } },
+            { a: { x: playerRight, y: playerBottom }, b: { x: playerLeft, y: playerBottom } },
+            { a: { x: playerLeft, y: playerBottom }, b: { x: playerLeft, y: playerTop } }
+        ];
+
+        const wallSides = [
+            { a: { x: wallLeft, y: wallTop }, b: { x: wallRight, y: wallTop } },
+            { a: { x: wallRight, y: wallTop }, b: { x: wallRight, y: wallBottom } },
+            { a: { x: wallRight, y: wallBottom }, b: { x: wallLeft, y: wallBottom } },
+            { a: { x: wallLeft, y: wallBottom }, b: { x: wallLeft, y: wallTop } }
+        ];
+
+        for (const playerSide of playerSides) 
+        {
+            for (const wallSide of wallSides) 
+            {
+                if (this.lineIntersection(playerSide.a, playerSide.b, wallSide.a, wallSide.b)) 
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     updatePosition(distX, distY, keyDict, walls)
     {
+        const originalX = this.x;
+        const originalY = this.y;
+
         const isWasMovement = {
             keyW: false,
             keyD: false,
@@ -75,6 +137,22 @@ export class Player extends Character
             this.y -= distX;
             this.x -= distY;
             isWasMovement.keyA = true;
+        }
+
+        let collided = false;
+        for (const wall of walls)
+        {
+            if (this.checkWallCollision(wall))
+            {
+                collided = true;
+                break;
+            }
+        }
+
+        if (collided) 
+        {
+            this.x = originalX;
+            this.y = originalY;
         }
 
         if (this.y < 0) this.y = 0;
