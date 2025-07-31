@@ -914,10 +914,10 @@ func (gs *GameService) SetWeaponsPoints(gameID string, data map[string]interface
 			continue
 		}
 
-		game.WeaponSpawnPoints[] = models.SpawnPoint{
+		game.WeaponSpawnPoints = append(game.WeaponSpawnPoints, models.SpawnPoint{
 			X: x,
 			Y: y,
-		}
+		})
 	}
 	return nil
 }
