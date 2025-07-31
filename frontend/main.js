@@ -114,4 +114,5 @@ export const initGame = async () => {
         type: "ready_to_battle",
     })
     console.log("#88888")
+    gameLoop()
 }

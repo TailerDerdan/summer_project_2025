@@ -26,24 +26,6 @@ func NewGameService() *GameService {
 	}
 }
 
-//{
-//	{X: 100, Y: 100},
-//	{X: 500, Y: 100},
-//	{X: 100, Y: 300},
-//	{X: 500, Y: 300},
-//	{X: 300, Y: 200},
-//	{X: 200, Y: 400},
-//	{X: 400, Y: 400},
-//	{X: 100, Y: 500},
-//	{X: 500, Y: 500},
-//	{X: 300, Y: 300},
-//	{X: 1000, Y: 1000},
-//	{X: 1100, Y: 1100},
-//	{X: 1200, Y: 1200},
-//	{X: 1300, Y: 1300},
-//	{X: 1400, Y: 1400},
-//}
-
 const maxWeaponsOnMap = 10
 
 func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *models.Game {
@@ -68,7 +50,7 @@ func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *m
 		ReadyCheck: make(map[string]bool),
 	}
 	gs.activeGames[gameID] = game
-	if points, ok := data["spawnsWeapons"].([]interface{}); ok {
+	if points, ok := data["weapons_points"].([]interface{}); ok {
 		game.WeaponSpawnPoints = make([]models.SpawnPoint, 0, len(points))
 
 		for _, p := range points {
