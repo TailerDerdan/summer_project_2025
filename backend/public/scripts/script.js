@@ -14,9 +14,11 @@ function connectWebSocket() {
             incCounterUsers(data.data.roomId)
         }
         if (data.type === "user_leaved_g_server") {
+            console.log("bbbbbbb")
             await deleteUser(data.data)
         }
         if (data.type === "delete_room_g_server") {
+            console.log("aaaaaaa")
             await deleteRoom(data.data.roomId)
             const room = document.getElementById(`room-menu__room-list-item-${data.data.roomId}`)
             if (room) {
@@ -50,9 +52,11 @@ async function deleteUser(user) {
         userElt.remove()
         const playersCount = document.getElementById(`playersCount-${ user["roomId"] }`)
         if (parseInt(playersCount.dataset.count) > 1) {
+            console.log("kkkkk")
             playersCount.dataset.count--
             playersCount.textContent = `${playersCount.dataset.count}/${playersCount.dataset.max}`
         } else {
+            console.log("hhhhhh")
             await deleteRoom(user["roomId"])
             const room = document.getElementById(`room-menu__room-list-item-${user["roomId"]}`)
             if (room) {
@@ -119,6 +123,7 @@ async function joinRoom(roomId) {
 }
 
 async function deleteRoom(roomId) {
+    console.log("yyyyy")
     const response = await fetch ( `/room/delete/${roomId}`, {
         method: "POST",
         headers: {
