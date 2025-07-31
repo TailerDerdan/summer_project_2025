@@ -93,7 +93,7 @@ func (gs *GameService) StartWaitingPlayers(gameID string) {
 	defer ticker.Stop()
 
 	timeout := time.After(1 * time.Minute)
-
+	fmt.Println("666 666 666")
 	for {
 		select {
 		case <-ticker.C:
@@ -103,7 +103,7 @@ func (gs *GameService) StartWaitingPlayers(gameID string) {
 				//gs.mu.Unlock()
 				return
 			}
-
+			fmt.Println("111 111 111")
 			allConnected := true
 			for _, player := range game.Players {
 				if !game.ReadyCheck[player.PlayerID] {
@@ -111,23 +111,25 @@ func (gs *GameService) StartWaitingPlayers(gameID string) {
 					break
 				}
 			}
+			fmt.Println("222 222 222")
 
 			if allConnected {
 				game.State.Status = "countdown"
-				game.State.CountDown = 3
+				game.State.CountDown = 15
 				gs.notifyGameState(gameID)
 				//gs.mu.Unlock()
 
 				go gs.startCountDown(gameID)
 				return
 			}
-
+			fmt.Println("333 333 333")
 			elapsed := time.Since(game.StartTime)
 			remainingWait := 1*time.Minute - elapsed
 			if remainingWait < 0 {
 				remainingWait = 0
 			}
 
+			fmt.Println("444 444 444")
 			msg := map[string]interface{}{
 				"type": "waiting_update_server",
 				"data": map[string]interface{}{
@@ -136,6 +138,7 @@ func (gs *GameService) StartWaitingPlayers(gameID string) {
 					"waiting":   true,
 				},
 			}
+			fmt.Println("555 555 555")
 			gs.SendMessageInsideGameToAll(gameID, msg)
 			//gs.mu.Unlock()
 
@@ -146,12 +149,12 @@ func (gs *GameService) StartWaitingPlayers(gameID string) {
 				//gs.mu.Unlock()
 				return
 			}
-
+			fmt.Println("000 000 000")
 			game.State.Status = "countdown"
-			game.State.CountDown = 3
+			game.State.CountDown = 15
 			gs.notifyGameState(gameID)
 			//gs.mu.Unlock()
-
+			fmt.Println("000 000 000")
 			go gs.startCountDown(gameID)
 			return
 		}
@@ -173,12 +176,12 @@ func (gs *GameService) startCountDown(gameID string) {
 		game.State.CountDown--
 
 		gs.notifyGameState(gameID)
-
+		fmt.Println("999 000 999")
 		if game.State.CountDown <= 0 {
 			game.State.Status = "playing"
 			game.StartTime = time.Now()
 			gs.notifyGameState(gameID)
-
+			fmt.Println("@@@ @@@ @@@")
 			go gs.StartTimer(gameID)
 			//gs.mu.Unlock()
 			return
@@ -529,7 +532,7 @@ func (gs *GameService) StartTimer(gameID string) {
 		weaponTicker := time.NewTicker(10 * time.Second)
 		defer ticker.Stop()
 		defer weaponTicker.Stop()
-
+		fmt.Println("aaa aaa aaa")
 		for {
 			select {
 			case <-ticker.C:
@@ -544,9 +547,10 @@ func (gs *GameService) StartTimer(gameID string) {
 						fmt.Printf("123 error sending end message: %v\n", err)
 						return
 					}
+					fmt.Println("bbb bbb bbb")
 					return
 				}
-
+				fmt.Println("ddd ddd ddd")
 				msg := map[string]interface{}{
 					"type": "time_update_server",
 					"data": map[string]interface{}{
@@ -558,6 +562,7 @@ func (gs *GameService) StartTimer(gameID string) {
 					return
 				}
 			case <-weaponTicker.C:
+				fmt.Println("ggg ggg ggg")
 				if err := gs.generateWeapons(gameID); err != nil {
 					fmt.Printf("error generate weapons: %v\n", err)
 					return
@@ -671,14 +676,17 @@ func (gs *GameService) generateWeapons(gameID string) error {
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
+	fmt.Println("ppp ppp ppp")
 	needWeapons := maxWeaponsOnMap - len(game.Weapons)
 	if needWeapons <= 0 {
 		return nil
 	}
+	fmt.Println("yyy yyy yyy")
 	freeSpawnPoints := gs.getFreeSpawnPoints(game)
 	if len(freeSpawnPoints) < needWeapons {
 		needWeapons = len(freeSpawnPoints)
 	}
+	fmt.Println("fff fff fff")
 	for i := 0; i < needWeapons; i++ {
 		point := freeSpawnPoints[i]
 		typeWeapon := gs.generateWeaponType()
@@ -691,6 +699,7 @@ func (gs *GameService) generateWeapons(gameID string) error {
 		}
 		game.Weapons[weapon.ID] = weapon
 	}
+	fmt.Println("kkk kkk kkk")
 	if err := gs.sendUpdateWeapons(gameID); err != nil {
 		return err
 	}
@@ -699,20 +708,20 @@ func (gs *GameService) generateWeapons(gameID string) error {
 
 func (gs *GameService) getFreeSpawnPoints(game *models.Game) []models.SpawnPoint {
 	freeSpawnPoints := make([]models.SpawnPoint, 0, len(game.WeaponSpawnPoints))
-
+	fmt.Println("nnn 000 nnn")
 	usedPoints := make(map[string]bool)
 	for _, weapon := range game.Weapons {
 		posKey := fmt.Sprintf("%.1f,%.1f", weapon.X, weapon.Y)
 		usedPoints[posKey] = true
 	}
-
+	fmt.Println("000 hhhh 000")
 	for _, point := range game.WeaponSpawnPoints {
 		posKey := fmt.Sprintf("%.1f,%.1f", point.X, point.Y)
 		if !usedPoints[posKey] {
 			freeSpawnPoints = append(freeSpawnPoints, point)
 		}
 	}
-
+	fmt.Println("000 mmmmmm 000")
 	return freeSpawnPoints
 }
 
@@ -797,6 +806,7 @@ func (gs *GameService) sendChangeWeapon(conn *websocket.Conn, gameID string) err
 	if !exists {
 		return fmt.Errorf("player not found")
 	}
+	fmt.Println("sss sss sss")
 	msg := map[string]interface{}{
 		"type": "change_weapon_server",
 		"data": map[string]interface{}{
@@ -932,6 +942,7 @@ func (gs *GameService) ReadyToBattle(conn *websocket.Conn, gameID string) error 
 	if !exists {
 		return fmt.Errorf("player not found")
 	}
+	fmt.Println("777 777 777")
 	game.ReadyCheck[player.PlayerID] = true
 	return nil
 }

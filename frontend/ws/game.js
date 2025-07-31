@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log("gameSession", data)
     if (!data) {
         console.log('sdfsdfgsdfgsdf')
-        //window.location.href = `/main`
+        window.location.href = `/main`
         return
     }
     console.log("33333")
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     catch (error) {
         console.error("WebSocket error:", error);
-        //window.location.href = '/main';
+        window.location.href = '/main';
     }
 });
 
