@@ -7,20 +7,21 @@ import (
 )
 
 type Game struct {
-	GameID        string
-	Type          string
-	RoomID        string
-	Players       map[*websocket.Conn]*PlayerInfo
-	Stats         map[string]*PlayerStats
-	State         GameState
-	StartTime     time.Time
-	Duration      time.Duration
-	Deaths        []PlayerDeathEvent
-	Bullets       map[string]*BulletInfo
-	ReadyCheck    map[string]bool
-	Weapons       map[string]*Weapon
-	LastSpawnTime time.Time
-	mu            sync.RWMutex
+	GameID            string
+	Type              string
+	RoomID            string
+	Players           map[*websocket.Conn]*PlayerInfo
+	Stats             map[string]*PlayerStats
+	State             GameState
+	StartTime         time.Time
+	Duration          time.Duration
+	Deaths            []PlayerDeathEvent
+	Bullets           map[string]*BulletInfo
+	ReadyCheck        map[string]bool
+	Weapons           map[string]*Weapon
+	WeaponSpawnPoints []SpawnPoint
+	LastSpawnTime     time.Time
+	mu                sync.RWMutex
 }
 type GameState struct {
 	Winner    string `json:"winner,omitempty"`

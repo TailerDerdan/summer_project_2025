@@ -3,6 +3,7 @@ import { arrEnemy, player } from "../player/player.js";
 import { playerBullets } from "../weapon/shooting.js";
 import { Bullet } from "../weapon/bullet.js";
 import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
+import {gameLoop} from "../main";
 export let mapName
 export const gameStats = {
     kills: 0,
@@ -63,6 +64,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     console.log("save stats: ")
                     saveStats(msg.data);
                     break;
+                case 'game_state_server':
+                    handleGameState(msg.data);
+                    break;
             }
         });
 
@@ -75,6 +79,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.location.href = '/main';
     }
 });
+
+function handleGameState(data) {
+    const statusElement = document.getElementById('game-status');
+
+    switch (data.status) {
+        case 'waiting':
+            statusElement.textContent = 'Ожидание игроков...';
+            break;
+
+        case 'countdown':
+            statusElement.textContent = `До начала игры: ${data.countdown}`;
+            if (data.countdown === 0) {
+                gameLoop()
+            }
+            break;
+    }
+}
 
 function handleInitPlayers(players)
 {

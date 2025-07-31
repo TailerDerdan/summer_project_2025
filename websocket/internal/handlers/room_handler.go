@@ -197,7 +197,7 @@ func (rh *RoomHandler) processRoomMessage(conn *websocket.Conn, roomID, userID s
 	case "user_ready":
 		err := rh.roomService.UserReady(conn, roomID)
 		return err
-	case "start_waiting":
+	case "start_game":
 		err := rh.roomService.StartGame(conn, roomID, userID, msg.Data)
 		return err
 	}

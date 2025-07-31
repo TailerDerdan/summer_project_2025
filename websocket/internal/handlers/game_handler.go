@@ -52,13 +52,15 @@ func (gh *GameHandler) HandleGameConnection(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	go gh.gameService.StartWaitingPlayers(gameID)
+
 	if err := gh.gameService.SendInitialGameState(conn, gameID); err != nil {
 		log.Printf("Game WS send initial game state failed: %v", err)
 		gh.sendError(conn, "Game WS send initial game state failed")
 		return
 	}
 
-	gh.gameService.StartTimer(conn, gameID)
+	//gh.gameService.StartTimer(conn, gameID)
 	//if err := gh.gameService.StartTimer(gameID); err != nil {
 	//	log.Printf("Game WS start timer failed: %v", err)
 	//}
@@ -140,11 +142,17 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 		//fmt.Println("player_death")
 		err := gh.gameService.PlayerDeath(gameID, playerID)
 		return err
+	case "weapons_points":
+		err := gh.gameService.SetWeaponsPoints(gameID, msg.Data)
+		return err
 	case "change_weapon":
 		err := gh.gameService.ChangeWeapon(conn, gameID, msg.Data)
 		return err
 	case "drop_weapon":
 		err := gh.gameService.DropWeapon(conn, gameID)
+		return err
+	case "ready_to_battle":
+		err := gh.gameService.ReadyToBattle(conn, gameID)
 		return err
 	}
 	return nil

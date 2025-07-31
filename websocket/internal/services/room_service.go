@@ -283,7 +283,7 @@ func (rs *RoomService) StartGame(conn *websocket.Conn, roomID, userID string, da
 	fmt.Printf("map name: %v", data["mapName"])
 	game := rs.gameService.CreateGame(roomID, data)
 	msg := map[string]interface{}{
-		"type": "start_waiting_server",
+		"type": "start_game_server",
 		"data": map[string]interface{}{
 			"hostId":  room.HostID,
 			"gameId":  game.GameID,

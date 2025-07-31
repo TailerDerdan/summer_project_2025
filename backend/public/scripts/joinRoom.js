@@ -25,13 +25,12 @@ document.addEventListener("DOMContentLoaded", async (e) => {
                 const gameType = document.getElementById("room-gamemode").textContent
                 const mapNameLocal = document.getElementById("room_map").value
                 socket.send(JSON.stringify({
-                    type: "start_waiting",
+                    type: "start_game",
                     data: {
                         userId: (dataJson.data.userId).toString(),
                         nickname: dataJson.data.nickname,
                         gameType: gameType,
                         mapName: mapNameLocal,
-                        //weaponsPoints: weaponsPoints,
                     }
                 }));
             }
@@ -85,7 +84,7 @@ function connectToWSRoom(dataUser)   {
                 window.location.href = '/main';
             }
         }
-        if (data.type === 'start_waiting_server') {
+        if (data.type === 'start_game_server') {
             handleGameStart(data.data, dataUser.data)
             await deleteUserFromRoom(data.data.roomId)
             await deleteRoom(data.data.roomId)

@@ -20,7 +20,7 @@ import {} from "./player/changeWeapon.js";
 
 const clock = new Clock();
 
-function gameLoop()
+export function gameLoop()
 {
     let deltaTime = clock.getElapsedTime();
     clock.restart();
@@ -102,15 +102,18 @@ const initGame = async () => {
 
     if (stateForWS.userId === stateForWS.hostId) {
         sendWebSocketMessage({
-            type: "get_weapons_points",
+            type: "weapons_points",
             data: {
-                weapon
+                weapons_points: gettedMap.weaponsPoints,
             }
         })
     }
-    setTimeout(() => {
-        gameLoop();
-    }, 100);
+    sendWebSocketMessage({
+        type: "ready_to_battle",
+    })
+    // setTimeout(() => {
+    //     gameLoop();
+    // }, 100);
 }
 
 initGame();

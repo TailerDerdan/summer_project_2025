@@ -26,23 +26,23 @@ func NewGameService() *GameService {
 	}
 }
 
-var weaponSpawnPoints = []models.SpawnPoint{
-	{X: 100, Y: 100},
-	{X: 500, Y: 100},
-	{X: 100, Y: 300},
-	{X: 500, Y: 300},
-	{X: 300, Y: 200},
-	{X: 200, Y: 400},
-	{X: 400, Y: 400},
-	{X: 100, Y: 500},
-	{X: 500, Y: 500},
-	{X: 300, Y: 300},
-	{X: 1000, Y: 1000},
-	{X: 1100, Y: 1100},
-	{X: 1200, Y: 1200},
-	{X: 1300, Y: 1300},
-	{X: 1400, Y: 1400},
-}
+//{
+//	{X: 100, Y: 100},
+//	{X: 500, Y: 100},
+//	{X: 100, Y: 300},
+//	{X: 500, Y: 300},
+//	{X: 300, Y: 200},
+//	{X: 200, Y: 400},
+//	{X: 400, Y: 400},
+//	{X: 100, Y: 500},
+//	{X: 500, Y: 500},
+//	{X: 300, Y: 300},
+//	{X: 1000, Y: 1000},
+//	{X: 1100, Y: 1100},
+//	{X: 1200, Y: 1200},
+//	{X: 1300, Y: 1300},
+//	{X: 1400, Y: 1400},
+//}
 
 const maxWeaponsOnMap = 10
 
@@ -52,14 +52,15 @@ func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *m
 	gameType := data["gameType"].(string)
 	gameID := gs.generateGameID(gameType)
 	game := &models.Game{
-		GameID:    gameID,
-		RoomID:    roomID,
-		Type:      gameType,
-		Players:   make(map[*websocket.Conn]*models.PlayerInfo),
-		Stats:     make(map[string]*models.PlayerStats),
-		Weapons:   make(map[string]*models.Weapon),
-		StartTime: time.Now(),
-		Duration:  3 * time.Minute,
+		GameID:            gameID,
+		RoomID:            roomID,
+		Type:              gameType,
+		Players:           make(map[*websocket.Conn]*models.PlayerInfo),
+		Stats:             make(map[string]*models.PlayerStats),
+		Weapons:           make(map[string]*models.Weapon),
+		WeaponSpawnPoints: make([]models.SpawnPoint, 0),
+		StartTime:         time.Now(),
+		Duration:          3 * time.Minute,
 		State: models.GameState{
 			CountDown: 0,
 			Status:    "waiting",
@@ -83,11 +84,11 @@ func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *m
 	if err := gs.generateWeapons(gameID); err != nil {
 		fmt.Printf("Ошибка инициализации оружия%v", err)
 	}
-	go gs.waitingPlayers(gameID)
+	//go gs.waitingPlayers(gameID)
 	return game
 }
 
-func (gs *GameService) waitForPlayers(gameID string) {
+func (gs *GameService) StartWaitingPlayers(gameID string) {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
@@ -96,10 +97,10 @@ func (gs *GameService) waitForPlayers(gameID string) {
 	for {
 		select {
 		case <-ticker.C:
-			gs.mu.Lock()
+			//gs.mu.Lock()
 			game, exists := gs.activeGames[gameID]
 			if !exists {
-				gs.mu.Unlock()
+				//gs.mu.Unlock()
 				return
 			}
 
@@ -115,9 +116,9 @@ func (gs *GameService) waitForPlayers(gameID string) {
 				game.State.Status = "countdown"
 				game.State.CountDown = 3
 				gs.notifyGameState(gameID)
-				gs.mu.Unlock()
+				//gs.mu.Unlock()
 
-				go gs.startCountdown(gameID)
+				go gs.startCountDown(gameID)
 				return
 			}
 
@@ -128,7 +129,7 @@ func (gs *GameService) waitForPlayers(gameID string) {
 			}
 
 			msg := map[string]interface{}{
-				"type": "waiting_update",
+				"type": "waiting_update_server",
 				"data": map[string]interface{}{
 					"remaining": int(remainingWait.Seconds()),
 					"connected": len(game.Players),
@@ -136,37 +137,36 @@ func (gs *GameService) waitForPlayers(gameID string) {
 				},
 			}
 			gs.SendMessageInsideGameToAll(gameID, msg)
-			gs.mu.Unlock()
+			//gs.mu.Unlock()
 
 		case <-timeout:
-			gs.mu.Lock()
+			//gs.mu.Lock()
 			game, exists := gs.activeGames[gameID]
 			if !exists {
-				gs.mu.Unlock()
+				//gs.mu.Unlock()
 				return
 			}
 
 			game.State.Status = "countdown"
 			game.State.CountDown = 3
 			gs.notifyGameState(gameID)
-			gs.mu.Unlock()
+			//gs.mu.Unlock()
 
-			// Запускаем обратный отсчет
-			go gs.startCountdown(gameID)
+			go gs.startCountDown(gameID)
 			return
 		}
 	}
 }
 
-func (gs *GameService) startCountdown(gameID string) {
+func (gs *GameService) startCountDown(gameID string) {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
 	for range ticker.C {
-		gs.mu.Lock()
+		//gs.mu.Lock()
 		game, exists := gs.activeGames[gameID]
 		if !exists {
-			gs.mu.Unlock()
+			//gs.mu.Unlock()
 			return
 		}
 
@@ -179,11 +179,25 @@ func (gs *GameService) startCountdown(gameID string) {
 			game.StartTime = time.Now()
 			gs.notifyGameState(gameID)
 
-			go gs.startGameTimer(gameID)
-			gs.mu.Unlock()
+			go gs.StartTimer(gameID)
+			//gs.mu.Unlock()
 			return
 		}
-		gs.mu.Unlock()
+		//gs.mu.Unlock()
+	}
+}
+
+func (gs *GameService) notifyGameState(gameID string) {
+	game := gs.activeGames[gameID]
+	msg := map[string]interface{}{
+		"type": "game_state_server",
+		"data": map[string]interface{}{
+			"status":    game.State.Status,
+			"countdown": game.State.CountDown,
+		},
+	}
+	if err := gs.SendMessageInsideGameToAll(gameID, msg); err != nil {
+		fmt.Printf("Errrrrrror %v", err)
 	}
 }
 
@@ -435,8 +449,20 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
+
 	game.Players[conn] = player
 	game.Stats[player.PlayerID] = &models.PlayerStats{}
+	game.ReadyCheck[player.PlayerID] = false
+
+	stateMsg := map[string]interface{}{
+		"type": "game_state_server",
+		"data": map[string]interface{}{
+			"status":    "waiting",
+			"countdown": game.State.CountDown,
+		},
+	}
+	conn.WriteJSON(stateMsg)
+
 	joinMsg := map[string]interface{}{
 		"type": "join_player_server",
 		"data": map[string]interface{}{
@@ -454,17 +480,16 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 	return nil
 }
 
-func (gs *GameService) getGameState(gameID string) ([]models.PlayerInfo, , error) {
+func (gs *GameService) getGameState(gameID string) ([]models.PlayerInfo, []models.Weapon, error) {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
 
 	game, exists := gs.activeGames[gameID]
 	if !exists {
-		return nil, fmt.Errorf("game %s does not exist", gameID)
+		return nil, nil, fmt.Errorf("game %s does not exist", gameID)
 	}
 
 	players := make([]models.PlayerInfo, 0, len(game.Players))
-
 	for _, player := range game.Players {
 		players = append(players, models.PlayerInfo{
 			PlayerID: player.PlayerID,
@@ -475,10 +500,21 @@ func (gs *GameService) getGameState(gameID string) ([]models.PlayerInfo, , error
 		})
 	}
 
-	return players, nil
+	weapons := make([]models.Weapon, 0, len(game.Weapons))
+	for _, weapon := range game.Weapons {
+		weapons = append(weapons, models.Weapon{
+			ID:   weapon.ID,
+			Type: weapon.Type,
+			X:    weapon.X,
+			Y:    weapon.Y,
+			Ammo: weapon.Ammo,
+		})
+	}
+
+	return players, weapons, nil
 }
 
-func (gs *GameService) StartTimer(conn *websocket.Conn, gameID string) {
+func (gs *GameService) StartTimer(gameID string) {
 	gs.mu.Lock()
 	game, exists := gs.activeGames[gameID]
 	gs.mu.Unlock()
@@ -499,7 +535,7 @@ func (gs *GameService) StartTimer(conn *websocket.Conn, gameID string) {
 				elapsed := time.Since(game.StartTime)
 				remaining := game.Duration - elapsed
 				if remaining <= 0 {
-					if err := gs.saveGameStats(conn, gameID); err != nil {
+					if err := gs.saveGameStats(gameID); err != nil {
 						fmt.Printf("123 error saving stats message: %v\n", err)
 						return
 					}
@@ -583,7 +619,7 @@ func (gs *GameService) UpdateBullets(conn *websocket.Conn, gameID string, data m
 }
 
 func (gs *GameService) SendInitialGameState(conn *websocket.Conn, gameID string) error {
-	players, err := gs.getGameState(gameID)
+	players, weapons, err := gs.getGameState(gameID)
 	if err != nil {
 		return err
 	}
@@ -596,7 +632,7 @@ func (gs *GameService) SendInitialGameState(conn *websocket.Conn, gameID string)
 	})
 }
 
-func (gs *GameService) saveGameStats(conn *websocket.Conn, gameID string) error {
+func (gs *GameService) saveGameStats(gameID string) error {
 	gs.mu.Lock()
 	defer gs.mu.Unlock()
 
@@ -608,22 +644,24 @@ func (gs *GameService) saveGameStats(conn *websocket.Conn, gameID string) error 
 	winnerID := gs.determineWinner(gameID)
 	game.State.Winner = winnerID
 
-	player := game.Players[conn]
-	statsMsg := map[string]interface{}{
-		"type": "save_stats_server",
-		"data": map[string]interface{}{
-			"winner": winnerID,
-			"stats": map[string]interface{}{
-				"countKills":  game.Stats[player.PlayerID].Kills,
-				"countDeaths": game.Stats[player.PlayerID].Deaths,
+	for conn, player := range game.Players {
+		statsMsg := map[string]interface{}{
+			"type": "save_stats_server",
+			"data": map[string]interface{}{
+				"winner": winnerID,
+				"stats": map[string]interface{}{
+					"countKills":  game.Stats[player.PlayerID].Kills,
+					"countDeaths": game.Stats[player.PlayerID].Deaths,
+				},
 			},
-		},
+		}
+
+		if err := conn.WriteJSON(statsMsg); err != nil {
+			fmt.Printf("error sending stats message: %+v\n", statsMsg)
+			return err
+		}
 	}
 
-	if err := conn.WriteJSON(statsMsg); err != nil {
-		fmt.Printf("error sending stats message: %+v\n", statsMsg)
-		return err
-	}
 	return nil
 }
 
@@ -659,7 +697,7 @@ func (gs *GameService) generateWeapons(gameID string) error {
 }
 
 func (gs *GameService) getFreeSpawnPoints(game *models.Game) []models.SpawnPoint {
-	freeSpawnPoints := make([]models.SpawnPoint, 0, len(weaponSpawnPoints))
+	freeSpawnPoints := make([]models.SpawnPoint, 0, len(game.WeaponSpawnPoints))
 
 	usedPoints := make(map[string]bool)
 	for _, weapon := range game.Weapons {
@@ -667,7 +705,7 @@ func (gs *GameService) getFreeSpawnPoints(game *models.Game) []models.SpawnPoint
 		usedPoints[posKey] = true
 	}
 
-	for _, point := range weaponSpawnPoints {
+	for _, point := range game.WeaponSpawnPoints {
 		posKey := fmt.Sprintf("%.1f,%.1f", point.X, point.Y)
 		if !usedPoints[posKey] {
 			freeSpawnPoints = append(freeSpawnPoints, point)
@@ -846,4 +884,53 @@ func (gs *GameService) sendDropWeapon(gameID, weaponID string) error {
 		},
 	}
 	return gs.SendMessageInsideGameToAll(gameID, msg)
+}
+
+func (gs *GameService) SetWeaponsPoints(gameID string, data map[string]interface{}) error {
+	game, exists := gs.activeGames[gameID]
+	if !exists {
+		return fmt.Errorf("game %s does not exist", gameID)
+	}
+
+	weaponPointsRaw, ok := data["weapons_points"]
+	if !ok {
+		return fmt.Errorf("weapons_points data is missing")
+	}
+
+	weaponPointsMap, ok := weaponPointsRaw.(map[string]interface{})
+	if !ok {
+		return fmt.Errorf("invalid weapons_points format, expected map[string]interface{}")
+	}
+
+	for _, pointData := range weaponPointsMap {
+		point, ok := pointData.(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		x, xOk := point["x"].(float64)
+		y, yOk := point["y"].(float64)
+		if !xOk || !yOk {
+			continue
+		}
+
+		game.WeaponSpawnPoints[] = models.SpawnPoint{
+			X: x,
+			Y: y,
+		}
+	}
+	return nil
+}
+
+func (gs *GameService) ReadyToBattle(conn *websocket.Conn, gameID string) error {
+	game, exists := gs.activeGames[gameID]
+	if !exists {
+		return fmt.Errorf("game %s does not exist", gameID)
+	}
+	player, exists := game.Players[conn]
+	if !exists {
+		return fmt.Errorf("player not found")
+	}
+	game.ReadyCheck[player.PlayerID] = true
+	return nil
 }

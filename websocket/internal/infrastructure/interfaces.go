@@ -13,13 +13,16 @@ type IGameService interface {
 	RemovePlayerFromGame(gameID string, conn *websocket.Conn)
 	PlayerKill(gameID, playerID string) error
 	PlayerDeath(gameID, playerID string) error
-	StartTimer(conn *websocket.Conn, gameID string)
+	StartTimer(gameID string)
 	RegisterPlayer(conn *websocket.Conn, gameID string, player *models.PlayerInfo) error
 	UpdatePosition(conn *websocket.Conn, gameID, playerID string, data map[string]interface{}) error
 	UpdateBullets(conn *websocket.Conn, gameID string, data map[string]interface{}) error
 	SendInitialGameState(conn *websocket.Conn, gameID string) error
 	ChangeWeapon(conn *websocket.Conn, gameID string, data map[string]interface{}) error
 	DropWeapon(conn *websocket.Conn, gameID string) error
+	StartWaitingPlayers(gameID string)
+	ReadyToBattle(conn *websocket.Conn, gameID string) error
+	SetWeaponsPoints(gameID string, data map[string]interface{}) error
 }
 
 type IRoomService interface {
