@@ -31,10 +31,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try
     {
-        console.log("44444")
+        console.log("44444, data:", data)
         await initGameWebsocket(data);
         console.log("@9999")
-        initGame()
+        //initGame()
         console.log("@8888")
 
         setMessageHandler((event) => {
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     catch (error) {
         console.error("WebSocket error:", error);
-        window.location.href = '/main';
+        //window.location.href = '/main';
     }
 });
 
