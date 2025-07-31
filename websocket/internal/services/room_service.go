@@ -213,6 +213,7 @@ func (rs *RoomService) UserLeave(conn *websocket.Conn, roomID, userID string) er
 	leaveMsg := map[string]interface{}{
 		"type": "leave_ack_server",
 		"data": map[string]interface{}{
+			"len":      room.PlayersCount - 1,
 			"roomId":   roomID,
 			"userId":   userID,
 			"nickname": clientInfo.Nickname,

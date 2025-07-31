@@ -80,7 +80,11 @@ function connectToWSRoom(dataUser)   {
             showNotification(`${data.data.userId}: ${data.data.nickname} вызодит из комнаты...`);
             if (data.type === 'leave_ack_server') {
                 socketRoomConn.close(1000, "Leave user")
-                await deleteUserFromRoom(data.data.roomId)
+                if (data.data.len <= 0) {
+                    await deleteRoom(data.data.roomId)
+                } else {
+                    await deleteUserFromRoom(data.data.roomId)
+                }
                 window.location.href = '/main';
             }
         }
