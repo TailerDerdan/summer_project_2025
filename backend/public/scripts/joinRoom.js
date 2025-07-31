@@ -89,7 +89,7 @@ function connectToWSRoom(dataUser)   {
                     await deleteUserFromRoom(data.data.roomId)
                     console.log("^_^")
                 }
-                //window.location.href = '/main';
+                window.location.href = '/main';
             }
         }
         if (data.type === 'start_game_server') {
@@ -105,7 +105,7 @@ function connectToWSRoom(dataUser)   {
             socketRoomConn.close(1000, "Delete room")
             await deleteUserFromRoom(data.data.roomId)
             await deleteRoom(data.data.roomId)
-            //window.location.href = ("/main")
+            window.location.href = ("/main")
         }
         if (data.type === "update_ready_state_server") {
             await updateReadyState(data.data)
@@ -198,7 +198,7 @@ async function deleteUserFromRoom(roomId) {
         })
     })
     if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.log(`HTTP error! status: ${response.status}`);
     }
  }
 
