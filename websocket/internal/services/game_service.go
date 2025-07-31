@@ -118,7 +118,7 @@ func (gs *GameService) StartWaitingPlayers(gameID string) {
 				game.State.CountDown = 15
 				gs.notifyGameState(gameID)
 				//gs.mu.Unlock()
-
+				fmt.Println("rrr rrr www")
 				go gs.startCountDown(gameID)
 				return
 			}
@@ -699,7 +699,7 @@ func (gs *GameService) generateWeapons(gameID string) error {
 		}
 		game.Weapons[weapon.ID] = weapon
 	}
-	fmt.Println("kkk kkk kkk")
+	fmt.Printf("kkk kkk kkk, %v\n", game.Weapons)
 	if err := gs.sendUpdateWeapons(gameID); err != nil {
 		return err
 	}
@@ -708,7 +708,7 @@ func (gs *GameService) generateWeapons(gameID string) error {
 
 func (gs *GameService) getFreeSpawnPoints(game *models.Game) []models.SpawnPoint {
 	freeSpawnPoints := make([]models.SpawnPoint, 0, len(game.WeaponSpawnPoints))
-	fmt.Println("nnn 000 nnn")
+	fmt.Printf("nnn 000 nnn, %v\n", game.WeaponSpawnPoints)
 	usedPoints := make(map[string]bool)
 	for _, weapon := range game.Weapons {
 		posKey := fmt.Sprintf("%.1f,%.1f", weapon.X, weapon.Y)
@@ -721,7 +721,7 @@ func (gs *GameService) getFreeSpawnPoints(game *models.Game) []models.SpawnPoint
 			freeSpawnPoints = append(freeSpawnPoints, point)
 		}
 	}
-	fmt.Println("000 mmmmmm 000")
+	fmt.Printf("000 mmmmmm 000, %v\n", freeSpawnPoints)
 	return freeSpawnPoints
 }
 

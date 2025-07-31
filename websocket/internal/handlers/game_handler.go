@@ -114,7 +114,7 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 			break
 		}
 	}
-	//gh.gameService.RemovePlayerFromGame(gameID, conn)
+	gh.gameService.RemovePlayerFromGame(gameID, conn)
 }
 
 func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID string, msg models.Msg) error {
