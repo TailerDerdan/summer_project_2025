@@ -7,6 +7,7 @@ import (
 )
 
 type IGameService interface {
+	GeneratePosition() float64
 	CreateGame(roomID, gameType string) *models.Game
 	//StartGame(roomID, gameType string)
 	SendMessageInsideGame(playerConn *websocket.Conn, gameID string, msg map[string]interface{}) error
