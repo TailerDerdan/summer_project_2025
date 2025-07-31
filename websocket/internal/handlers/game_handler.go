@@ -38,28 +38,28 @@ func (gh *GameHandler) HandleGameConnection(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	//defer conn.Close()
-
+	fmt.Println("0000")
 	player, err := gh.authenticatePlayer(conn)
 	if err != nil {
 		log.Printf("Game WS authenticate failed: %v", err)
 		gh.sendError(conn, "Game WS authenticate failed")
 		return
 	}
-
+	fmt.Println("1111")
 	if err := gh.gameService.RegisterPlayer(conn, gameID, player); err != nil {
 		log.Printf("Game WS register failed: %v", err)
 		gh.sendError(conn, "Game WS register failed")
 		return
 	}
-
+	fmt.Println("2222")
 	go gh.gameService.StartWaitingPlayers(gameID)
-
+	fmt.Println("3333")
 	if err := gh.gameService.SendInitialGameState(conn, gameID); err != nil {
 		log.Printf("Game WS send initial game state failed: %v", err)
 		gh.sendError(conn, "Game WS send initial game state failed")
 		return
 	}
-
+	fmt.Println("4444")
 	gh.handleGameMessage(conn, gameID, player.PlayerID)
 }
 

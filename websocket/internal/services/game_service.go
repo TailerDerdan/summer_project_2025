@@ -416,15 +416,16 @@ func (gs *GameService) PlayerDeath(gameID, playerID string) error {
 func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, player *models.PlayerInfo) error {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
+	fmt.Println("5555")
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
-
+	fmt.Println("7777")
 	game.Players[conn] = player
 	game.Stats[player.PlayerID] = &models.PlayerStats{}
 	game.ReadyCheck[player.PlayerID] = false
-
+	fmt.Println("8888")
 	stateMsg := map[string]interface{}{
 		"type": "game_state_server",
 		"data": map[string]interface{}{
@@ -433,7 +434,7 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 		},
 	}
 	conn.WriteJSON(stateMsg)
-
+	fmt.Println("99999")
 	joinMsg := map[string]interface{}{
 		"type": "join_player_server",
 		"data": map[string]interface{}{
@@ -444,6 +445,7 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 			"nickname": player.Nickname,
 		},
 	}
+	fmt.Println("452345234")
 	if err := gs.SendMessageInsideGame(conn, gameID, joinMsg); err != nil {
 		fmt.Println("error sending join message")
 		return err
@@ -602,6 +604,7 @@ func (gs *GameService) SendInitialGameState(conn *websocket.Conn, gameID string)
 	if err != nil {
 		return err
 	}
+	fmt.Println("666666")
 	return conn.WriteJSON(map[string]interface{}{
 		"type": "init_players_server",
 		"data": map[string]interface{}{
