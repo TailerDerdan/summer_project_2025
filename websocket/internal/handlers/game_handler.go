@@ -37,7 +37,7 @@ func (gh *GameHandler) HandleGameConnection(w http.ResponseWriter, r *http.Reque
 		log.Printf("Game WS upgrade failed: %v", err)
 		return
 	}
-	//defer conn.Close()
+	defer conn.Close()
 	fmt.Println("0000")
 	player, err := gh.authenticatePlayer(conn)
 	if err != nil {
@@ -47,15 +47,15 @@ func (gh *GameHandler) HandleGameConnection(w http.ResponseWriter, r *http.Reque
 	}
 	fmt.Println("1111")
 	if err := gh.gameService.RegisterPlayer(conn, gameID, player); err != nil {
-		log.Printf("Game WS register failed: %v", err)
-		gh.sendError(conn, "Game WS register failed")
+		fmt.Printf("Game WS register failed: %v", err)
+		//gh.sendError(conn, "Game WS register failed")
 		return
 	}
 	fmt.Println("2222")
 	//go gh.gameService.StartWaitingPlayers(gameID)
 	if err := gh.gameService.SendInitialGameState(conn, gameID); err != nil {
-		log.Printf("Game WS send initial game state failed: %v", err)
-		gh.sendError(conn, "Game WS send initial game state failed")
+		fmt.Printf("Game WS send initial game state failed: %v", err)
+		//gh.sendError(conn, "Game WS send initial game state failed")
 		return
 	}
 	fmt.Println("3333")
