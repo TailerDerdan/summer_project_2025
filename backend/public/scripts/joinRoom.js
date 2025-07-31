@@ -21,13 +21,14 @@ document.addEventListener("DOMContentLoaded", async (e) => {
         startBtn.addEventListener('click', () => {
             if (socket && socket.readyState === WebSocket.OPEN) {
                 const gameType = document.getElementById("room-gamemode").textContent
+                const mapNameLocal = document.getElementById("room_map").value
                 socket.send(JSON.stringify({
                     type: "start_game",
                     data: {
                         userId: (dataJson.data.userId).toString(),
                         nickname: dataJson.data.nickname,
                         gameType: gameType,
-                        //weaponsPoints: weaponsPoints,
+                        mapName: mapNameLocal,
                     }
                 }));
             }
@@ -166,12 +167,12 @@ function showNotification(message) {
 }
 
 function handleGameStart(data, user) {
-    const mapNameLocal = document.getElementById("room_map").value
-
+    console.log("data.mapName: ", data.mapName)
     sessionStorage.setItem('gameSession', JSON.stringify({
-        mapName: mapNameLocal,
+        mapName: data.mapName,
         gameId: data.gameId,
         userId: user.userId,
+        hostId: data.hostId,
         nickname: user.nickname,
     }))
     let countStart = 2

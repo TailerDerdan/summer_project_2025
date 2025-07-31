@@ -3,6 +3,7 @@ import { arrEnemy, player } from "../player/player.js";
 import { playerBullets } from "../weapon/shooting.js";
 import { Bullet } from "../weapon/bullet.js";
 import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
+import {gameLoop} from "../main.js";
 export let mapName
 export const gameStats = {
     kills: 0,
@@ -15,19 +16,24 @@ export const gameStats = {
 export let enemyBullets = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log("222222")
     const data = JSON.parse(sessionStorage.getItem('gameSession'))
     console.log("gameSession", data)
     if (!data) {
-        window.location.href = `/main`
+        console.log('sdfsdfgsdfgsdf')
+        //window.location.href = `/main`
         return
     }
+    console.log("33333")
     mapName = data.mapName
     console.log("mapName, data.mapName", mapName, data.mapName)
     sessionStorage.removeItem('gameSession');
 
     try
     {
+        console.log("44444")
         await initGameWebsocket(data);
+        initGame()
 
         setMessageHandler((event) => {
             const msg = JSON.parse(event.data);
@@ -63,6 +69,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     console.log("save stats: ")
                     saveStats(msg.data);
                     break;
+                case 'game_state_server':
+                    handleGameState(msg.data);
+                    break;
             }
         });
 
@@ -75,6 +84,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.location.href = '/main';
     }
 });
+
+function handleGameState(data) {
+    const statusElement = document.getElementById('game-status');
+
+    switch (data.status) {
+        case 'waiting':
+            statusElement.textContent = 'Ожидание игроков...';
+            break;
+
+        case 'countdown':
+            statusElement.textContent = `До начала игры: ${data.countdown}`;
+            if (data.countdown === 0) {
+                gameLoop()
+            }
+            break;
+    }
+}
 
 function handleInitPlayers(players)
 {
@@ -308,7 +334,7 @@ export function sendBullets()
 
         if ((now - lastSentTimeForBullets > 100) && (playerBullets.length !== 0))
         {
-            console.log(playerBullets);
+            // console.log(playerBullets);
 
             sendWebSocketMessage({
                 type: "update_bullets",

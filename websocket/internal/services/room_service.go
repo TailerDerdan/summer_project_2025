@@ -43,44 +43,6 @@ func (rs *RoomService) CreateRoom(msgCreateRoom models.MsgCreateRoom) (*models.R
 	return room, nil
 }
 
-//func (rs *RoomService) UpdateReadyState(conn *websocket.Conn, roomID string) {
-//	user := rs.rooms[roomID].Clients[conn]
-//	user.IsReady = !user.IsReady
-//}
-
-//func (rs *RoomService) RegisterConnection(conn *websocket.Conn, roomID, userID, nickname string) {
-//	if _, exists := rs.rooms[roomID]; !exists {
-//		log.Printf("Attempt to join non-existent room: %s", roomID)
-//		conn.WriteJSON(map[string]string{"error": "Room does not exist"})
-//		conn.Close()
-//		return
-//	}
-//
-//	for existingConn, user := range rs.rooms[roomID].Clients {
-//		if user.UserID == userID {
-//			log.Printf("User %s already in room %s", userID, roomID)
-//			existingConn.Close()
-//			delete(rs.rooms[roomID].Clients, existingConn)
-//			break
-//		}
-//	}
-//
-//	fmt.Printf("max players: %d\n", rs.rooms[roomID].MaxPlayers)
-//	if rs.rooms[roomID].PlayersCount < rs.rooms[roomID].MaxPlayers {
-//		fmt.Printf("add player %s to room %s\n", userID, roomID)
-//		rs.rooms[roomID].PlayersCount++
-//		rs.rooms[roomID].Clients[conn] = &models.UserInfo{
-//			UserID:   userID,
-//			Nickname: nickname,
-//			IsReady:  false,
-//		}
-//		log.Printf("User %s joined room %s", nickname, roomID)
-//	} else {
-//		conn.WriteJSON(map[string]string{"error": "Room is full"})
-//		conn.Close()
-//	}
-//}
-
 func (rs *RoomService) UnregisterConnection(conn *websocket.Conn, roomID, userID string) {
 	log.Printf("Unregistering connection for user %s", userID)
 	room, exists := rs.rooms[roomID]
@@ -211,36 +173,6 @@ func (rs *RoomService) SendMessageInsideRoom(userConn *websocket.Conn, roomID st
 	return nil
 }
 
-//func (rs *RoomService) CheckUsersReadyToStartGame(conn *websocket.Conn, roomID string) bool {
-//	for _, user := range rs.rooms[roomID].Clients {
-//		if !user.IsReady {
-//			fmt.Println("Not all users ready to start game")
-//			msg := map[string]interface{}{
-//				"type": "not_all_ready",
-//			}
-//			conn.WriteJSON(msg)
-//			return false
-//		}
-//	}
-//	return true
-//}
-//
-//func (rs *RoomService) CheckAuthToStartGame(conn *websocket.Conn, roomID string, userID string) bool {
-//	room := rs.rooms[roomID]
-//	if room == nil {
-//		conn.WriteJSON(map[string]string{"error": "Room not found"})
-//		conn.Close()
-//		return false
-//	}
-//
-//	if room.HostID != userID {
-//		conn.WriteJSON(map[string]string{"error": "Start game can only HOST user"})
-//		conn.Close()
-//		return false
-//	}
-//	return true
-//}
-
 func (rs *RoomService) RegisterUser(conn *websocket.Conn, roomID string, user *models.UserInfo) error {
 	//rs.mu.Lock()
 	//defer rs.mu.Unlock()
@@ -348,14 +280,18 @@ func (rs *RoomService) StartGame(conn *websocket.Conn, roomID, userID string, da
 		}
 	}
 
+	fmt.Printf("map name: %v", data["mapName"])
 	game := rs.gameService.CreateGame(roomID, data)
 	msg := map[string]interface{}{
 		"type": "start_game_server",
 		"data": map[string]interface{}{
-			"gameId": game.GameID,
-			"roomId": roomID,
+			"hostId":  room.HostID,
+			"gameId":  game.GameID,
+			"roomId":  roomID,
+			"mapName": data["mapName"],
 		},
 	}
+	fmt.Println("111111")
 	if err := rs.SendMessageInsideRoomToAll(roomID, msg); err != nil {
 		return err
 	}
