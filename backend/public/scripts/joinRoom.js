@@ -194,7 +194,7 @@ async function deleteUserFromRoom(roomId) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            roomId: roomId,
+            roomId: parseInt(roomId),
         })
     })
     if (!response.ok) {
