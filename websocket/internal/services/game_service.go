@@ -102,12 +102,16 @@ func NewGameService() *GameService {
 //}()
 //}
 
+//func (gs *GameService) GeneratePosition() float64 {
+//	rand.Seed(time.Now().UnixNano())
+//	for {
+//		num := rand.Intn(100)
+//		return float64(num)
+//	}
+//}
+
 func (gs *GameService) GeneratePosition() float64 {
-	rand.Seed(time.Now().UnixNano())
-	for {
-		num := rand.Intn(100)
-		return float64(num)
-	}
+	return float64(rand.Intn(100))
 }
 
 func (gs *GameService) CreateGame(roomID, gameType string) *models.Game {
