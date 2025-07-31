@@ -80,8 +80,8 @@ const handleMouseMove = (event) => {
             let isProbablyPutSpawn = true;
             for (const spawn of stateEditor.map.spawnsWeapons)
             {
-                console.log(Math.abs((spawn.x / COUNT_TILE_X) - iterX))
-                if (Math.abs((spawn.x / COUNT_TILE_X) - iterX) < 35 && Math.abs((spawn.y / COUNT_TILE_Y) - iterY) < 35)
+                console.log(Math.abs((spawn.x / TILE_WIDTH) - iterX))
+                if (Math.abs((spawn.x / TILE_WIDTH) - iterX) < 35 && Math.abs((spawn.y / TILE_HEIGHT) - iterY) < 35)
                 {
                     isProbablyPutSpawn = false;
                     break;
