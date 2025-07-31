@@ -50,7 +50,7 @@ export class SnapshotBuffer
 
         const t = Math.min(1, (now - oldSnapshot.timestamp) / delta);
 
-        console.log(t)
+        //console.log(t)
 
         this.followObject.x = this.lerp(oldSnapshot.x, newSnapshot.x, t);
         this.followObject.y = this.lerp(oldSnapshot.y, newSnapshot.y, t);

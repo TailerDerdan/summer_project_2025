@@ -389,7 +389,7 @@ func (gs *GameService) PlayerKill(gameID, playerID string) error {
 	return nil
 }
 
-func (gs *GameService) PlayerDeath(gameID, playerID string) error {
+func (gs *GameService) PlayerDeath(conn *websocket.Conn, gameID, playerID string) error {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
 
@@ -406,6 +406,20 @@ func (gs *GameService) PlayerDeath(gameID, playerID string) error {
 		fmt.Println("error sending stats message")
 		return err
 	}
+
+	msg := map[string]interface{}{
+		"type": "player_death_server",
+		"data": map[string]interface{}{
+			"gameId":   gameID,
+			"playerId": playerID,
+		},
+	}
+
+	if err := gs.SendMessageInsideGame(conn, gameID, msg); err != nil {
+		fmt.Println("error sending death message")
+		return err
+	}
+
 	return nil
 }
 

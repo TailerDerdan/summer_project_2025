@@ -1,7 +1,7 @@
 import { Sound } from "../soundsScript/sound.js";
 import { Character } from "../Infrastructure/Character.js";
 import { Blood, remainingBlood } from "../blood/blood.js";
-import {randomPosition} from "../random";
+import {randomPosition} from "../random.js";
 
 const WIDTH_FRAME = 23;
 const HEIGHT_FRAME = 34;

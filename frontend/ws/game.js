@@ -3,7 +3,6 @@ import { arrEnemy, player } from "../player/player.js";
 import { playerBullets } from "../weapon/shooting.js";
 import { Bullet } from "../weapon/bullet.js";
 import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
-import { Blood, remainingBlood } from "../blood/blood";
 
 export let mapName
 export const gameStats = {
@@ -18,13 +17,13 @@ export let enemyBullets = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
     const data = JSON.parse(sessionStorage.getItem('gameSession'))
-    console.log("gameSession", data)
+    //console.log("gameSession", data)
     if (!data) {
         window.location.href = `/main`
         return
     }
     mapName = data.mapName
-    console.log("mapName, data.mapName", mapName, data.mapName)
+    //console.log("mapName, data.mapName", mapName, data.mapName)
     sessionStorage.removeItem('gameSession');
 
     try
@@ -33,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         setMessageHandler((event) => {
             const msg = JSON.parse(event.data);
-            console.log("msg.type: ", msg.type)
+            //console.log("msg.type: ", msg.type)
             switch (msg.type) {
                 case "init_players_server":
                     handleInitPlayers(msg.data.players);
@@ -83,7 +82,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function handleInitPlayers(players)
 {
-    console.log("==>", players)
+    //console.log("==>", players)
     Object.values(players).forEach(player => {
         if (!arrEnemy.has(player.playerId))
         {
@@ -158,7 +157,7 @@ function handleUpdateStats(data)
         position: index + 1,
         isCurrent: item.id === data.userId
     }));
-    console.log("ghdfghdfg: ",data.userId, typeof data.userId)
+    //console.log("ghdfghdfg: ",data.userId, typeof data.userId)
 
     updateStats();
 }
@@ -218,7 +217,7 @@ function showResultsAfterBattle(endData) {
     console.log("userId", userId, typeof userId)
     const winnerNickname = findPlayerNickname(endData.winner);
     const isWinner = parseInt(endData.winner) === userId;
-    console.log("results tyt")
+    console.log("results tut")
     resultsBlock.innerHTML = `
         <h2>${isWinner ? 'ПОБЕДА!' : 'КОНЕЦ БОЯ'}</h2>
         <p>Победитель: ${winnerNickname}</p>
@@ -250,9 +249,9 @@ function showResultsAfterBattle(endData) {
 
 function findPlayerNickname(playerId) 
 {
-    console.log("arrEnemy.has(playerId.toString())", arrEnemy.get(playerId))
+    //console.log("arrEnemy.has(playerId.toString())", arrEnemy.get(playerId))
     if (arrEnemy.has(playerId)) {
-        console.log("--===---", arrEnemy.get(playerId).nickname)
+        //console.log("--===---", arrEnemy.get(playerId).nickname)
         return arrEnemy.get(playerId).nickname;
     }
     return stateForWS.nickname;
@@ -313,7 +312,7 @@ export function sendBullets()
 
         if ((now - lastSentTimeForBullets > 100) && (playerBullets.length !== 0))
         {
-            console.log(playerBullets);
+            //console.log(playerBullets);
 
             sendWebSocketMessage({
                 type: "update_bullets",

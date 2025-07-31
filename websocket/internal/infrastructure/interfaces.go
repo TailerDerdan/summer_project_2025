@@ -14,7 +14,7 @@ type IGameService interface {
 	CheckGameEndConditions(gameID string)
 	RemovePlayerFromGame(gameID string, conn *websocket.Conn)
 	PlayerKill(gameID, playerID string) error
-	PlayerDeath(gameID, playerID string) error
+	PlayerDeath(conn *websocket.Conn, gameID, playerID string) error
 	StartTimer(conn *websocket.Conn, gameID string)
 	RegisterPlayer(conn *websocket.Conn, gameID string, player *models.PlayerInfo) error
 	UpdatePosition(conn *websocket.Conn, gameID, playerID string, data map[string]interface{}) error

@@ -4,7 +4,7 @@ import { InitAssaultRifle, InitShotgun, TYPE_WEAPON, Weapon } from '../weapon/ty
 import { Character } from "../Infrastructure/Character.js";
 import { bot1, bot2, bot3 } from "../bot/Bot.js";
 import {Sound} from "../soundsScript/sound.js";
-import {randomPosition} from "../random";
+import {randomPosition} from "../random.js";
 
 const WIDTH_FRAME = 23;
 const HEIGHT_FRAME = 34;
@@ -106,6 +106,7 @@ export class Player extends Character
                 this.x = pos.x;
                 this.y = pos.y;
                 this.respawnTimer = null;
+                console.log(this.id);
             }, 2500);
         }
     }

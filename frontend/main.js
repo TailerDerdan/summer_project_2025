@@ -9,12 +9,10 @@ import { render, texture2D, updateTexture } from './shadows/shadows.js';
 //import {recordDeath, recordKill} from "./game.js";
 import { getMap } from './requests/requests.js';
 
-// import { checkAndSendPosition } from './game.js';
 import { drawRemainingBlood } from './blood/blood.js';
 import {playerDeath} from "./player/KillAndDeath.js";
 import { stateForWS } from './ws/websocketGame.js';
 import { mapName } from './ws/game.js';
-import { sendBullets } from './ws/game.js';
 import { drawAllWeaponOnMap, updateAllWeaponOnMap } from './weapon/spawnWeapon.js';
 import {} from "./player/changeWeapon.js";
 
@@ -59,7 +57,6 @@ function gameLoop()
     if (!player.isCharacterLive)
     {
         player.appearanceAfterDeathWidthDelay();
-        playerDeath(stateForWS.userId);
     }
 
     camera.update();
