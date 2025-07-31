@@ -8,6 +8,7 @@ export const CountOfBuildings = {
     Wall: 2,
     Car1: 1,
     Car2: 1,
+    SpawnWeapon: 1
 }
 
 export const choosenBuilding = {
@@ -20,6 +21,7 @@ export const stateMouseDowning = {
     isPressedWall: false,
     isPressedCar1: false,
     isPressedCar2: false,
+    isPressedSpawnWeapon: false,
 }
 
 export const SPRITE_FLOOR_WIDTH = 16;
@@ -82,17 +84,19 @@ export const car2 = new Building(
     "Car2"
 );
 
-export const spawnWeapon = new Building(TILE_WIDTH, TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT, 1, false, 0, "", "spawnWeapon");
+export const spawnWeapon = new Building(TILE_WIDTH, TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT, 1, false, 0, "../mapEditor/sprites/level1/spawnWeapon.png", "SpawnWeapon");
 
 floor.fillSprite(1, TypeBuilding, 7, 4);
 wall.fillSprite(TypeBuilding.Floor1 + CountOfBuildings.Floor + 1, TypeBuilding, 1, 2);
 car1.fillSprite(TypeBuilding.Wall1 + CountOfBuildings.Wall + 1, TypeBuilding, 1, 1);
 car2.fillSprite(TypeBuilding.Car11 + CountOfBuildings.Car2 + 1, TypeBuilding, 1, 1);
+spawnWeapon.fillSprite(TypeBuilding.Car21 + CountOfBuildings.SpawnWeapon + 1, TypeBuilding, 1, 1);
 
 const spritesFloor = document.getElementsByClassName("floor")[0];
 const spritesWall = document.getElementsByClassName("wall")[0];
 const spritesCar1 = document.getElementsByClassName("car1")[0];
 const spritesCar2 = document.getElementsByClassName("car2")[0];
+const spritesSpawnWeapon = document.getElementsByClassName("spawnWeapon")[0];
 
 const divSprites = document.getElementsByClassName("choosen-sprites")[0];
 const canvasForSprite = document.getElementById("sprites");
@@ -112,6 +116,7 @@ const boundHandlersForBuildings = {
     wall: null,
     car1: null,
     car2: null,
+    spawnWeapon: null,
 }
 
 spritesFloor.addEventListener("mousedown", (event) => {
@@ -147,6 +152,17 @@ spritesFloor.addEventListener("mousedown", (event) => {
             stateMouseDowning.isPressedCar2 = false;
         }
     }
+
+    if (stateMouseDowning.isPressedSpawnWeapon)
+    {
+        if (boundHandlersForBuildings.spawnWeapon)
+        {
+            canvasForSprite.removeEventListener('mousedown', boundHandlersForBuildings.spawnWeapon);
+            boundHandlersForBuildings.spawnWeapon = null;
+            stateMouseDowning.isPressedSpawnWeapon = false;
+        }
+    }
+
     boundHandlersForBuildings.floor = floor.interactionWithBuilding.bind(floor);
     canvasForSprite.addEventListener('mousedown', boundHandlersForBuildings.floor);
     stateMouseDowning.isPressedFloor = true;
@@ -185,6 +201,17 @@ spritesWall.addEventListener("mousedown", (event) => {
             stateMouseDowning.isPressedCar2 = false;
         }
     }
+
+    if (stateMouseDowning.isPressedSpawnWeapon)
+    {
+        if (boundHandlersForBuildings.spawnWeapon)
+        {
+            canvasForSprite.removeEventListener('mousedown', boundHandlersForBuildings.spawnWeapon);
+            boundHandlersForBuildings.spawnWeapon = null;
+            stateMouseDowning.isPressedSpawnWeapon = false;
+        }
+    }
+
     boundHandlersForBuildings.wall = wall.interactionWithBuilding.bind(wall);
     canvasForSprite.addEventListener('mousedown', boundHandlersForBuildings.wall);
     stateMouseDowning.isPressedWall = true;
@@ -223,6 +250,17 @@ spritesCar1.addEventListener("mousedown", (event) => {
             stateMouseDowning.isPressedCar2 = false;
         }
     }
+
+    if (stateMouseDowning.isPressedSpawnWeapon)
+    {
+        if (boundHandlersForBuildings.spawnWeapon)
+        {
+            canvasForSprite.removeEventListener('mousedown', boundHandlersForBuildings.spawnWeapon);
+            boundHandlersForBuildings.spawnWeapon = null;
+            stateMouseDowning.isPressedSpawnWeapon = false;
+        }
+    }
+
     boundHandlersForBuildings.car1 = car1.interactionWithBuilding.bind(car1);
     canvasForSprite.addEventListener('mousedown', boundHandlersForBuildings.car1);
     stateMouseDowning.isPressedCar1 = true;
@@ -261,7 +299,67 @@ spritesCar2.addEventListener("mousedown", (event) => {
             stateMouseDowning.isPressedCar1 = false;
         }
     }
+
+    if (stateMouseDowning.isPressedSpawnWeapon)
+    {
+        if (boundHandlersForBuildings.spawnWeapon)
+        {
+            canvasForSprite.removeEventListener('mousedown', boundHandlersForBuildings.spawnWeapon);
+            boundHandlersForBuildings.spawnWeapon = null;
+            stateMouseDowning.isPressedSpawnWeapon = false;
+        }
+    }
+
     boundHandlersForBuildings.car2 = car2.interactionWithBuilding.bind(car2);
     canvasForSprite.addEventListener('mousedown', boundHandlersForBuildings.car2);
     stateMouseDowning.isPressedCar2 = true;
+})
+
+spritesSpawnWeapon.addEventListener("mousedown", (event) => {
+    
+    spawnWeapon.drawForCanvasForChoice(ctxForSprite, canvasForSprite);
+
+    if (stateMouseDowning.isPressedFloor)
+    {
+        if (boundHandlersForBuildings.floor)
+        {
+            canvasForSprite.removeEventListener('mousedown', boundHandlersForBuildings.floor);
+            boundHandlersForBuildings.floor = null;
+            stateMouseDowning.isPressedFloor = false;
+        }
+    }
+
+    if (stateMouseDowning.isPressedWall)
+    {
+        if (boundHandlersForBuildings.wall)
+        {
+            canvasForSprite.removeEventListener('mousedown', boundHandlersForBuildings.wall);
+            boundHandlersForBuildings.wall = null;
+            stateMouseDowning.isPressedWall = false;
+        }
+    }
+
+    if (stateMouseDowning.isPressedCar1)
+    {
+        if (boundHandlersForBuildings.car1)
+        {
+            canvasForSprite.removeEventListener('mousedown', boundHandlersForBuildings.car1);
+            boundHandlersForBuildings.car1 = null;
+            stateMouseDowning.isPressedCar1 = false;
+        }
+    }
+
+    if (stateMouseDowning.isPressedCar2)
+    {
+        if (boundHandlersForBuildings.car2)
+        {
+            canvasForSprite.removeEventListener('mousedown', boundHandlersForBuildings.car2);
+            boundHandlersForBuildings.car2 = null;
+            stateMouseDowning.isPressedCar2 = false;
+        }
+    }
+
+    boundHandlersForBuildings.spawnWeapon = spawnWeapon.interactionWithBuilding.bind(spawnWeapon);
+    canvasForSprite.addEventListener('mousedown', boundHandlersForBuildings.spawnWeapon);
+    stateMouseDowning.isPressedSpawnWeapon = true;
 })

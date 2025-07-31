@@ -57,7 +57,7 @@ export function gameLoop()
 
     drawRemainingBlood(ctx, camera.xView, camera.yView);
 
-    updateMovementPlayer(camera.xView, camera.yView, deltaTime);
+    updateMovementPlayer(camera.xView, camera.yView, deltaTime, map.walls);
     player.updateCharacter();
     if (!player.isCharacterLive)
     {

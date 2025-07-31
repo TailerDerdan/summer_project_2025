@@ -16,7 +16,7 @@ document.addEventListener("mousedown", (event) => {
             allWeapon.push(weaponPlayer);
         }
 
-        for (const weapon of allWeapon)
+        for (const [id, weapon] of allWeapon)
         {
             console.log(weapon);
             if (weapon.currentAmmo == 0) continue;

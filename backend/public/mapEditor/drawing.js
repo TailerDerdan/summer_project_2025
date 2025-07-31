@@ -1,8 +1,8 @@
-import { COUNT_TILE_X, TILE_HEIGHT, TILE_WIDTH } from "./sizes.js";
+import { COUNT_TILE_X, COUNT_TILE_Y, TILE_HEIGHT, TILE_WIDTH } from "./sizes.js";
 import { panOffset, scaleData } from "./panning.js";
 import { stateEditor } from "./state.js";
 import { Building } from "./buildings/bulding.js";
-import { car1, car2, choosenBuilding, CountOfBuildings, floor, TypeBuilding, wall } from "./buildings/deterBuildings.js";
+import { car1, car2, choosenBuilding, CountOfBuildings, floor, spawnWeapon, TypeBuilding, wall } from "./buildings/deterBuildings.js";
 
 let drawing = false;
 let erasing = false;
@@ -72,6 +72,26 @@ const handleMouseMove = (event) => {
         )
         {
             car2.drawOnMainCanvas(stateEditor.map.tileMap, stateEditor.map.buldingsObject, stateEditor.map.buldings, iterX, iterY);
+        }
+        if (choosenBuilding.state >= TypeBuilding.SpawnWeapon1 &&
+            choosenBuilding.state <= TypeBuilding.SpawnWeapon1 + CountOfBuildings.SpawnWeapon - 1
+        )
+        {
+            let isProbablyPutSpawn = true;
+            for (const spawn of stateEditor.map.spawnsWeapons)
+            {
+                console.log(Math.abs((spawn.x / COUNT_TILE_X) - iterX))
+                if (Math.abs((spawn.x / COUNT_TILE_X) - iterX) < 35 && Math.abs((spawn.y / COUNT_TILE_Y) - iterY) < 35)
+                {
+                    isProbablyPutSpawn = false;
+                    break;
+                }
+            }
+            if (isProbablyPutSpawn)
+            {
+                spawnWeapon.drawOnMainCanvas(stateEditor.map.tileMap, stateEditor.map.buldingsObject, stateEditor.map.buldings, iterX, iterY);
+                stateEditor.map.spawnsWeapons.push({x: iterX * COUNT_TILE_X, y: iterY * COUNT_TILE_Y});
+            }
         }
     }
     

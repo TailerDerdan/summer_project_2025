@@ -15,7 +15,7 @@ export class Enemy extends Character
     {
         super(id, x, y, width, height, dir, nickname);
 
-        this.soundShoot = new Sound('sounds/Hotline_Miami_2_Wrong_Number/M16.wav');
+        this.weapon = null;
     }
 }
 
