@@ -27,8 +27,8 @@ export function drawAllWeaponOnMap(ctx, xView, yView)
         console.log(id, weapon)
         if (weapon.owner) continue;
 
-        let screenX = weapon.x - xView;
-        let screenY = weapon.y - yView;
+        let screenX = weapon.x;
+        let screenY = weapon.y;
 
         console.log(screenY, screenX)
 
