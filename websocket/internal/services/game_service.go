@@ -15,11 +15,6 @@ import (
 	"sync"
 )
 
-import (
-	"math/rand"
-	"time"
-)
-
 type GameService struct {
 	activeGames map[string]*models.Game
 	mu          sync.Mutex
@@ -111,7 +106,8 @@ func NewGameService() *GameService {
 //}
 
 func (gs *GameService) GeneratePosition() float64 {
-	return float64(rand.Intn(100))
+	n, _ := rand.Int(rand.Reader, big.NewInt(100))
+	return float64(n.Int64())
 }
 
 func (gs *GameService) CreateGame(roomID, gameType string) *models.Game {
