@@ -119,9 +119,9 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 	}
 	if gameState.Status != "playing" {
 		allowedTypes := map[string]bool{
-			"ready_to_battle": true,
-			"weapons_points":  true,
-			"player_move":     true,
+			//"ready_to_battle": true,
+			//"weapons_points":  true,
+			//"player_move":     true,
 		}
 
 		if !allowedTypes[msg.Type] {

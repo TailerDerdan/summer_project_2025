@@ -45,13 +45,13 @@ type BulletInfo struct {
 	Lifetime int     `json:"lifetime"`
 }
 
-type WeaponType string
+type WeaponType int
 
 const (
-	WeaponPistol  WeaponType = "pistol"
-	WeaponRifle   WeaponType = "rifle"
-	WeaponShotgun WeaponType = "shotgun"
-	WeaponSniper  WeaponType = "sniper"
+	AssaultRifle WeaponType = 1
+	SniperRifle  WeaponType = 2
+	Shotgun      WeaponType = 3
+	Pistol       WeaponType = 4
 )
 
 type Weapon struct {

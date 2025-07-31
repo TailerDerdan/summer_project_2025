@@ -2,6 +2,7 @@ package services
 
 import (
 	"crypto/rand"
+	rand2 "math/rand"
 	"sort"
 	"time"
 
@@ -658,6 +659,10 @@ func (gs *GameService) generateWeapons(gameID string) error {
 	if len(freeSpawnPoints) < needWeapons {
 		needWeapons = len(freeSpawnPoints)
 	}
+	rand2.Shuffle(len(freeSpawnPoints), func(i, j int) {
+		freeSpawnPoints[i], freeSpawnPoints[j] = freeSpawnPoints[j], freeSpawnPoints[i]
+	})
+
 	fmt.Println("fff fff fff")
 	for i := 0; i < needWeapons; i++ {
 		point := freeSpawnPoints[i]
@@ -699,8 +704,14 @@ func (gs *GameService) getFreeSpawnPoints(game *models.Game) []models.SpawnPoint
 
 func (gs *GameService) getInitialWeaponAmmo(weaponType models.WeaponType) int {
 	switch weaponType {
-	case models.WeaponRifle:
-		return 10
+	case models.AssaultRifle:
+		return 30
+	case models.SniperRifle:
+		return 5
+	case models.Shotgun:
+		return 4
+	case models.Pistol:
+		return 4
 	}
 	return 0
 }
@@ -716,7 +727,7 @@ func (gs *GameService) generateWeaponID() string {
 }
 
 func (gs *GameService) generateWeaponType() models.WeaponType {
-	types := []models.WeaponType{models.WeaponPistol, models.WeaponRifle, models.WeaponShotgun, models.WeaponSniper}
+	types := []models.WeaponType{models.SniperRifle, models.AssaultRifle, models.Shotgun, models.Pistol}
 	num, _ := rand.Int(rand.Reader, big.NewInt(int64(len(types))))
 	return types[num.Int64()]
 }
