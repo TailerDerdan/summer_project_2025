@@ -6,16 +6,13 @@ export function spawnWeapon(weaponsServer)
 {
     for (const weaponServer of weaponsServer)
     {
-        console.log("loop", weaponServer);
         const initValue = getInitValues(weaponServer.type);
-        console.log(initValue)
         if (initValue)
         {
             const weapon = new Weapon(initValue, weaponServer.type, weaponServer.x, weaponServer.y);
             allWeapon.set(weaponServer.id.toString(), weapon);
         }
     }
-    console.log(allWeapon);
 }
 
 export function drawAllWeaponOnMap(ctx, xView, yView)
@@ -24,13 +21,12 @@ export function drawAllWeaponOnMap(ctx, xView, yView)
 
     for (const [id, weapon] of allWeapon)
     {
-        console.log(id, weapon)
         if (weapon.owner) continue;
 
         let screenX = weapon.x - xView;
         let screenY = weapon.y - yView;
 
-        console.log(screenY, screenX)
+        console.log(xView, yView, weapon.x, weapon.y)
 
         weapon.container.updateX(weapon.x);
         weapon.container.updateY(weapon.y);
