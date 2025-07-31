@@ -4,6 +4,7 @@ import { InitAssaultRifle, InitShotgun, TYPE_WEAPON, Weapon } from '../weapon/ty
 import { Character } from "../Infrastructure/Character.js";
 import { bot1, bot2, bot3 } from "../bot/Bot.js";
 import {Sound} from "../soundsScript/sound.js";
+import {randomPosition} from "../random";
 
 const WIDTH_FRAME = 23;
 const HEIGHT_FRAME = 34;
@@ -94,6 +95,19 @@ export class Player extends Character
         }
         const spanCurrentAmmo = document.getElementById("currentAmmoPlayer");
         spanCurrentAmmo.textContent = currentAmmo;
+    }
+
+    appearanceAfterDeathWidthDelay() {
+        if (!this.isCharacterLive && !this.respawnTimer) {
+            this.respawnTimer = setTimeout(() => {
+                this.isCharacterLive = true;
+                this.wasCharacterWounded = false;
+                const pos = randomPosition();
+                this.x = pos.x;
+                this.y = pos.y;
+                this.respawnTimer = null;
+            }, 2500);
+        }
     }
 }
 

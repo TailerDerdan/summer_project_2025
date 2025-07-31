@@ -95,34 +95,34 @@ export class Character
         ctx.restore();
     }
 
-    appearanceAfterDeath()
-    {
-        if (this.isCharacterLive) return;
-        const pos = randomPosition();
-        this.x = pos.x;
-        this.y = pos.y;
-        this.isCharacterLive = true;
-        this.wasCharacterWounded = false;
-    }
-
-    appearanceAfterDeathWidthDelay() {
-        setTimeout(() => this.appearanceAfterDeath(), 100);
-    }
-
-    updateCharacter()
-    {
-        if (this.wasCharacterWounded)
-        {
-            const blood = new Blood(this);
-            remainingBlood.push(blood);
-            blood.playAnimationBlood();
-            if (blood.isAnimationPlayed)
-            {
-                this.isCharacterLive = false;
-                this.wasCharacterWounded = false;
-                this.appearanceAfterDeathWidthDelay();
-                this.revivalSound.play();
-            }
-        }
-    }
+    // appearanceAfterDeath()
+    // {
+    //     if (this.isCharacterLive) return;
+    //     const pos = randomPosition();
+    //     this.x = pos.x;
+    //     this.y = pos.y;
+    //     this.isCharacterLive = true;
+    //     this.wasCharacterWounded = false;
+    // }
+    //
+    // appearanceAfterDeathWidthDelay() {
+    //     setTimeout(() => this.appearanceAfterDeath(), 100);
+    // }
+    //
+    // updateCharacter()
+    // {
+    //     if (this.wasCharacterWounded)
+    //     {
+    //         const blood = new Blood(this);
+    //         remainingBlood.push(blood);
+    //         blood.playAnimationBlood();
+    //         if (blood.isAnimationPlayed)
+    //         {
+    //             this.isCharacterLive = false;
+    //             this.wasCharacterWounded = false;
+    //             this.appearanceAfterDeathWidthDelay();
+    //             this.revivalSound.play();
+    //         }
+    //     }
+    // }
 }

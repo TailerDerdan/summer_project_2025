@@ -3,6 +3,8 @@ import { arrEnemy, player } from "../player/player.js";
 import { playerBullets } from "../weapon/shooting.js";
 import { Bullet } from "../weapon/bullet.js";
 import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
+import { Blood, remainingBlood } from "../blood/blood";
+
 export let mapName
 export const gameStats = {
     kills: 0,
@@ -58,6 +60,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     break;
                 case "update_bullets_server":
                     updateEnemyBullets(msg.data);
+                    break;
+                case "player_death_server":
+                    handlePlayerDeath(msg.data);
                     break;
                 case "save_stats_server":
                     console.log("save stats: ")
@@ -318,10 +323,6 @@ export function sendBullets()
                 }
             });
 
-            // for (const playerBullet of playerBullets) {
-            //     console.log(playerBullet);
-            // }
-
             lastSentTimeForBullets = now;
 
             //playerBullets.length = 0;
@@ -342,6 +343,16 @@ function updateEnemyBullets(data) {
             bullet.ownerId
         );
     });
+}
+
+function handlePlayerDeath(data) {
+    const playerId = data.playerId;
+    if (arrEnemy.has(playerId)) {
+        arrEnemy.get(playerId).isCharacterLive = false;
+    }
+    if (playerId === stateForWS.userId) {
+        player.isCharacterLive = false;
+    }
 }
 
 async function saveStats(data) {

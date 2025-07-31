@@ -29,14 +29,15 @@ function gameLoop()
     map.draw(ctx, camera.xView, camera.yView);
 
     arrEnemy.forEach(enemy => {
+        if (!enemy.isCharacterLive) return;
         enemy.snapshotBuffer.interpolate();
         enemy.drawCharacter(ctx, camera.xView, camera.yView)
-        enemy.updateCharacter();
+        enemy.updateEnemy();
     })
 
     arrBot.forEach(bot => {
         bot.updateMovementBot(ctx, camera.xView, camera.yView);
-        bot.updateCharacter();
+        //bot.updateCharacter();
     })
 
     arrBot.forEach((bot, index) => {
@@ -49,22 +50,16 @@ function gameLoop()
     drawAllWeaponOnMap(ctx, camera.xView, camera.yView);
     player.drawCurrentAmmo();
 
-    //updateMovementBullets();
-
-    // checkAndSendPosition();
-
-    // sendBullets();
-
     updateAllBullets(ctx, camera.xView, camera.yView);
 
     drawRemainingBlood(ctx, camera.xView, camera.yView);
 
     updateMovementPlayer(camera.xView, camera.yView, deltaTime);
-    player.updateCharacter();
+
     if (!player.isCharacterLive)
     {
         player.appearanceAfterDeathWidthDelay();
-        playerDeath(stateForWS.userId)
+        playerDeath(stateForWS.userId);
     }
 
     camera.update();

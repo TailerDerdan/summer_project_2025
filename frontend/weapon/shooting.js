@@ -5,7 +5,7 @@ import { Bullet } from './bullet.js';
 import { camera } from '../camera/camera.js';
 import { getDir, inverseDir } from '../player/changeDir.js';
 import { randomMinMax } from '../random.js';
-import { playerKill } from '../player/KillAndDeath.js';
+import {playerDeath, playerKill} from '../player/KillAndDeath.js';
 import { stateForWS } from '../ws/websocketGame.js';
 import { enemyBullets } from "../ws/game.js";
 
@@ -254,6 +254,29 @@ document.addEventListener('mousedown', throttleUpdateBullets);
 
 function updateBulletsOnMap(ctx, xView, yView, bullets) {
     bullets.forEach((bullet, index) => {
+        for (const [id, enemy] of arrEnemy) {
+            if (enemy.container.isTwoContainerConcerns(bullet.container, camera.xView, camera.yView) &&
+                enemy.isCharacterLive &&
+                (bullet.ownerId !== enemy.id)
+            )
+            {
+                bullets.splice(index, 1);
+                enemy.wasCharacterWounded = true;
+                if (bullet.ownerId === player.id) {
+                    playerKill(stateForWS.userId);
+                }
+            }
+        }
+        if (player.container.isTwoContainerConcerns(bullet.container, camera.xView, camera.yView) &&
+            player.isCharacterLive &&
+            (bullet.ownerId !== player.id)
+        )
+        {
+            bullets.splice(index, 1);
+            player.wasCharacterWounded = true;
+            playerDeath(stateForWS.userId);
+        }
+
         bullet.setX(bullet.getX() + bullet.getDistX());
         bullet.setY(bullet.getY() - bullet.getDistY());
 

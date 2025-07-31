@@ -1,5 +1,7 @@
 import { Sound } from "../soundsScript/sound.js";
 import { Character } from "../Infrastructure/Character.js";
+import { Blood, remainingBlood } from "../blood/blood.js";
+import {randomPosition} from "../random";
 
 const WIDTH_FRAME = 23;
 const HEIGHT_FRAME = 34;
@@ -16,6 +18,19 @@ export class Enemy extends Character
         super(id, x, y, width, height, dir, nickname);
 
         this.soundShoot = new Sound('sounds/Hotline_Miami_2_Wrong_Number/M16.wav');
+    }
+
+    updateEnemy() {
+        if (!this.isCharacterLive) {
+            const blood = new Blood(this);
+            remainingBlood.push(blood);
+            blood.playAnimationBlood();
+            if (blood.isAnimationPlayed)
+            {
+                this.isCharacterLive = true;
+                this.wasCharacterWounded = false;
+            }
+        }
     }
 }
 
