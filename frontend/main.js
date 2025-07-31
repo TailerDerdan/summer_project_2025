@@ -80,9 +80,8 @@ export function gameLoop()
     window.requestAnimationFrame(gameLoop);
 }
 
-const initGame = async () => {
-    console.log('$', mapName)
-    console.log('%', stateForWS.mapName)
+export const initGame = async () => {
+    console.log("11111")
     if (!stateForWS?.mapName) {
         await new Promise(resolve => {
             const checkInterval = setInterval(() => {
@@ -93,6 +92,7 @@ const initGame = async () => {
             }, 2000);
         });
     }
+    console.log("00000")
     const gettedMap = await getMap(stateForWS.mapName);
     const imgMap = new Image();
     imgMap.src = gettedMap.image;
@@ -108,12 +108,12 @@ const initGame = async () => {
             }
         })
     }
+    console.log("99999")
     sendWebSocketMessage({
         type: "ready_to_battle",
     })
+    console.log("88888")
     // setTimeout(() => {
     //     gameLoop();
     // }, 100);
 }
-
-initGame();

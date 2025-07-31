@@ -291,6 +291,7 @@ func (rs *RoomService) StartGame(conn *websocket.Conn, roomID, userID string, da
 			"mapName": data["mapName"],
 		},
 	}
+	fmt.Println("111111")
 	if err := rs.SendMessageInsideRoomToAll(roomID, msg); err != nil {
 		return err
 	}

@@ -1,5 +1,3 @@
-import {mapName} from "../../../frontend/ws/game";
-
 document.addEventListener("DOMContentLoaded", async (e) => {
     //const usersArr = await loadUsersData()
     const dataJson = JSON.parse(sessionStorage.getItem('ws_join_data'));
