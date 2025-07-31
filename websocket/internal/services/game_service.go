@@ -672,6 +672,9 @@ func (gs *GameService) saveGameStats(gameID string) error {
 }
 
 func (gs *GameService) generateWeapons(gameID string) error {
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
+
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
@@ -761,6 +764,9 @@ func (gs *GameService) generateWeaponType() models.WeaponType {
 }
 
 func (gs *GameService) sendUpdateWeapons(gameID string) error {
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
+
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
@@ -780,6 +786,9 @@ func (gs *GameService) sendUpdateWeapons(gameID string) error {
 }
 
 func (gs *GameService) ChangeWeapon(conn *websocket.Conn, gameID string, data map[string]interface{}) error {
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
+
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
@@ -813,6 +822,9 @@ func (gs *GameService) ChangeWeapon(conn *websocket.Conn, gameID string, data ma
 }
 
 func (gs *GameService) sendChangeWeapon(conn *websocket.Conn, gameID string) error {
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
+
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
@@ -833,6 +845,9 @@ func (gs *GameService) sendChangeWeapon(conn *websocket.Conn, gameID string) err
 }
 
 func (gs *GameService) deleteWeapon(conn *websocket.Conn, gameID, weaponID string) error {
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
+
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
@@ -850,6 +865,9 @@ func (gs *GameService) deleteWeapon(conn *websocket.Conn, gameID, weaponID strin
 }
 
 func (gs *GameService) sendDeleteWeapon(gameID, weaponID string) error {
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
+
 	_, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
@@ -864,6 +882,9 @@ func (gs *GameService) sendDeleteWeapon(gameID, weaponID string) error {
 }
 
 func (gs *GameService) DropWeapon(conn *websocket.Conn, gameID string) error {
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
+
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
@@ -895,6 +916,9 @@ func (gs *GameService) DropWeapon(conn *websocket.Conn, gameID string) error {
 }
 
 func (gs *GameService) sendDropWeapon(conn *websocket.Conn, gameID, weaponID string) error {
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
+
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
@@ -913,6 +937,9 @@ func (gs *GameService) sendDropWeapon(conn *websocket.Conn, gameID, weaponID str
 }
 
 func (gs *GameService) SetWeaponsPoints(gameID string, data map[string]interface{}) error {
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
+
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
@@ -962,6 +989,9 @@ func (gs *GameService) SetWeaponsPoints(gameID string, data map[string]interface
 }
 
 func (gs *GameService) ReadyToBattle(conn *websocket.Conn, gameID string) error {
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
+
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
@@ -976,6 +1006,9 @@ func (gs *GameService) ReadyToBattle(conn *websocket.Conn, gameID string) error 
 }
 
 func (gs *GameService) GetGameState(gameID string) (*models.GameState, error) {
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
+
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return nil, fmt.Errorf("game %s does not exist", gameID)
