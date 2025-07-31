@@ -1,13 +1,15 @@
+let socketRoomConn = null
+
 document.addEventListener("DOMContentLoaded", async (e) => {
     //const usersArr = await loadUsersData()
     const dataJson = JSON.parse(sessionStorage.getItem('ws_join_data'));
     //sessionStorage.removeItem('ws_join_data');
     console.log("dataJson: ", dataJson)
-    const socket = connectToWSRoom(dataJson)
+    connectToWSRoom(dataJson)
 
     document.getElementById('leave-room-btn').addEventListener('click', () => {
-        if (socket && socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({
+        if (socketRoomConn && socketRoomConn.readyState === WebSocket.OPEN) {
+            socketRoomConn.send(JSON.stringify({
                 type: "user_leave",
                 data: {
                     userId: (dataJson.data.userId).toString(),
@@ -19,10 +21,10 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     const startBtn = document.getElementById("room_start")
     if (startBtn) {
         startBtn.addEventListener('click', () => {
-            if (socket && socket.readyState === WebSocket.OPEN) {
+            if (socketRoomConn && socketRoomConn.readyState === WebSocket.OPEN) {
                 const gameType = document.getElementById("room-gamemode").textContent
                 const mapNameLocal = document.getElementById("room_map").value
-                socket.send(JSON.stringify({
+                socketRoomConn.send(JSON.stringify({
                     type: "start_game",
                     data: {
                         userId: (dataJson.data.userId).toString(),
@@ -38,8 +40,8 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     const readyBtn = document.getElementById(`room_ready-${dataJson.data.userId}`)
     if (readyBtn) {
         readyBtn.addEventListener('click', () => {
-            if (socket && socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify({
+            if (socketRoomConn && socketRoomConn.readyState === WebSocket.OPEN) {
+                socketRoomConn.send(JSON.stringify({
                     type: "user_ready",
                     data: {
                         userId: (dataJson.data.userId).toString(),
@@ -52,9 +54,9 @@ document.addEventListener("DOMContentLoaded", async (e) => {
 })
 function connectToWSRoom(dataUser)   {
     console.log(typeof dataUser.roomId)
-    const socket = new WebSocket(`ws://mochilovo-avi.ru:8080/ws/room/${dataUser.roomId}`);
-    socket.onopen = () => {
-        socket.send(JSON.stringify({
+    socketRoomConn = new WebSocket(`ws://mochilovo-avi.ru:8080/ws/room/${dataUser.roomId}`);
+    socketRoomConn.onopen = () => {
+        socketRoomConn.send(JSON.stringify({
             type: "user_auth",
             data: {
                 userId: (dataUser.data.userId).toString(),
@@ -63,7 +65,7 @@ function connectToWSRoom(dataUser)   {
         }));
     };
 
-    socket.onmessage = async (event) => {
+    socketRoomConn.onmessage = async (event) => {
         const data = JSON.parse(event.data);
         if (data.type === 'user_joined_server') {
             addUserToList(data.data);
@@ -77,31 +79,30 @@ function connectToWSRoom(dataUser)   {
             removeUserFromList(data.data.userId)
             showNotification(`${data.data.userId}: ${data.data.nickname} вызодит из комнаты...`);
             if (data.type === 'leave_ack_server') {
+                socketRoomConn.close(1000, "Leave user")
                 await deleteUserFromRoom(data.data.roomId)
-                socket.close()
                 window.location.href = '/main';
             }
         }
         if (data.type === 'start_game_server') {
+            socketRoomConn.close(1000, "Start game")
             handleGameStart(data.data, dataUser.data)
             await deleteUserFromRoom(data.data.roomId)
             await deleteRoom(data.data.roomId)
-            socket.close()
         }
         if (data.type === "not_all_ready_server") {
             showNotification(`Не все игроки нажали кнопку "ГОТОВ"`);
         }
         if (data.type === "delete_room_l_server") {
+            socketRoomConn.close(1000, "Delete room")
             await deleteUserFromRoom(data.data.roomId)
             await deleteRoom(data.data.roomId)
-            socket.close()
             window.location.href = ("/main")
         }
         if (data.type === "update_ready_state_server") {
             await updateReadyState(data.data)
         }
     }
-    return socket
 }
 
 async function updateReadyState(data) {

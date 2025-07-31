@@ -1,7 +1,9 @@
-function connectWebSocket() {
-    const soket = new WebSocket('ws://mochilovo-avi.ru:8080/ws/global-updates');
+let socketGlobalConn = null
 
-    soket.onmessage = async (event) => {
+function connectWebSocket() {
+    socketGlobalConn = new WebSocket('ws://mochilovo-avi.ru:8080/ws/global-updates');
+
+    socketGlobalConn.onmessage = async (event) => {
         const data = JSON.parse(event.data);
         if (data.type === 'room_create_server') {
             addRoomToList(data.room, data.user);
@@ -89,23 +91,7 @@ function addRoomToList(room) {
     container.appendChild(roomElt)
 }
 async function joinRoom(roomId) {
-    // if (socketState.conn) {
-    //     socketState.conn.send(JSON.stringify({
-    //         type: "get_count_users",
-    //         data: {
-    //             roomId: roomId.toString(),
-    //         },
-    //     }))
-    // }
-    // await new Promise(resolve => {
-    //     const checkInterval = setInterval(() => {
-    //         if (socketState.) {
-    //             console.log("||||||")
-    //             clearInterval(checkInterval);
-    //             resolve();
-    //         }
-    //     }, 2000);
-    // });
+    socketGlobalConn.close(1000, "Room join")
     const response = await fetch(`/room/join/${roomId}`, {
         method: "POST",
         headers: {
@@ -116,7 +102,6 @@ async function joinRoom(roomId) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
     const dataJson = await response.json()
-
 
     sessionStorage.setItem('roomSettings', JSON.stringify({
         userId: dataJson.userId,

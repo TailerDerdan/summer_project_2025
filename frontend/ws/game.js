@@ -153,7 +153,7 @@ function handlePlayerMove(data)
 function handleGameEnd(data)
 {
     showResultsAfterBattle(data);
-    stateForWS.gameSocket.close();
+    stateForWS.gameSocket.close(1000, "End game");
 }
 
 function updateStats() {

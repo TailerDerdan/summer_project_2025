@@ -176,9 +176,13 @@ func (gs *GameService) SendMessageInsideGame(playerConn *websocket.Conn, gameID 
 	if !exists {
 		return fmt.Errorf("game not exists")
 	}
+	fmt.Printf("%v, %v", game.Players, game.State.Status)
 	for conn := range game.Players {
+		fmt.Println("!!!!!!")
 		if conn != playerConn {
+			fmt.Println("######")
 			if err := conn.WriteJSON(msg); err != nil {
+				fmt.Println("PPPPP")
 				if err := conn.Close(); err != nil {
 					return fmt.Errorf("error conn closing to client")
 				}
@@ -433,7 +437,12 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 			"countdown": game.State.CountDown,
 		},
 	}
-	conn.WriteJSON(stateMsg)
+
+	if err := conn.WriteJSON(stateMsg); err != nil {
+		fmt.Println("error sending state message")
+		return err
+	}
+
 	fmt.Println("99999")
 	joinMsg := map[string]interface{}{
 		"type": "join_player_server",
@@ -450,6 +459,7 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 		fmt.Println("error sending join message")
 		return err
 	}
+	fmt.Println("######")
 	return nil
 }
 
