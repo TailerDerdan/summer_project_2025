@@ -1,11 +1,7 @@
-export const socketState = {
-    conn: null,
-}
-
 function connectWebSocket() {
-    socketState.conn = new WebSocket('ws://mochilovo-avi.ru:8080/ws/global-updates');
+    const soket = new WebSocket('ws://mochilovo-avi.ru:8080/ws/global-updates');
 
-    socketState.conn.onmessage = async (event) => {
+    soket.onmessage = async (event) => {
         const data = JSON.parse(event.data);
         if (data.type === 'room_create_server') {
             addRoomToList(data.room, data.user);
