@@ -26,8 +26,6 @@ export function drawAllWeaponOnMap(ctx, xView, yView)
         let screenX = weapon.x - xView;
         let screenY = weapon.y - yView;
 
-        console.log(xView, yView, weapon.x, weapon.y)
-
         weapon.container.updateX(weapon.x);
         weapon.container.updateY(weapon.y);
 

@@ -649,7 +649,7 @@ func (gs *GameService) generateWeapons(gameID string) error {
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
-	fmt.Println("ppp ppp ppp")
+	fmt.Printf("ppp ppp ppp, %v\n", len(game.Weapons))
 	needWeapons := maxWeaponsOnMap - len(game.Weapons)
 	if needWeapons <= 0 {
 		return nil
@@ -663,7 +663,7 @@ func (gs *GameService) generateWeapons(gameID string) error {
 		freeSpawnPoints[i], freeSpawnPoints[j] = freeSpawnPoints[j], freeSpawnPoints[i]
 	})
 
-	fmt.Println("fff fff fff")
+	fmt.Printf("fff fff fff, %v; %v\n", needWeapons, freeSpawnPoints)
 	for i := 0; i < needWeapons; i++ {
 		point := freeSpawnPoints[i]
 		typeWeapon := gs.generateWeaponType()
@@ -675,6 +675,7 @@ func (gs *GameService) generateWeapons(gameID string) error {
 			Y:    point.Y,
 		}
 		game.Weapons[weapon.ID] = weapon
+		fmt.Printf("666 %v\n", game.Weapons[weapon.ID])
 	}
 	fmt.Printf("kkk kkk kkk, %v\n", game.Weapons)
 	if err := gs.sendUpdateWeapons(gameID); err != nil {
