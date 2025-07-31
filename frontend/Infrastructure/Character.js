@@ -95,8 +95,6 @@ export class Character
 
         this.sprite.applyToSpriteMovement(ctx, -this.width / 2, -this.height / 2, this.width, this.height);
 
-        console.log(this.weapon);
-
         if (this.weapon)
         {
             if (this.weapon.type == TYPE_WEAPON.PISTOL)

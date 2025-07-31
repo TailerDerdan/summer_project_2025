@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     handleGameState(msg.data);
                     break;
                 case "change_weapon_server":
-                    // handleChangeWeapon(msg.data);
+                    handleChangeWeapon(msg.data);
                     break;
             }
         });
@@ -112,9 +112,9 @@ function handleGameState(data) {
 
 function handleInitPlayers(players)
 {
-    console.log("==>", players)
+    console.log("enemies", players)
     Object.values(players).forEach(player => {
-        if (!arrEnemy.has(player.playerId))
+        if (!arrEnemy.has(player.playerId) && player.playerId != stateForWS.userId)
         {
             const newEnemy = new Enemy(player.playerId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir, player.nickname);
             arrEnemy.set(player.playerId, newEnemy);
@@ -124,7 +124,8 @@ function handleInitPlayers(players)
 
 function handleJoinPlayer(player)
 {
-    if (!arrEnemy.has(player.userId))
+    console.log("enemy", player)
+    if (!arrEnemy.has(player.userId) && player.playerId != stateForWS.userId)
     {
         const newEnemy = new Enemy(player.userId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir, player.nickname);
         arrEnemy.set(player.userId, newEnemy);
@@ -406,6 +407,7 @@ function handleGenerateWeapons(data)
 
 export function sendChangeWeapon()
 {
+    console.log(player.weapon.id)
     sendWebSocketMessage({
         type: "change_weapon",
         data: {
@@ -421,6 +423,8 @@ function handleChangeWeapon(data)
         if (allWeapon.has(data.weaponId))
         {
             arrEnemy.get(data.playerId).weapon = allWeapon.get(data.weaponId);
+            allWeapon.get(data.weaponId).owner = arrEnemy.get(data.playerId);
+            console.log(allWeapon.get(data.weaponId))
         }
         else
         {

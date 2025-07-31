@@ -26,7 +26,7 @@ document.addEventListener("mousedown", (event) => {
                 player.weapon = weapon;
                 weapon.owner = player;
                 setTypeShooting(player);
-                // sendChangeWeapon();
+                sendChangeWeapon();
                 break;
             }
         }
