@@ -24,10 +24,13 @@ export function drawAllWeaponOnMap(ctx, xView, yView)
 
     for (const [id, weapon] of allWeapon)
     {
+        console.log(id, weapon)
         if (weapon.owner) continue;
 
         let screenX = weapon.x - xView;
         let screenY = weapon.y - yView;
+
+        console.log(screenY, screenX)
 
         weapon.container.updateX(weapon.x);
         weapon.container.updateY(weapon.y);
