@@ -35,11 +35,6 @@ export class Building
         {
             TypeBuilding[`${this.nameOfBuilding}${iter - lastTypeOfBuilding + 1}`] = iter;
 
-            if (this.nameOfBuilding == "Wall")
-            {
-                console.log(xCoord, yCoord, xOnCanvas, yOnCanvas, countSpriteInLine, countSpriteInLineInCanvas);
-            }
-
             this.rectsForSprite.push(
             {
                 sx: xCoord * this.widthSprite,
@@ -193,8 +188,6 @@ export class Building
             width: Math.ceil(this.widthOnMap / TILE_WIDTH),
             height: Math.ceil(this.heightOnMap / TILE_HEIGHT)
         });
-
-        console.log(buildingsObject);
     }
 
     drawOnMap(ctx, buildingObj)
@@ -256,9 +249,9 @@ export class Building
     static erasingOnMainCanvas(tileMap, buildingsObject, buldings, mouseTileX, mouseTileY)
     {
         const building = buildingsObject.find((elem) => {
-
-            if ((mouseTileX >= elem.x && mouseTileX <= elem.x + elem.width) &&
-               (mouseTileY >= elem.y && mouseTileY <= elem.y + elem.height))
+            console.log(mouseTileX, mouseTileY, elem);
+            if ((mouseTileX >= elem.x && mouseTileX <= elem.x + elem.width - 1) &&
+               (mouseTileY >= elem.y && mouseTileY <= elem.y + elem.height - 1))
             {
                 return true;
             }
