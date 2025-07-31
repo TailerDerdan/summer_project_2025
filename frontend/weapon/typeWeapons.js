@@ -8,7 +8,7 @@ export const TYPE_WEAPON = {
     PISTOL: 4
 }
 
-const TYPE_SHOOTING = {
+export const TYPE_SHOOTING = {
     SINGLE: 0,
     AUTOMATIC: 1,
     FIRING_A_BURST: 2
@@ -96,8 +96,9 @@ export function getInitValues(typeWeapon)
 
 export class Weapon
 {
-    constructor(InitValues, typeWeapon, x, y)
+    constructor(InitValues, typeWeapon, x, y, id)
     {
+        this.id = id;
         this.ammoCapacity = InitValues.ammoCapacity;
         this.totalAmmo = InitValues.totalAmmo;
         this.currentAmmo = InitValues.currentAmmo;
@@ -107,6 +108,7 @@ export class Weapon
         this.timeReload = InitValues.timeReload;
         this.damage = InitValues.damage;
         this.type = typeWeapon;
+        this.typeShooting = InitValues.typeShooting;
         this.speedBullet = InitValues.speedBullet;
         this.x = x;
         this.y = y;

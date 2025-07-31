@@ -1,5 +1,7 @@
+import { setTypeShooting } from "../weapon/shooting.js";
 import { allWeapon } from "../weapon/spawnWeapon.js";
 import { TYPE_WEAPON } from "../weapon/typeWeapons.js";
+import { sendChangeWeapon } from "../ws/game.js";
 import { player } from "./player.js"
 
 document.addEventListener("mousedown", (event) => {
@@ -13,17 +15,18 @@ document.addEventListener("mousedown", (event) => {
             player.weapon = null;
             weaponPlayer.owner = null;
             weaponPlayer.container.fillVertices();
-            allWeapon.push(weaponPlayer);
+            allWeapon.set(weaponPlayer.id, weaponPlayer);
         }
 
         for (const [id, weapon] of allWeapon)
         {
-            console.log(weapon);
             if (weapon.currentAmmo == 0) continue;
             if (player.container.isTwoContainerConcerns(weapon.container))
             {
                 player.weapon = weapon;
                 weapon.owner = player;
+                setTypeShooting(player);
+                // sendChangeWeapon();
                 break;
             }
         }

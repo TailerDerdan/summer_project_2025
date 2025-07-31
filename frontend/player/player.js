@@ -18,10 +18,9 @@ export class Player extends Character
 {
     constructor(id, x, y, dir, width, height, speed, weapon)
     {
-        super(id, x, y, width, height, dir);
+        super(id, x, y, width, height, dir, weapon);
 
         this.speed = speed;
-        this.weapon = weapon;
 
         this.sprite = new Sprite(COUNT_FRAMES, './sprites/playerSprite.png', 0.1, true);
         this.sprite.makeFrames(WIDTH_FRAME, HEIGHT_FRAME, START_X);
@@ -32,6 +31,12 @@ export class Player extends Character
             x: this.x,
             y: this.y
         };
+        
+        this.throttleUpd = null;
+        this.intervalId = 0;
+        this.throttleUpdateBullets = null;
+        this.regularShootHandler = null;
+        this.regularStopHandler = null;
     }
 
     getCenterX() { return this.x + this.width / 2; }
@@ -190,6 +195,4 @@ export class Player extends Character
     }
 }
 
-const weapon1 = new Weapon(InitAssaultRifle, TYPE_WEAPON.ASSAULT_RIFLE, 0, 0);
-
-export const player = new Player(null, 400, 400, 0, 75, 48, 14, weapon1);
+export const player = new Player(null, 400, 400, 0, 75, 48, 14, null);

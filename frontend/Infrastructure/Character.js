@@ -4,6 +4,7 @@ import { randomPosition } from "../random.js";
 import {Sound} from "../soundsScript/sound.js";
 import { Blood, remainingBlood } from "../blood/blood.js";
 import { SnapshotBuffer } from "../ws/snapshot.js";
+import { TYPE_WEAPON } from "../weapon/typeWeapons.js";
 
 
 const WIDTH_FRAME = 25;
@@ -13,7 +14,7 @@ const COUNT_FRAMES = 8;
 
 export class Character
 {
-    constructor(id, x, y, width, height, dir, nickname)
+    constructor(id, x, y, width, height, dir, nickname, weapon = null)
     {
         console.log('Bot created with:', {id, x, y, width, height, dir});
 
@@ -26,6 +27,8 @@ export class Character
         this.container = new Container(width, height, x, y, dir);
         this.nickname = nickname;
         this.snapshotBuffer = new SnapshotBuffer(this);
+
+        this.weapon = weapon;
 
         this.speed = 0;
 
@@ -91,6 +94,28 @@ export class Character
         this.container.drawContainer(ctx);
 
         this.sprite.applyToSpriteMovement(ctx, -this.width / 2, -this.height / 2, this.width, this.height);
+
+        console.log(this.weapon);
+
+        if (this.weapon)
+        {
+            if (this.weapon.type == TYPE_WEAPON.PISTOL)
+            {
+                ctx.drawImage(this.weapon.sprite, 0, -this.height / 2, this.weapon.widthSprite, this.weapon.heightSprite);
+            }
+            if (this.weapon.type == TYPE_WEAPON.ASSAULT_RIFLE)
+            {
+                ctx.drawImage(this.weapon.sprite, 0, -this.height * 0.8, this.weapon.widthSprite, this.weapon.heightSprite);
+            }
+            if (this.weapon.type == TYPE_WEAPON.SHOTGUN)
+            {
+                ctx.drawImage(this.weapon.sprite, 0, -this.height * 0.8, this.weapon.widthSprite, this.weapon.heightSprite);
+            }
+            if (this.weapon.type == TYPE_WEAPON.SNIPER_RIFLE)
+            {
+                ctx.drawImage(this.weapon.sprite, 0, -this.height * 0.8, this.weapon.widthSprite, this.weapon.heightSprite);
+            }
+        }
 
         ctx.restore();
     }

@@ -3,7 +3,7 @@ import { arrEnemy, player } from "../player/player.js";
 import { playerBullets } from "../weapon/shooting.js";
 import { Bullet } from "../weapon/bullet.js";
 import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
-import { spawnWeapon } from "../weapon/spawnWeapon.js";
+import { allWeapon, spawnWeapon } from "../weapon/spawnWeapon.js";
 import {gameLoop, initGame} from "../main.js";
 export let mapName
 export const gameStats = {
@@ -76,6 +76,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     handleGenerateWeapons(msg.data);
                 case 'game_state_server':
                     handleGameState(msg.data);
+                    break;
+                case "change_weapon_server":
+                    // handleChangeWeapon(msg.data);
                     break;
             }
         });
@@ -398,6 +401,30 @@ async function saveStats(data) {
 
 function handleGenerateWeapons(data) 
 {
-    console.log(data)
     spawnWeapon(data.weapons);
+}
+
+export function sendChangeWeapon()
+{
+    sendWebSocketMessage({
+        type: "change_weapon",
+        data: {
+            weaponID: player.weapon.id,
+        }
+    });
+}
+
+function handleChangeWeapon(data)
+{
+    if (arrEnemy.has(data.playerId))
+    {
+        if (allWeapon.has(data.weaponId))
+        {
+            arrEnemy.get(data.playerId).weapon = allWeapon.get(data.weaponId);
+        }
+        else
+        {
+            console.log("Такого оружия нет");
+        }
+    }
 }

@@ -1,5 +1,5 @@
 import { player, arrEnemy, arrBot } from '../player/player.js';
-import { TYPE_WEAPON, InitAssaultRifle, InitShotgun, InitSniperRifle, Weapon } from './typeWeapons.js';
+import { TYPE_WEAPON, InitAssaultRifle, InitShotgun, InitSniperRifle, Weapon, TYPE_SHOOTING } from './typeWeapons.js';
 import { ctx } from  '../canvas.js';
 import { Bullet } from './bullet.js';
 import { camera } from '../camera/camera.js';
@@ -35,7 +35,7 @@ const updateBullets = (event) => {
 
         if (player.weapon.currentAmmo === 0) return;
 
-        player.soundShoot.stop();
+        // player.soundShoot.stop();
 
         const objForMovement = {
             dir: 0,
@@ -91,7 +91,7 @@ const updateBullets = (event) => {
             player.weapon.currentAmmo--;
         }
 
-        player.soundShoot.play();
+        // player.soundShoot.play();
     }
 }
 
@@ -243,15 +243,6 @@ for (const bot of arrBot) {
     }
 }
 
-let throttleUpd = throttle(updateBullets, player.weapon.timeBetweenBul * 1000);
-
-function throttleUpdateBullets(event)
-{
-    throttleUpd(event);
-}
-
-document.addEventListener('mousedown', throttleUpdateBullets);
-
 function updateBulletsOnMap(ctx, xView, yView, bullets) {
     bullets.forEach((bullet, index) => {
         bullet.setX(bullet.getX() + bullet.getDistX());
@@ -271,10 +262,46 @@ export function updateAllBullets(ctx, xView, yView) {
     updateBulletsOnMap(ctx, xView, yView, playerBullets);
 }
 
-// let intervalId = 0;
-// document.addEventListener('mousedown', (event) => {
-//     intervalId = setInterval(() => {updateBullets(event);}, player.weapon.timeBetweenBul * 1000);
-// })
-// document.addEventListener('mouseup', () => {
-//     clearInterval(intervalId);
-// })
+export function setTypeShooting(player)
+{
+    if (!player.weapon) return;
+
+    document.removeEventListener('mousedown', player.throttleUpdateBullets);
+    document.removeEventListener('mousedown', player.regularShootHandler);
+    document.removeEventListener('mouseup', player.regularStopHandler);
+
+    if (player.intervalId) {
+        clearInterval(player.intervalId);
+        player.intervalId = 0;
+    }
+
+    if (player.weapon.typeShooting == TYPE_SHOOTING.SINGLE || player.weapon.typeShooting == TYPE_SHOOTING.FIRING_A_BURST)
+    {
+        player.throttleUpd = throttle(updateBullets, player.weapon.timeBetweenBul * 1000);
+
+        player.throttleUpdateBullets = (event) => {
+            player.throttleUpd(event);
+        }
+
+        document.addEventListener('mousedown', player.throttleUpdateBullets);
+    }
+    else
+    {
+        if (!player.weapon) return;
+
+        player.regularShootHandler = (event) => {
+            updateBullets(event);
+            player.intervalId = setInterval(() => {
+                updateBullets(event);
+            }, player.weapon.timeBetweenBul * 1000);
+        };
+        
+        player.regularStopHandler = () => {
+            clearInterval(player.intervalId);
+            player.intervalId = 0;
+        };
+
+        document.addEventListener('mousedown', player.regularShootHandler);
+        document.addEventListener('mouseup', player.regularStopHandler);
+    }
+}

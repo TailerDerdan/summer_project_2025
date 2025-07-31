@@ -9,7 +9,7 @@ export function spawnWeapon(weaponsServer)
         const initValue = getInitValues(weaponServer.type);
         if (initValue)
         {
-            const weapon = new Weapon(initValue, weaponServer.type, weaponServer.x, weaponServer.y);
+            const weapon = new Weapon(initValue, weaponServer.type, weaponServer.x, weaponServer.y, weaponServer.id.toString());
             allWeapon.set(weaponServer.id.toString(), weapon);
         }
     }
