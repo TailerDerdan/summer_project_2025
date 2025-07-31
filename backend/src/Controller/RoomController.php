@@ -75,6 +75,13 @@ class RoomController extends AbstractController {
 
     public function join(int $roomId): Response {
         $user = $this->getUser();
+        $room = $this->roomService->get($roomId);
+        if (!$room) {
+            return new JsonResponse(['error' => 'Room not found'], Response::HTTP_NOT_FOUND);
+        }
+        if ($room->getPlayersCount() >= $room->getMaxPlayers()) {
+            return new JsonResponse(['error' => 'Maximum number of players reached'], Response::HTTP_NOT_FOUND);
+        }
         if ($user->getRoomId() != (int)$roomId) {
             $this->userService->updateRoomId($user->getUserId(), (int)$roomId);
             $this->roomService->addUserInRoom($user->getUserId(), (int)$roomId);

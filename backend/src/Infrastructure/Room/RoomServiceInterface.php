@@ -10,7 +10,6 @@ interface RoomServiceInterface {
     public function get(int $roomId): ?Room;
     public function update($roomParams, $roomId): int;
     public function delete(int $roomId): void;
-    public function getRoomById($roomId): ?Room;
     public function getAll(): ?array;
     public function addUserInRoom(int $userId, int $roomId): void;
     public function removeUserFromRoom(int $userId, int $roomId): void;
