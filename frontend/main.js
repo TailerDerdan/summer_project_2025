@@ -105,7 +105,7 @@ export const initGame = async () => {
         sendWebSocketMessage({
             type: "weapons_points",
             data: {
-                weapons_points: gettedMap.spawnsWeapons//gettedMap.weaponsPoints,
+                weapons_points: gettedMap.spawnsWeapons,
             }
         })
     }
@@ -114,55 +114,4 @@ export const initGame = async () => {
         type: "ready_to_battle",
     })
     console.log("#88888")
-    firstDrawMap()
-    console.log("#hhhhh")
-    // setTimeout(() => {
-    //     gameLoop();
-    // }, 100);
-}
-
-function firstDrawMap() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    map.draw(ctx, camera.xView, camera.yView);
-
-    arrEnemy.forEach(enemy => {
-        enemy.snapshotBuffer.interpolate();
-        enemy.drawCharacter(ctx, camera.xView, camera.yView)
-        enemy.updateCharacter();
-    })
-
-    arrBot.forEach(bot => {
-        bot.updateMovementBot(ctx, camera.xView, camera.yView);
-        bot.updateCharacter();
-    })
-
-    arrBot.forEach((bot, index) => {
-        if (bot.isCharacterLive && bot.weapon) {
-            //throttleBotsShoot[index]();
-        }
-    });
-
-    updateAllWeaponOnMap();
-    drawAllWeaponOnMap(ctx, camera.xView, camera.yView);
-    player.drawCurrentAmmo();
-    updateAllBullets(ctx, camera.xView, camera.yView);
-
-    drawRemainingBlood(ctx, camera.xView, camera.yView);
-
-    updateMovementPlayer(camera.xView, camera.yView, deltaTime, map.walls);
-    player.updateCharacter();
-    if (!player.isCharacterLive)
-    {
-        player.appearanceAfterDeathWidthDelay();
-        playerDeath(stateForWS.userId)
-    }
-
-    camera.update();
-    updateTexture();
-    render(state);
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, texture2D);
-    if (!stateForWS.gameIsRun) {
-        console.log("game over")
-    }
 }
