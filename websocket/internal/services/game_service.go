@@ -52,7 +52,7 @@ func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *m
 	}
 	gs.activeGames[gameID] = game
 	//go gs.waitingPlayers(gameID)
-	go gs.StartWaitingPlayers(gameID)
+	//go gs.StartWaitingPlayers(gameID)
 	return game
 }
 
@@ -433,7 +433,7 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 	fmt.Println("7777")
 	game.Players[conn] = player
 	game.Stats[player.PlayerID] = &models.PlayerStats{}
-	game.ReadyCheck[player.PlayerID] = false
+	game.ReadyCheck[player.PlayerID] = true
 	fmt.Println("8888")
 	stateMsg := map[string]interface{}{
 		"type": "game_state_server",
