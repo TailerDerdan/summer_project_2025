@@ -5,6 +5,7 @@ export const TYPE_WEAPON = {
     ASSAULT_RIFLE: 1,
     SNIPER_RIFLE: 2,
     SHOTGUN: 3,
+    PISTOL: 4
 }
 
 const TYPE_SHOOTING = {
@@ -59,6 +60,53 @@ export const InitShotgun = {
     sprite: "./weapon/spriteWeapon/shotgun.png",
     widthSprite: 9 * 2,
     heightSprite: 27 * 2,
+}
+
+export const InitPistols = {
+    ammoCapacity: 4,
+    totalAmmo: Infinity,
+    currentAmmo: 4,
+    fireRange: 1200,
+    timeBetweenBul: 2.5,
+    weight: 1.6,
+    timeReload: 5,
+    damage: 2,
+    speedBullet: 15,
+    typeShooting: TYPE_SHOOTING.SINGLE,
+    sprite: "./weapon/spriteWeapon/gun.png",
+    widthSprite: 6 * 2,
+    heightSprite: 13 * 2,
+}
+
+export function getInitValues(typeWeapon)
+{
+    switch (typeWeapon) {
+        case TYPE_WEAPON.ASSAULT_RIFLE:
+            return InitAssaultRifle;
+        case TYPE_WEAPON.SHOTGUN:
+            return InitShotgun;
+        case TYPE_WEAPON.SNIPER_RIFLE:
+            return InitSniperRifle;
+        default:
+            break;
+    }
+}
+
+export function getTypeWeaponByStr(typeStr)
+{
+    switch (typeStr) {
+        case "pistol":
+            return TYPE_WEAPON.PISTOL;
+        case "rifle":
+            return TYPE_WEAPON.ASSAULT_RIFLE;
+        case "shotgun":
+            return TYPE_WEAPON.SHOTGUN;
+        case "sniper":
+            return TYPE_WEAPON.SNIPER_RIFLE;
+        default:
+            return TYPE_WEAPON.NONE;
+            break;
+    }
 }
 
 export class Weapon

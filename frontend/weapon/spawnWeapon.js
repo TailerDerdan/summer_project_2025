@@ -1,43 +1,27 @@
-import { randomMinMax, randomPosition } from "../random.js";
-import { InitAssaultRifle, InitShotgun, InitSniperRifle, TYPE_WEAPON, Weapon } from "./typeWeapons.js";
+import { getInitValues, getTypeWeaponByStr, Weapon } from "./typeWeapons.js";
 
-const MAX_COUNT_WEAPON_ON_MAP = 10;
+export let allWeapon = new Map();
 
-const tableOfWeightOfWeapon = new Map();
-let sumOfAllWeight = 0;
-
-function MakeTableOfWeight()
+export function spawnWeapon(weaponsServer)
 {
-    tableOfWeightOfWeapon.set(TYPE_WEAPON.NONE, 1000);
-    sumOfAllWeight += tableOfWeightOfWeapon.get(TYPE_WEAPON.NONE);
-    tableOfWeightOfWeapon.set(TYPE_WEAPON.ASSAULT_RIFLE, 3);
-    sumOfAllWeight += tableOfWeightOfWeapon.get(TYPE_WEAPON.ASSAULT_RIFLE);
-    tableOfWeightOfWeapon.set(TYPE_WEAPON.SHOTGUN, 5);
-    sumOfAllWeight += tableOfWeightOfWeapon.get(TYPE_WEAPON.SHOTGUN);
-    tableOfWeightOfWeapon.set(TYPE_WEAPON.SNIPER_RIFLE, 4);
-    sumOfAllWeight += tableOfWeightOfWeapon.get(TYPE_WEAPON.SNIPER_RIFLE);
-}
-
-MakeTableOfWeight();
-
-export let allWeapon = [];
-
-function spawnWeapon()
-{
-    for (let iter = 0; iter < MAX_COUNT_WEAPON_ON_MAP; iter++)
+    for (const weaponServer of weaponsServer)
     {
-        const weapon = new Weapon(InitShotgun, TYPE_WEAPON.SHOTGUN, iter * 100, 500);
-        allWeapon.push(weapon);
+        const initValue = getInitValues(weaponServer.type);
+        if (initValue)
+        {
+            const typeWeapon = getTypeWeaponByStr(weaponServer.type);
+            const weapon = new Weapon(initValue, typeWeapon, weaponServer.x, weaponServer.y);
+            allWeapon.set(weaponServer.id.toString(), weapon);
+        }
     }
+    console.log(allWeapon);
 }
-
-spawnWeapon();
 
 export function drawAllWeaponOnMap(ctx, xView, yView)
 {
     ctx.save();
 
-    for (const weapon of allWeapon)
+    for (const [id, weapon] of allWeapon)
     {
         if (weapon.owner) continue;
 
@@ -56,7 +40,7 @@ export function drawAllWeaponOnMap(ctx, xView, yView)
 
 export function updateAllWeaponOnMap()
 {
-    for (const weapon of allWeapon)
+    for (const [id, weapon] of allWeapon)
     {
         if (weapon.currentAmmo <= 0 && !weapon.owner)
         {
@@ -70,5 +54,11 @@ export function updateAllWeaponOnMap()
             }
         }
     }
-    allWeapon = allWeapon.filter(weapon => !weapon.isExpired);
+    for (const [id, weapon] of allWeapon)
+    {
+        if (weapon.isExpired)
+        {
+            allWeapon.delete(id);
+        }
+    }
 }

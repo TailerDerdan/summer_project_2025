@@ -3,6 +3,7 @@ import { arrEnemy, player } from "../player/player.js";
 import { playerBullets } from "../weapon/shooting.js";
 import { Bullet } from "../weapon/bullet.js";
 import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
+import { spawnWeapon } from "../weapon/spawnWeapon.js";
 export let mapName
 export const gameStats = {
     kills: 0,
@@ -31,7 +32,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         setMessageHandler((event) => {
             const msg = JSON.parse(event.data);
-            console.log("msg.type: ", msg.type)
             switch (msg.type) {
                 case "init_players_server":
                     handleInitPlayers(msg.data.players);
@@ -62,6 +62,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 case "save_stats_server":
                     console.log("save stats: ")
                     saveStats(msg.data);
+                    break;
+                case "generate_weapons_server":
+                    console.log(msg);
+                    handleGenerateWeapons(msg.data);
                     break;
             }
         });
@@ -308,8 +312,6 @@ export function sendBullets()
 
         if ((now - lastSentTimeForBullets > 100) && (playerBullets.length !== 0))
         {
-            console.log(playerBullets);
-
             sendWebSocketMessage({
                 type: "update_bullets",
                 data: {
@@ -365,4 +367,9 @@ async function saveStats(data) {
     catch (error) {
         console.error('Ошибка:', error);
     }
+}
+
+function handleGenerateWeapons(data) 
+{
+    spawnWeapon(data.weapons);
 }

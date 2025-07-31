@@ -15,7 +15,7 @@ const updateKeyDict = (event) => {
     }
 };
 
-export const updateMovementPlayer = (xView, yView, deltaTime) => {
+export const updateMovementPlayer = (xView, yView, deltaTime, walls) => {
 
     let playerDir = player.dir;
 
@@ -47,9 +47,9 @@ export const updateMovementPlayer = (xView, yView, deltaTime) => {
     player.changeDistXYByPhysic(dist);
 
     //console.log('duyqwduyqw', dist);
-    let isWasMovement = player.updatePosition(dist.distX, dist.distY, keyDict);
+    let isWasMovement = player.updatePosition(dist.distX, dist.distY, keyDict, walls);
 
-    if (isWasMovement)
+    if (isWasMovement.keyA || isWasMovement.keyD || isWasMovement.keyS || isWasMovement.keyW)
     {
         player.sprite.updateFrames(deltaTime);
     }

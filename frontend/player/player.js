@@ -4,6 +4,7 @@ import { InitAssaultRifle, InitShotgun, TYPE_WEAPON, Weapon } from '../weapon/ty
 import { Character } from "../Infrastructure/Character.js";
 import { bot1, bot2, bot3 } from "../bot/Bot.js";
 import {Sound} from "../soundsScript/sound.js";
+import { HEIGHT_MAP, WIDTH_MAP } from '../sizes.js';
 
 const WIDTH_FRAME = 23;
 const HEIGHT_FRAME = 34;
@@ -40,34 +41,48 @@ export class Player extends Character
     setX(x) { this.x = x; }
     setY(y) { this.y = y; }
 
-    updatePosition(distX, distY, keyDict)
+    updatePosition(distX, distY, keyDict, walls)
     {
-        let isWasMovement = false;
+        const isWasMovement = {
+            keyW: false,
+            keyD: false,
+            keyS: false,
+            keyA: false,
+        };
+
         if (keyDict.KeyW)
         {
             this.y -= distY;
             this.x += distX;
-            isWasMovement = true;
+            isWasMovement.keyW = true;
+
         }
         if (keyDict.KeyS)
         {
             this.y += distY;
             this.x -= distX;
-            isWasMovement = true;
+            isWasMovement.keyS = true;
         }
 
         if (keyDict.KeyD)
         {
             this.y += distX;
             this.x += distY;
-            isWasMovement = true;
+            isWasMovement.keyD = true;
         }
         if (keyDict.KeyA)
         {
             this.y -= distX;
             this.x -= distY;
-            isWasMovement = true;
+            isWasMovement.keyA = true;
         }
+
+        if (this.y < 0) this.y = 0;
+        if (this.y > HEIGHT_MAP) this.y = HEIGHT_MAP;
+
+        if (this.x < 0) this.x = 0;
+        if (this.x > WIDTH_MAP) this.x = WIDTH_MAP;
+
         if (this.weapon)
         {
             this.weapon.x = player.x;

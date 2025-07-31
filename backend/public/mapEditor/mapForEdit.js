@@ -1,4 +1,4 @@
-import { car1, car2, CountOfBuildings, floor, TypeBuilding, wall } from "./buildings/deterBuildings.js";
+import { car1, car2, CountOfBuildings, floor, spawnWeapon, TypeBuilding, wall } from "./buildings/deterBuildings.js";
 import { COUNT_TILE_X, COUNT_TILE_Y, HEIGHT_MAP, TILE_HEIGHT, TILE_WIDTH, WIDTH_MAP } from "./sizes.js";
 import { stateEditor } from "./state.js";
 
@@ -33,6 +33,7 @@ export class MapEditor
         this.verticalWalls = new Array(COUNT_TILE_X * COUNT_TILE_Y).fill(0);
         this.containers = [];
         this.isSaveMap = false;
+        this.spawnsWeapons = [];
     }
 
     draw(ctx, x, y, viewportWidth, viewportHeight, panOffset, scaleData)
@@ -98,6 +99,11 @@ export class MapEditor
             {
                 car2.drawOnMap(ctx, elem);
             }
+            if (elem.choosenBuilding >= TypeBuilding.SpawnWeapon1 &&
+                elem.choosenBuilding <= TypeBuilding.SpawnWeapon1 + CountOfBuildings.SpawnWeapon - 1)
+            {
+                spawnWeapon.drawOnMap(ctx, elem);
+            }
         })
     }
 
@@ -108,7 +114,9 @@ export class MapEditor
             for (let iterX = 0; iterX < COUNT_TILE_X; iterX++)
             {
                 const wall = this.buldingsObject.find((elem) => {
-                    if (elem.x == iterX && elem.y == iterY) return true;
+                    if (elem.x == iterX && elem.y == iterY &&
+                        elem.choosenBuilding >= TypeBuilding.Wall1 &&
+                        elem.choosenBuilding <= TypeBuilding.Wall1 + CountOfBuildings.Wall - 1) return true;
                 });
 
                 if (wall)
@@ -143,7 +151,7 @@ export class MapEditor
                     this.tileMap[iterY * COUNT_TILE_Y + iterX] <= TypeBuilding.Floor1 + CountOfBuildings.Floor - 1)
                 {
                     let iter = this.tileMap[iterY * COUNT_TILE_Y + iterX] - TypeBuilding.Floor1;
-                    ctx.drawImage(floor.image,
+                    ctx.drawImage(this.imageFloor,
                         floor.rectsForSprite[iter].sx,
                         floor.rectsForSprite[iter].sy,
                         floor.rectsForSprite[iter].sWidth,
@@ -159,31 +167,28 @@ export class MapEditor
                 {
                     const wallObj = this.buldingsObject.find((elem) => {
                         if (elem.x == iterX && elem.y == iterY) return true;
-                    })
-                    let rotation = 0;
+                    });
                     if (wallObj)
                     {
-                        rotation = wallObj.rotation;
+                        wall.drawOnMap(ctx, wallObj);
                     }
-                    let iter = this.buldings[iterY * COUNT_TILE_Y + iterX] - TypeBuilding.Wall1;
-                    ctx.save();
-                    ctx.translate(iterX * TILE_WIDTH + TILE_WIDTH / 2,
-                                    iterY * TILE_HEIGHT + TILE_HEIGHT / 2);
-                    ctx.rotate(rotation * Math.PI / 180);
-                    ctx.drawImage(wall.image,
-                        wall.rectsForSprite[iter].sx,
-                        wall.rectsForSprite[iter].sy,
-                        wall.rectsForSprite[iter].sWidth,
-                        wall.rectsForSprite[iter].sHeight,
-                        -wall.widthOnMap,
-                        -wall.heightOnMap,
-                        wall.rectsForSprite[iter].dWidth,
-                        wall.rectsForSprite[iter].dHeight
-                    );
-                    ctx.restore();
                 }
             }
         }
+
+        this.buldingsObject.forEach((elem) => {
+
+            if (elem.choosenBuilding >= TypeBuilding.Car11 &&
+                elem.choosenBuilding <= TypeBuilding.Car11 + CountOfBuildings.Car1 - 1)
+            {
+                car1.drawOnMap(ctx, elem);
+            }
+            if (elem.choosenBuilding >= TypeBuilding.Car21 &&
+                elem.choosenBuilding <= TypeBuilding.Car21 + CountOfBuildings.Car2 - 1)
+            {
+                car2.drawOnMap(ctx, elem);
+            }
+        })
     }
 
     saveMap(nameMap, ctx)
@@ -280,6 +285,7 @@ export class MapEditor
             nameMap: nameMap,
             image: imageMap,
             walls: this.containers,
+            spawnsWeapons: this.spawnsWeapons,
         }
         fetch("/main/saveMap", {
             method: "POST",

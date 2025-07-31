@@ -17,16 +17,8 @@ export class Building
         this.rotation = rotation;
         this.rectsForSprite = [];
         this.nameOfBuilding = nameOfBuilding;
-
-        if (src != "")
-        {
-            this.image = new Image();
-            this.image.src = srcImage;
-        }
-        else
-        {
-            
-        }
+        this.image = new Image();
+        this.image.src = srcImage;
     }
 
     fillSprite(lastTypeOfBuilding, TypeBuilding, countSpriteInLine, countSpriteInLineInCanvas)
@@ -80,11 +72,9 @@ export class Building
     interactionWithBuilding(event)
     {
         const {offsetX, offsetY} = event;
-        console.log(event, offsetX, offsetY, this)
         
         for (let iter = 0; iter < this.countSprite; iter++)
         {
-            console.log(this.rectsForSprite[iter].dx, this.rectsForSprite[iter].dWidth, this.rectsForSprite[iter].dy, this.rectsForSprite[iter].dHeight);
             if (offsetX >= this.rectsForSprite[iter].dx &&
                 offsetX <= this.rectsForSprite[iter].dx + this.rectsForSprite[iter].dWidth &&
                 offsetY >= this.rectsForSprite[iter].dy &&
@@ -92,7 +82,7 @@ export class Building
             )
             {
                 choosenBuilding.state = iter + TypeBuilding[`${this.nameOfBuilding}${1}`];
-                console.log(choosenBuilding);
+                console.log(choosenBuilding, TypeBuilding);
                 return;
             }
         }
@@ -265,8 +255,6 @@ export class Building
 
     static erasingOnMainCanvas(tileMap, buildingsObject, buldings, mouseTileX, mouseTileY)
     {
-        tileMap[mouseTileY * COUNT_TILE_X + mouseTileX] = 0;
-
         const building = buildingsObject.find((elem) => {
 
             if ((mouseTileX >= elem.x && mouseTileX <= elem.x + elem.width) &&
@@ -276,7 +264,11 @@ export class Building
             }
         });
 
-        if (!building) return;
+        if (!building) 
+        {
+            tileMap[mouseTileY * COUNT_TILE_X + mouseTileX] = 0;
+            return;
+        }
 
         for (let iterY = building.y; iterY < building.y + building.height; iterY++)
         {
