@@ -8,6 +8,7 @@ export function spawnWeapon(weaponsServer)
     {
         console.log("loop", weaponServer);
         const initValue = getInitValues(weaponServer.type);
+        console.log(initValue)
         if (initValue)
         {
             const weapon = new Weapon(initValue, weaponServer.type, weaponServer.x, weaponServer.y);
