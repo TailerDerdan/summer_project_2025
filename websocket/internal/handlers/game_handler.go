@@ -95,12 +95,13 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 		//	log.Printf("Game WS read message failed: %v", err)
 		//}
 		_, messageBytes, err := conn.ReadMessage()
+		log.Printf("G Received: %s", string(messageBytes))
 		if err != nil {
 			log.Printf("G WebSocket read error: %v", err)
 			//gh.gameService.RemovePlayerFromGame(gameID, conn)
 			break
 		}
-		log.Printf("G Received raw message: %s", string(messageBytes))
+		log.Printf("G raw message: %s", string(messageBytes))
 		if err := json.Unmarshal(messageBytes, &msg); err != nil {
 			log.Printf("G Failed to parse JSON: %v\nRaw data: %s", err, string(messageBytes))
 			//gh.gameService.RemovePlayerFromGame(gameID, conn)

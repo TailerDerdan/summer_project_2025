@@ -86,6 +86,7 @@ export const initGame = async () => {
         await new Promise(resolve => {
             const checkInterval = setInterval(() => {
                 if (stateForWS?.mapName) {
+                    console.log("||||||")
                     clearInterval(checkInterval);
                     resolve();
                 }
@@ -94,17 +95,19 @@ export const initGame = async () => {
     }
     console.log("00000")
     const gettedMap = await getMap(stateForWS.mapName);
+    console.log("====")
     const imgMap = new Image();
     imgMap.src = gettedMap.image;
     map.image = imgMap;
     map.generate(ctx);
     map.fillWalls(gettedMap.walls);
-
+    console.log("++++")
     if (stateForWS.userId === stateForWS.hostId) {
+        console.log("}}}}")
         sendWebSocketMessage({
             type: "weapons_points",
             data: {
-                weapons_points: gettedMap.weaponsPoints,
+                weapons_points: [{x: 0, y: 0}]//gettedMap.weaponsPoints,
             }
         })
     }
