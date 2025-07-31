@@ -68,19 +68,21 @@ func (gh *GameHandler) authenticatePlayer(conn *websocket.Conn) (*models.PlayerI
 	var msg models.Msg
 
 	if err := conn.ReadJSON(&msg); err != nil {
+		fmt.Printf("Game WS read message failed: %v", err)
 		return nil, err
 	}
 	if msg.Type != "game_auth" {
 		return nil, fmt.Errorf("not a game_auth")
 	}
-
-	return &models.PlayerInfo{
+	player := &models.PlayerInfo{
 		PlayerID: msg.Data["userId"].(string),
 		Nickname: msg.Data["nickname"].(string),
 		X:        internal.GeneratePosition(),
 		Y:        internal.GeneratePosition(),
 		Dir:      0,
-	}, nil
+	}
+	fmt.Printf("PLayer new: %v\n", player)
+	return player, nil
 }
 
 func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID string) {
@@ -174,6 +176,8 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 }
 
 func (gh *GameHandler) sendError(conn *websocket.Conn, msg string) {
-	conn.WriteJSON(map[string]string{"error": msg})
+	if err := conn.WriteJSON(map[string]string{"error": msg}); err != nil {
+		fmt.Printf("Game WS send error asdfasdf: %v", err)
+	}
 	conn.Close()
 }

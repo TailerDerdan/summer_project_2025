@@ -316,6 +316,7 @@ func (gs *GameService) endGame(gameID string) error {
 func (gs *GameService) determineWinner(gameID string) string {
 	game, exists := gs.activeGames[gameID]
 	if !exists {
+		fmt.Println("Error DetermineWinner, game does not exist")
 		return ""
 	}
 
@@ -332,11 +333,13 @@ func (gs *GameService) determineWinner(gameID string) string {
 	if maxScore <= 0 {
 		if len(game.Players) > 0 {
 			for conn := range game.Players {
+				fmt.Printf("%v: %v\n", game.Players[conn], winnerID)
 				winnerID = game.Players[conn].PlayerID
 				break
 			}
 		}
 	}
+	fmt.Println("DetermineWinner, winnerID:", winnerID)
 	return winnerID
 }
 
@@ -430,7 +433,7 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
-	fmt.Println("7777")
+	fmt.Printf("7777, %v\n", player)
 	game.Players[conn] = player
 	game.Stats[player.PlayerID] = &models.PlayerStats{}
 	game.ReadyCheck[player.PlayerID] = true
@@ -499,7 +502,7 @@ func (gs *GameService) getGameState(gameID string) ([]models.PlayerInfo, []model
 			Ammo: weapon.Ammo,
 		})
 	}
-	fmt.Printf("mdsfqew, %v, %v\n", players, weapons)
+	fmt.Printf("mdsfqew, %+v, %+v\n", players, weapons)
 	return players, weapons, nil
 }
 
@@ -628,7 +631,7 @@ func (gs *GameService) SendInitialGameState(conn *websocket.Conn, gameID string)
 			"weapons": weapons,
 		},
 	}
-	fmt.Printf("666666, msg: %v\n", msg)
+	fmt.Printf("666666, msg: %+v\n", msg)
 	if err := conn.WriteJSON(msg); err != nil {
 		return fmt.Errorf("send initial players message failed: %v", err)
 	}
