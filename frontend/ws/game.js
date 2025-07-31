@@ -101,7 +101,7 @@ function handleGameState(data) {
         case 'countdown':
             statusElement.textContent = `До начала игры: ${data.countdown}`;
             if (data.countdown === 0) {
-                gameLoop()
+                statusElement.textContent = ''
             }
             break;
     }
@@ -398,5 +398,6 @@ async function saveStats(data) {
 
 function handleGenerateWeapons(data) 
 {
+    console.log(data)
     spawnWeapon(data.weapons);
 }

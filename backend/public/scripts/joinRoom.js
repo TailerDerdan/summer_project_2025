@@ -175,16 +175,7 @@ function handleGameStart(data, user) {
         hostId: data.hostId,
         nickname: user.nickname,
     }))
-    let countStart = 2
-    const countStartElt = document.querySelector(".timer-down")
-    const timer = setInterval(() => {
-        countStartElt.textContent = `Переход в игру через ${countStart}`
-        countStart--
-        if (countStart < 0) {
-            clearInterval(timer)
-            window.location.href = `/game/index.html?${data.gameId}`
-        }
-    }, 1000)
+    window.location.href = `/game/index.html?${data.gameId}`
 }
 
 async function deleteUserFromRoom(roomId) {

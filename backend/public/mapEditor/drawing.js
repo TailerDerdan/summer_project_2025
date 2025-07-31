@@ -8,7 +8,7 @@ let drawing = false;
 let erasing = false;
 
 const handleMouseDown = (event) => {
-    
+
     event.preventDefault();
     if (event.button === 0 && event.altKey)
     {
@@ -20,7 +20,7 @@ const handleMouseDown = (event) => {
         drawing = true;
         return;
     }
-    
+
 }
 
 const handleLeftMouseDown = (event) => {
@@ -29,7 +29,7 @@ const handleLeftMouseDown = (event) => {
 }
 
 const handleMouseMove = (event) => {
-    
+
     if (!drawing && !erasing)
     {
         return;
@@ -86,8 +86,8 @@ const handleMouseMove = (event) => {
             let isProbablyPutSpawn = true;
             for (const spawn of stateEditor.map.spawnsWeapons)
             {
-                console.log(Math.abs((spawn.x / COUNT_TILE_X) - iterX))
-                if (Math.abs((spawn.x / COUNT_TILE_X) - iterX) < 35 && Math.abs((spawn.y / COUNT_TILE_Y) - iterY) < 35)
+                console.log(Math.abs((spawn.x / TILE_WIDTH) - iterX))
+                if (Math.abs((spawn.x / TILE_WIDTH) - iterX) < 35 && Math.abs((spawn.y / TILE_HEIGHT) - iterY) < 35)
                 {
                     isProbablyPutSpawn = false;
                     break;
@@ -96,21 +96,21 @@ const handleMouseMove = (event) => {
             if (isProbablyPutSpawn)
             {
                 spawnWeapon.drawOnMainCanvas(stateEditor.map.tileMap, stateEditor.map.buldingsObject, stateEditor.map.buldings, iterX, iterY);
-                stateEditor.map.spawnsWeapons.push({x: iterX * COUNT_TILE_X, y: iterY * COUNT_TILE_Y});
+                stateEditor.map.spawnsWeapons.push({x: iterX * TILE_WIDTH, y: iterY * TILE_HEIGHT});
             }
         }
     }
-    
+
 }
 
 const handleMouseUp = (event) => {
-    
+
     drawing = false;
     erasing = false;
 }
 
 const rotationObject = (event) => {
-    
+
     if (event.key == 'к' || event.key == 'К' || event.key == 'r' || event.key == 'R')
     {
         choosenBuilding.rotation += 90;

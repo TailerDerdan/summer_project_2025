@@ -1,4 +1,4 @@
-import { getInitValues, getTypeWeaponByStr, Weapon } from "./typeWeapons.js";
+import { getInitValues, Weapon } from "./typeWeapons.js";
 
 export let allWeapon = new Map();
 
@@ -9,12 +9,10 @@ export function spawnWeapon(weaponsServer)
         const initValue = getInitValues(weaponServer.type);
         if (initValue)
         {
-            const typeWeapon = getTypeWeaponByStr(weaponServer.type);
-            const weapon = new Weapon(initValue, typeWeapon, weaponServer.x, weaponServer.y);
+            const weapon = new Weapon(initValue, weaponServer.type, weaponServer.x, weaponServer.y);
             allWeapon.set(weaponServer.id.toString(), weapon);
         }
     }
-    console.log(allWeapon);
 }
 
 export function drawAllWeaponOnMap(ctx, xView, yView)

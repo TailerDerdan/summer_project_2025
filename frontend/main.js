@@ -99,13 +99,13 @@ export const initGame = async () => {
     map.image = imgMap;
     map.generate(ctx);
     map.fillWalls(gettedMap.walls);
-    console.log("++++")
-    if (stateForWS.userId === stateForWS.hostId) {
+    console.log("++++, ", stateForWS.userId, stateForWS.hostId)
+    if (stateForWS.userId == stateForWS.hostId) {
         console.log("}}}}")
         sendWebSocketMessage({
             type: "weapons_points",
             data: {
-                weapons_points: gettedMap.spawnsWeapons//gettedMap.weaponsPoints,
+                weapons_points: gettedMap.spawnsWeapons,
             }
         })
     }
@@ -114,7 +114,5 @@ export const initGame = async () => {
         type: "ready_to_battle",
     })
     console.log("#88888")
-    // setTimeout(() => {
-    //     gameLoop();
-    // }, 100);
+    gameLoop()
 }

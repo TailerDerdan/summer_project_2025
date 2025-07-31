@@ -32,39 +32,34 @@ func NewGameHandler(gs infrastructure.IGameService, ws infrastructure.IWebSocket
 }
 
 func (gh *GameHandler) HandleGameConnection(w http.ResponseWriter, r *http.Request, gameID string) {
-	fmt.Println("MMMMMMM")
 	conn, err := gh.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("Game WS upgrade failed: %v", err)
 		return
 	}
 	//defer conn.Close()
-	fmt.Println("NNNNNN")
+
 	player, err := gh.authenticatePlayer(conn)
 	if err != nil {
 		log.Printf("Game WS authenticate failed: %v", err)
 		gh.sendError(conn, "Game WS authenticate failed")
 		return
 	}
-	fmt.Println("IIIIIII")
+
 	if err := gh.gameService.RegisterPlayer(conn, gameID, player); err != nil {
 		log.Printf("Game WS register failed: %v", err)
 		gh.sendError(conn, "Game WS register failed")
 		return
 	}
-	fmt.Println("PPPPPPP")
+
 	go gh.gameService.StartWaitingPlayers(gameID)
-	fmt.Println("YYYYYY")
+
 	if err := gh.gameService.SendInitialGameState(conn, gameID); err != nil {
 		log.Printf("Game WS send initial game state failed: %v", err)
 		gh.sendError(conn, "Game WS send initial game state failed")
 		return
 	}
-	fmt.Println("TTTTTTT")
-	//gh.gameService.StartTimer(conn, gameID)
-	//if err := gh.gameService.StartTimer(gameID); err != nil {
-	//	log.Printf("Game WS start timer failed: %v", err)
-	//}
+
 	gh.handleGameMessage(conn, gameID, player.PlayerID)
 }
 
@@ -95,13 +90,13 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 		//	log.Printf("Game WS read message failed: %v", err)
 		//}
 		_, messageBytes, err := conn.ReadMessage()
-		log.Printf("G Received: %s", string(messageBytes))
+		//log.Printf("G Received: %s", string(messageBytes))
 		if err != nil {
 			log.Printf("G WebSocket read error: %v", err)
 			//gh.gameService.RemovePlayerFromGame(gameID, conn)
 			break
 		}
-		log.Printf("G raw message: %s", string(messageBytes))
+		//log.Printf("G raw message: %s", string(messageBytes))
 		if err := json.Unmarshal(messageBytes, &msg); err != nil {
 			log.Printf("G Failed to parse JSON: %v\nRaw data: %s", err, string(messageBytes))
 			//gh.gameService.RemovePlayerFromGame(gameID, conn)
@@ -118,6 +113,21 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 }
 
 func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID string, msg models.Msg) error {
+	gameState, err := gh.gameService.GetGameState(gameID)
+	if err != nil {
+		return err
+	}
+	if gameState.Status != "playing" {
+		allowedTypes := map[string]bool{
+			"ready_to_battle": true,
+			"weapons_points":  true,
+			//"player_move":     true,
+		}
+
+		if !allowedTypes[msg.Type] {
+			return nil
+		}
+	}
 	switch msg.Type {
 	//case "player_join":
 	//	fmt.Println("/-666-/")
@@ -145,6 +155,7 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 		err := gh.gameService.PlayerDeath(gameID, playerID)
 		return err
 	case "weapons_points":
+		fmt.Println("12341234")
 		err := gh.gameService.SetWeaponsPoints(gameID, msg.Data)
 		return err
 	case "change_weapon":

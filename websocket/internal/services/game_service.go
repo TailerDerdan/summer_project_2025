@@ -2,6 +2,7 @@ package services
 
 import (
 	"crypto/rand"
+	rand2 "math/rand"
 	"sort"
 	"time"
 
@@ -25,24 +26,6 @@ func NewGameService() *GameService {
 		activeGames: make(map[string]*models.Game),
 	}
 }
-
-//{
-//	{X: 100, Y: 100},
-//	{X: 500, Y: 100},
-//	{X: 100, Y: 300},
-//	{X: 500, Y: 300},
-//	{X: 300, Y: 200},
-//	{X: 200, Y: 400},
-//	{X: 400, Y: 400},
-//	{X: 100, Y: 500},
-//	{X: 500, Y: 500},
-//	{X: 300, Y: 300},
-//	{X: 1000, Y: 1000},
-//	{X: 1100, Y: 1100},
-//	{X: 1200, Y: 1200},
-//	{X: 1300, Y: 1300},
-//	{X: 1400, Y: 1400},
-//}
 
 const maxWeaponsOnMap = 10
 
@@ -68,22 +51,6 @@ func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *m
 		ReadyCheck: make(map[string]bool),
 	}
 	gs.activeGames[gameID] = game
-	//if points, ok := data["weaponsPoints"].([]interface{}); ok {
-	//	weaponSpawnPoints = make([]models.SpawnPoint, 0, len(points))
-	//
-	//	for _, p := range points {
-	//		if point, ok := p.(map[string]interface{}); ok {
-	//			spawnPoint := models.SpawnPoint{
-	//				X: point["x"].(float64),
-	//				Y: point["y"].(float64),
-	//			}
-	//			weaponSpawnPoints = append(weaponSpawnPoints, spawnPoint)
-	//		}
-	//	}
-	//}
-	if err := gs.generateWeapons(gameID); err != nil {
-		fmt.Printf("Ошибка инициализации оружия%v", err)
-	}
 	//go gs.waitingPlayers(gameID)
 	return game
 }
@@ -115,7 +82,7 @@ func (gs *GameService) StartWaitingPlayers(gameID string) {
 
 			if allConnected {
 				game.State.Status = "countdown"
-				game.State.CountDown = 15
+				game.State.CountDown = 10
 				gs.notifyGameState(gameID)
 				//gs.mu.Unlock()
 				fmt.Println("rrr rrr www")
@@ -151,7 +118,7 @@ func (gs *GameService) StartWaitingPlayers(gameID string) {
 			}
 			fmt.Println("000 000 000")
 			game.State.Status = "countdown"
-			game.State.CountDown = 15
+			game.State.CountDown = 10
 			gs.notifyGameState(gameID)
 			//gs.mu.Unlock()
 			fmt.Println("000 000 000")
@@ -580,6 +547,9 @@ func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID str
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
+	if game.State.Status != "playing" {
+		return nil
+	}
 
 	player := game.Players[conn]
 	player.X = data["x"].(float64)
@@ -607,9 +577,12 @@ func (gs *GameService) UpdateBullets(conn *websocket.Conn, gameID string, data m
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
 
-	_, exists := gs.activeGames[gameID]
+	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
+	}
+	if game.State.Status != "playing" {
+		return nil
 	}
 
 	bulletsMsg := map[string]interface{}{
@@ -676,7 +649,7 @@ func (gs *GameService) generateWeapons(gameID string) error {
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
-	fmt.Println("ppp ppp ppp")
+	fmt.Printf("ppp ppp ppp, %v\n", len(game.Weapons))
 	needWeapons := maxWeaponsOnMap - len(game.Weapons)
 	if needWeapons <= 0 {
 		return nil
@@ -686,7 +659,11 @@ func (gs *GameService) generateWeapons(gameID string) error {
 	if len(freeSpawnPoints) < needWeapons {
 		needWeapons = len(freeSpawnPoints)
 	}
-	fmt.Println("fff fff fff")
+	rand2.Shuffle(len(freeSpawnPoints), func(i, j int) {
+		freeSpawnPoints[i], freeSpawnPoints[j] = freeSpawnPoints[j], freeSpawnPoints[i]
+	})
+
+	fmt.Printf("fff fff fff, %v; %v\n", needWeapons, freeSpawnPoints)
 	for i := 0; i < needWeapons; i++ {
 		point := freeSpawnPoints[i]
 		typeWeapon := gs.generateWeaponType()
@@ -698,6 +675,7 @@ func (gs *GameService) generateWeapons(gameID string) error {
 			Y:    point.Y,
 		}
 		game.Weapons[weapon.ID] = weapon
+		fmt.Printf("666 %v\n", game.Weapons[weapon.ID])
 	}
 	fmt.Printf("kkk kkk kkk, %v\n", game.Weapons)
 	if err := gs.sendUpdateWeapons(gameID); err != nil {
@@ -727,8 +705,14 @@ func (gs *GameService) getFreeSpawnPoints(game *models.Game) []models.SpawnPoint
 
 func (gs *GameService) getInitialWeaponAmmo(weaponType models.WeaponType) int {
 	switch weaponType {
-	case models.WeaponRifle:
-		return 10
+	case models.AssaultRifle:
+		return 30
+	case models.SniperRifle:
+		return 5
+	case models.Shotgun:
+		return 4
+	case models.Pistol:
+		return 4
 	}
 	return 0
 }
@@ -744,7 +728,7 @@ func (gs *GameService) generateWeaponID() string {
 }
 
 func (gs *GameService) generateWeaponType() models.WeaponType {
-	types := []models.WeaponType{models.WeaponPistol, models.WeaponRifle, models.WeaponShotgun, models.WeaponSniper}
+	types := []models.WeaponType{models.SniperRifle, models.AssaultRifle, models.Shotgun, models.Pistol}
 	num, _ := rand.Int(rand.Reader, big.NewInt(int64(len(types))))
 	return types[num.Int64()]
 }
@@ -758,6 +742,7 @@ func (gs *GameService) sendUpdateWeapons(gameID string) error {
 	for _, weapon := range game.Weapons {
 		weapons = append(weapons, weapon)
 	}
+	fmt.Printf("+++%v\n===%v\n", weapons, game.Weapons)
 	msg := map[string]interface{}{
 		"type": "generate_weapons_server",
 		"data": map[string]interface{}{
@@ -771,6 +756,9 @@ func (gs *GameService) ChangeWeapon(conn *websocket.Conn, gameID string, data ma
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
+	}
+	if game.State.Status != "playing" {
+		return nil
 	}
 	weaponID := data["weaponID"].(string)
 	weapon, exists := game.Weapons[weaponID]
@@ -903,33 +891,46 @@ func (gs *GameService) SetWeaponsPoints(gameID string, data map[string]interface
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
 
-	weaponPointsRaw, ok := data["weapons_points"]
+	game.WeaponSpawnPoints = make([]models.SpawnPoint, 0)
+
+	fmt.Printf("/// %v\n", data["weapons_points"])
+	points, ok := data["weapons_points"].([]interface{})
 	if !ok {
-		return fmt.Errorf("weapons_points data is missing")
+		return fmt.Errorf("invalid weapons_points format, expected array")
 	}
 
-	weaponPointsMap, ok := weaponPointsRaw.(map[string]interface{})
-	if !ok {
-		return fmt.Errorf("invalid weapons_points format, expected map[string]interface{}")
-	}
+	fmt.Printf("Processing %d weapon spawn points\n", len(points))
 
-	for _, pointData := range weaponPointsMap {
-		point, ok := pointData.(map[string]interface{})
+	for i, p := range points {
+		point, ok := p.(map[string]interface{})
 		if !ok {
+			fmt.Printf("Invalid point format at index %d: %v\n", i, p)
 			continue
 		}
 
 		x, xOk := point["x"].(float64)
 		y, yOk := point["y"].(float64)
 		if !xOk || !yOk {
+			fmt.Printf("Missing coordinates at index %d: %v\n", i, point)
 			continue
 		}
 
-		game.WeaponSpawnPoints = append(game.WeaponSpawnPoints, models.SpawnPoint{
-			X: x,
-			Y: y,
-		})
+		spawnPoint := models.SpawnPoint{X: x, Y: y}
+		game.WeaponSpawnPoints = append(game.WeaponSpawnPoints, spawnPoint)
+		fmt.Printf("Added spawn point %d: X=%.1f, Y=%.1f\n", i, x, y)
 	}
+
+	fmt.Printf("Total weapon spawn points set: %d\n", len(game.WeaponSpawnPoints))
+
+	if len(game.WeaponSpawnPoints) > 0 {
+		if err := gs.generateWeapons(gameID); err != nil {
+			fmt.Printf("Ошибка инициализации оружия: %v\n", err)
+			return fmt.Errorf("failed to generate weapons: %w", err)
+		}
+	} else {
+		fmt.Println("No valid weapon spawn points provided")
+	}
+
 	return nil
 }
 
@@ -945,4 +946,12 @@ func (gs *GameService) ReadyToBattle(conn *websocket.Conn, gameID string) error 
 	fmt.Println("777 777 777")
 	game.ReadyCheck[player.PlayerID] = true
 	return nil
+}
+
+func (gs *GameService) GetGameState(gameID string) (*models.GameState, error) {
+	game, exists := gs.activeGames[gameID]
+	if !exists {
+		return nil, fmt.Errorf("game %s does not exist", gameID)
+	}
+	return &game.State, nil
 }
