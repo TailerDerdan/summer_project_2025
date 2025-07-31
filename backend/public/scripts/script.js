@@ -1,5 +1,3 @@
-import {stateForWS} from "../../../frontend/ws/websocketGame";
-
 export const socketState = {
     conn: null,
 }
