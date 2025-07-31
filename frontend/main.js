@@ -105,7 +105,7 @@ export const initGame = async () => {
         sendWebSocketMessage({
             type: "weapons_points",
             data: {
-                weapons_points: [{x: 0, y: 0}]//gettedMap.weaponsPoints,
+                weapons_points: gettedMap.spawnsWeapons//gettedMap.weaponsPoints,
             }
         })
     }
