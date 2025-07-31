@@ -80,6 +80,7 @@ function connectToWSRoom(dataUser)   {
             removeUserFromList(data.data.userId)
             showNotification(`${data.data.userId}: ${data.data.nickname} вызодит из комнаты...`);
             if (data.type === 'leave_ack_server') {
+                console.log(data.data)
                 socketRoomConn.close(1000, "Leave user")
                 if (data.data.len <= 0) {
                     await deleteRoom(data.data.roomId)
