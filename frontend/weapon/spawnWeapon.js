@@ -1,4 +1,4 @@
-import { getInitValues, getTypeWeaponByStr, Weapon } from "./typeWeapons.js";
+import { getInitValues, Weapon } from "./typeWeapons.js";
 
 export let allWeapon = new Map();
 
