@@ -92,23 +92,6 @@ export function getInitValues(typeWeapon)
     }
 }
 
-export function getTypeWeaponByStr(typeStr)
-{
-    switch (typeStr) {
-        case "pistol":
-            return TYPE_WEAPON.PISTOL;
-        case "rifle":
-            return TYPE_WEAPON.ASSAULT_RIFLE;
-        case "shotgun":
-            return TYPE_WEAPON.SHOTGUN;
-        case "sniper":
-            return TYPE_WEAPON.SNIPER_RIFLE;
-        default:
-            return TYPE_WEAPON.NONE;
-            break;
-    }
-}
-
 export class Weapon
 {
     constructor(InitValues, typeWeapon, x, y)
