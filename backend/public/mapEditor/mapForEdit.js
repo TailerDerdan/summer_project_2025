@@ -1,4 +1,4 @@
-import { car1, car2, CountOfBuildings, floor, spawnWeapon, TypeBuilding, wall } from "./buildings/deterBuildings.js";
+import { car1, car2, connectionWalls, CountOfBuildings, floor, spawnWeapon, TypeBuilding, wall } from "./buildings/deterBuildings.js";
 import { COUNT_TILE_X, COUNT_TILE_Y, HEIGHT_MAP, TILE_HEIGHT, TILE_WIDTH, WIDTH_MAP } from "./sizes.js";
 import { stateEditor } from "./state.js";
 
@@ -104,6 +104,11 @@ export class MapEditor
             {
                 spawnWeapon.drawOnMap(ctx, elem);
             }
+            if (elem.choosenBuilding >= TypeBuilding.ConnectionWalls1 &&
+                elem.choosenBuilding <= TypeBuilding.ConnectionWalls1 + CountOfBuildings.ConnectionWalls - 1)
+            {
+                connectionWalls.drawOnMap(ctx, elem);
+            }
         })
     }
 
@@ -115,8 +120,8 @@ export class MapEditor
             {
                 const wall = this.buldingsObject.find((elem) => {
                     if (elem.x == iterX && elem.y == iterY &&
-                        elem.choosenBuilding >= TypeBuilding.Wall1 &&
-                        elem.choosenBuilding <= TypeBuilding.Wall1 + CountOfBuildings.Wall - 1) return true;
+                        ((elem.choosenBuilding >= TypeBuilding.Wall1 && elem.choosenBuilding <= TypeBuilding.Wall1 + CountOfBuildings.Wall - 1) || 
+                         (elem.choosenBuilding >= TypeBuilding.ConnectionWalls1 && elem.choosenBuilding <= TypeBuilding.ConnectionWalls1 + CountOfBuildings.ConnectionWalls - 1))) return true;
                 });
 
                 if (wall)
@@ -187,6 +192,11 @@ export class MapEditor
                 elem.choosenBuilding <= TypeBuilding.Car21 + CountOfBuildings.Car2 - 1)
             {
                 car2.drawOnMap(ctx, elem);
+            }
+            if (elem.choosenBuilding >= TypeBuilding.ConnectionWalls1 &&
+                elem.choosenBuilding <= TypeBuilding.ConnectionWalls1 + CountOfBuildings.ConnectionWalls - 1)
+            {
+                connectionWalls.drawOnMap(ctx, elem);
             }
         })
     }
