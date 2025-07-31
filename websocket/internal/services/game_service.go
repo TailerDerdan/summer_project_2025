@@ -439,6 +439,7 @@ func (gs *GameService) PlayerDeath(gameID, playerID string) error {
 		fmt.Println("error sending stats message")
 		return err
 	}
+
 	return nil
 }
 

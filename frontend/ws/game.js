@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log("44444, data:", data)
         await initGameWebsocket(data);
         console.log("@9999")
-        //initGame()
+        initGame()
         console.log("@8888")
 
         setMessageHandler((event) => {
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function handleGameState(data) {
-    const statusElement = document.getElementById('game-status');
+    const statusElement = document.querySelector('.game-status');
 
     switch (data.status) {
         case 'waiting':
