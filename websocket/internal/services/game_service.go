@@ -15,6 +15,11 @@ import (
 	"sync"
 )
 
+import (
+	"math/rand"
+	"time"
+)
+
 type GameService struct {
 	activeGames map[string]*models.Game
 	mu          sync.Mutex
@@ -435,13 +440,13 @@ func (gs *GameService) PlayerRespawn(gameID, playerID string) error {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
 
-	game, exists := gs.activeGames[gameID]
+	_, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
 
-	newX := GeneratePosition()
-	newY := GeneratePosition()
+	newX := gs.GeneratePosition()
+	newY := gs.GeneratePosition()
 
 	msg := map[string]interface{}{
 		"type": "player_respawn_server",
