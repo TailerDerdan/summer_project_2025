@@ -33,7 +33,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     {
         console.log("44444")
         await initGameWebsocket(data);
+        console.log("@9999")
         initGame()
+        console.log("@8888")
 
         setMessageHandler((event) => {
             const msg = JSON.parse(event.data);

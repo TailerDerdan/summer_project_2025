@@ -12,6 +12,7 @@ export async function initGameWebsocket(data) {
     console.log("5555555")
     if (stateForWS.gameSocket)
     {
+        console.log("hkgjhgkhjgk")
         stateForWS.gameSocket.close();
     }
 

@@ -108,11 +108,11 @@ export const initGame = async () => {
             }
         })
     }
-    console.log("99999")
+    console.log("#99999")
     sendWebSocketMessage({
         type: "ready_to_battle",
     })
-    console.log("88888")
+    console.log("#88888")
     // setTimeout(() => {
     //     gameLoop();
     // }, 100);
