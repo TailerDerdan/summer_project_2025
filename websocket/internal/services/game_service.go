@@ -423,8 +423,8 @@ func (gs *GameService) PlayerDeath(gameID, playerID string) error {
 }
 
 func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, player *models.PlayerInfo) error {
-	//gs.mu.Lock()
-	//defer gs.mu.Unlock()
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
 	fmt.Println("5555")
 	game, exists := gs.activeGames[gameID]
 	if !exists {
@@ -469,8 +469,8 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 }
 
 func (gs *GameService) getGameState(gameID string) ([]models.PlayerInfo, []models.Weapon, error) {
-	//gs.mu.Lock()
-	//defer gs.mu.Unlock()
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
 	fmt.Println("rrqwer")
 	game, exists := gs.activeGames[gameID]
 	if !exists {
