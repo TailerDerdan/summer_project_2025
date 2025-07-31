@@ -81,7 +81,7 @@ func (gs *GameService) StartWaitingPlayers(gameID string) {
 
 			if allConnected {
 				game.State.Status = "countdown"
-				game.State.CountDown = 15
+				game.State.CountDown = 10
 				gs.notifyGameState(gameID)
 				//gs.mu.Unlock()
 				fmt.Println("rrr rrr www")
@@ -117,7 +117,7 @@ func (gs *GameService) StartWaitingPlayers(gameID string) {
 			}
 			fmt.Println("000 000 000")
 			game.State.Status = "countdown"
-			game.State.CountDown = 15
+			game.State.CountDown = 10
 			gs.notifyGameState(gameID)
 			//gs.mu.Unlock()
 			fmt.Println("000 000 000")
