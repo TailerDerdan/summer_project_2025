@@ -746,6 +746,7 @@ func (gs *GameService) sendUpdateWeapons(gameID string) error {
 	for _, weapon := range game.Weapons {
 		weapons = append(weapons, weapon)
 	}
+	fmt.Printf("+++%v\n===%v\n", weapons, game.Weapons)
 	msg := map[string]interface{}{
 		"type": "generate_weapons_server",
 		"data": map[string]interface{}{
