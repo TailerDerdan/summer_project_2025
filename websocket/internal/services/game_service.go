@@ -903,6 +903,7 @@ func (gs *GameService) SetWeaponsPoints(gameID string, data map[string]interface
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
 
+	fmt.Printf("/// %v\n", data["weapons_points"])
 	weaponPointsRaw, ok := data["weapons_points"]
 	if !ok {
 		return fmt.Errorf("weapons_points data is missing")
@@ -912,7 +913,7 @@ func (gs *GameService) SetWeaponsPoints(gameID string, data map[string]interface
 	if !ok {
 		return fmt.Errorf("invalid weapons_points format, expected map[string]interface{}")
 	}
-
+	fmt.Printf("@@@ %v\n", weaponPointsMap)
 	for _, pointData := range weaponPointsMap {
 		point, ok := pointData.(map[string]interface{})
 		if !ok {
@@ -930,6 +931,7 @@ func (gs *GameService) SetWeaponsPoints(gameID string, data map[string]interface
 			Y: y,
 		})
 	}
+	fmt.Printf("$$$ %v\n", game.WeaponSpawnPoints)
 	return nil
 }
 
