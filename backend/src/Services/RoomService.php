@@ -53,9 +53,4 @@ class RoomService implements RoomServiceInterface {
     {
         $this->roomRepository->removeUserFromRoom($userId, $roomId);
     }
-
-    public function getRoomById($roomId): ?Room
-    {
-        return $this->roomRepository->get($roomId);
-    }
 }

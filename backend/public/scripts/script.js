@@ -1,7 +1,13 @@
-function connectWebSocket() {
-    const socket = new WebSocket('ws://mochilovo-avi.ru:8080/ws/global-updates');
+import {stateForWS} from "../../../frontend/ws/websocketGame";
 
-    socket.onmessage = async (event) => {
+export const socketState = {
+    conn: null,
+}
+
+function connectWebSocket() {
+    socketState.conn = new WebSocket('ws://mochilovo-avi.ru:8080/ws/global-updates');
+
+    socketState.conn.onmessage = async (event) => {
         const data = JSON.parse(event.data);
         if (data.type === 'room_create_server') {
             addRoomToList(data.room, data.user);
@@ -51,13 +57,13 @@ async function deleteUser(user) {
             playersCount.dataset.count--
             playersCount.textContent = `${playersCount.dataset.count}/${playersCount.dataset.max}`
         }
-        // if (parseInt(playersCount.dataset.count) <= 0) {
-        //     await deleteRoom(user["roomId"])
-        //     const room = document.getElementById(`room-menu__room-list-item-${user["roomId"]}`)
-        //     if (room) {
-        //         room.remove()
-        //     }
-        // }
+        if (parseInt(playersCount.dataset.count) <= 0) {
+            await deleteRoom(user["roomId"])
+            const room = document.getElementById(`room-menu__room-list-item-${user["roomId"]}`)
+            if (room) {
+                room.remove()
+            }
+        }
     }
 }
 
@@ -89,6 +95,23 @@ function addRoomToList(room) {
     container.appendChild(roomElt)
 }
 async function joinRoom(roomId) {
+    // if (socketState.conn) {
+    //     socketState.conn.send(JSON.stringify({
+    //         type: "get_count_users",
+    //         data: {
+    //             roomId: roomId.toString(),
+    //         },
+    //     }))
+    // }
+    // await new Promise(resolve => {
+    //     const checkInterval = setInterval(() => {
+    //         if (socketState.) {
+    //             console.log("||||||")
+    //             clearInterval(checkInterval);
+    //             resolve();
+    //         }
+    //     }, 2000);
+    // });
     const response = await fetch(`/room/join/${roomId}`, {
         method: "POST",
         headers: {
