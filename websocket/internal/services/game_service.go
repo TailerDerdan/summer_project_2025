@@ -855,7 +855,7 @@ func (gs *GameService) DropWeapon(conn *websocket.Conn, gameID string) error {
 	}
 	game.Weapons[weapon.ID] = weapon
 
-	if err := gs.sendDropWeapon(gameID, weapon.ID); err != nil {
+	if err := gs.sendDropWeapon(conn, gameID, weapon.ID); err != nil {
 		return fmt.Errorf("error send delete weapon %v", err)
 	}
 
@@ -867,7 +867,7 @@ func (gs *GameService) DropWeapon(conn *websocket.Conn, gameID string) error {
 	return nil
 }
 
-func (gs *GameService) sendDropWeapon(gameID, weaponID string) error {
+func (gs *GameService) sendDropWeapon(conn *websocket.Conn, gameID, weaponID string) error {
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
@@ -882,7 +882,7 @@ func (gs *GameService) sendDropWeapon(gameID, weaponID string) error {
 			"Y":        weapon.Y,
 		},
 	}
-	return gs.SendMessageInsideGameToAll(gameID, msg)
+	return gs.SendMessageInsideGame(conn, gameID, msg)
 }
 
 func (gs *GameService) SetWeaponsPoints(gameID string, data map[string]interface{}) error {
