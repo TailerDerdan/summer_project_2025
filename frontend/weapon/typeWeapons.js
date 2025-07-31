@@ -87,6 +87,8 @@ export function getInitValues(typeWeapon)
             return InitShotgun;
         case TYPE_WEAPON.SNIPER_RIFLE:
             return InitSniperRifle;
+        case TYPE_WEAPON.PISTOL:
+            return InitPistols;
         default:
             break;
     }
