@@ -124,7 +124,10 @@ export class Player extends Character
             console.log("try respawn");
             sendWebSocketMessage({
                 type: "player_respawn",
-                data: { playerId: this.id.toString() }
+                //data: { playerId: this.id.toString() }
+                data: {
+                    playerId: stateForWS.userId.toString(),
+                }
             });
             this.respawnTimer = null;
         }, 2500);

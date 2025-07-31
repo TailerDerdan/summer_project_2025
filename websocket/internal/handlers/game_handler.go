@@ -300,7 +300,7 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 		return err
 	case "player_respawn":
 		fmt.Println("player_respawn")
-		err := gh.gameService.PlayerRespawn(gameID, playerID)
+		err := gh.gameService.PlayerRespawn(conn, gameID, playerID)
 		return err
 	}
 	return nil

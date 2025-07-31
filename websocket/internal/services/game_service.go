@@ -436,11 +436,11 @@ func (gs *GameService) PlayerDeath(conn *websocket.Conn, gameID, playerID string
 	return nil
 }
 
-func (gs *GameService) PlayerRespawn(gameID, playerID string) error {
+func (gs *GameService) PlayerRespawn(conn *websocket.Conn, gameID, playerID string) error {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
 
-	_, exists := gs.activeGames[gameID]
+	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
@@ -448,13 +448,17 @@ func (gs *GameService) PlayerRespawn(gameID, playerID string) error {
 	newX := gs.GeneratePosition()
 	newY := gs.GeneratePosition()
 
+	player := game.Players[conn]
+	player.X = newX
+	player.Y = newY
+
 	msg := map[string]interface{}{
 		"type": "player_respawn_server",
 		"data": map[string]interface{}{
 			"gameId":   gameID,
 			"playerId": playerID,
-			"newX":     newX,
-			"newY":     newY,
+			"newX":     player.X,
+			"newY":     player.Y,
 		},
 	}
 

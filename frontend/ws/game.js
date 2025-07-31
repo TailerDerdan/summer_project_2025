@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     //handlePlayerDeath(msg.data);
                     break;
                 case "player_respawn_server":
+                    console.log("server sent response spawn");
                     handlePlayerRespawn(msg.data);
                     break;
                 case "save_stats_server":
@@ -379,20 +380,6 @@ function handlePlayerDeath(data) {
         player.isCharacterLive = false;
     }
 }
-
-// function handlePlayerRespawn(data) {
-//     if (arrEnemy.has(data.playerId)) {
-//         const enemy = arrEnemy.get(data.playerId);
-//         enemy.x = data.x;
-//         enemy.y = data.y;
-//         enemy.isCharacterLive = true;
-//     }
-//     if (data.playerId === stateForWS.userId) {
-//         player.x = data.x;
-//         player.y = data.y;
-//         player.isCharacterLive = true;
-//     }
-// }
 
 function handlePlayerRespawn(data) {
     const playerId = data.playerId;
