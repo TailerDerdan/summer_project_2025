@@ -117,7 +117,7 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 	if err != nil {
 		return err
 	}
-	fmt.Printf("$$ Game State: %+v\n", gameState.Status)
+	//fmt.Printf("$$ Game State: %+v\n", gameState.Status)
 	//if gameState.Status != "playing" {
 	//	allowedTypes := map[string]bool{
 	//		"ready_to_battle": true,

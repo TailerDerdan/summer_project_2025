@@ -181,6 +181,7 @@ func (rs *RoomService) RegisterUser(conn *websocket.Conn, roomID string, user *m
 		UserID:   user.UserID,
 		Nickname: user.Nickname,
 	}
+	fmt.Printf("Registering user: %v\n", user.UserID)
 	return nil
 }
 
@@ -210,10 +211,11 @@ func (rs *RoomService) UserLeave(conn *websocket.Conn, roomID, userID string) er
 		return fmt.Errorf("room not found")
 	}
 	clientInfo := room.Clients[conn]
+	fmt.Printf("count user: %v, room: %v\n", room.PlayersCount, roomID)
 	leaveMsg := map[string]interface{}{
 		"type": "leave_ack_server",
 		"data": map[string]interface{}{
-			"len":      room.PlayersCount - 1,
+			"len":      room.PlayersCount - 2,
 			"roomId":   roomID,
 			"userId":   userID,
 			"nickname": clientInfo.Nickname,
