@@ -67,6 +67,7 @@ function connectToWSRoom(dataUser)   {
 
     socketRoomConn.onmessage = async (event) => {
         const data = JSON.parse(event.data);
+        console.log("data: ", data)
         if (data.type === 'user_joined_server') {
             addUserToList(data.data);
             showNotification(` присоединился к комнате`);
@@ -82,8 +83,10 @@ function connectToWSRoom(dataUser)   {
                 socketRoomConn.close(1000, "Leave user")
                 if (data.data.len <= 0) {
                     await deleteRoom(data.data.roomId)
+                    console.log("0_0")
                 } else {
                     await deleteUserFromRoom(data.data.roomId)
+                    console.log("^_^")
                 }
                 window.location.href = '/main';
             }

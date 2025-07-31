@@ -118,17 +118,17 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 		return err
 	}
 	fmt.Printf("$$ Game State: %+v\n", gameState.Status)
-	if gameState.Status != "playing" {
-		allowedTypes := map[string]bool{
-			"ready_to_battle": true,
-			"weapons_points":  true,
-			//"player_move":     true,
-		}
-
-		if !allowedTypes[msg.Type] {
-			return nil
-		}
-	}
+	//if gameState.Status != "playing" {
+	//	allowedTypes := map[string]bool{
+	//		"ready_to_battle": true,
+	//		"weapons_points":  true,
+	//		//"player_move":     true,
+	//	}
+	//
+	//	if !allowedTypes[msg.Type] {
+	//		return nil
+	//	}
+	//}
 	switch msg.Type {
 	//case "player_join":
 	//	fmt.Println("/-666-/")

@@ -620,13 +620,14 @@ func (gs *GameService) SendInitialGameState(conn *websocket.Conn, gameID string)
 		return err
 	}
 	fmt.Println("666666")
-	return conn.WriteJSON(map[string]interface{}{
+	conn.WriteJSON(map[string]interface{}{
 		"type": "init_players_server",
 		"data": map[string]interface{}{
 			"players": players,
 			"weapons": weapons,
 		},
 	})
+	return nil
 }
 
 func (gs *GameService) saveGameStats(gameID string) error {
