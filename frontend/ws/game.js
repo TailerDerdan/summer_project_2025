@@ -398,5 +398,6 @@ async function saveStats(data) {
 
 function handleGenerateWeapons(data) 
 {
+    console.log(data)
     spawnWeapon(data.weapons);
 }
