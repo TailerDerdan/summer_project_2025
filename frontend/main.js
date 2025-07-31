@@ -6,10 +6,8 @@ import { camera } from './camera/camera.js';
 import { Clock } from './clock/clock.js';
 import { player, arrEnemy, arrBot } from './player/player.js';
 import { render, texture2D, updateTexture } from './shadows/shadows.js';
-//import {recordDeath, recordKill} from "./game.js";
 import { getMap } from './requests/requests.js';
 
-// import { checkAndSendPosition } from './game.js';
 import { drawRemainingBlood } from './blood/blood.js';
 import {playerDeath} from "./player/KillAndDeath.js";
 import {sendWebSocketMessage, stateForWS} from './ws/websocketGame.js';

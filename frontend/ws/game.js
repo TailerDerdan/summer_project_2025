@@ -3,7 +3,7 @@ import { arrEnemy, player } from "../player/player.js";
 import { playerBullets } from "../weapon/shooting.js";
 import { Bullet } from "../weapon/bullet.js";
 import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
-import {gameLoop} from "../main.js";
+import {gameLoop, initGame} from "../main.js";
 export let mapName
 export const gameStats = {
     kills: 0,
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log("44444, data:", data)
         await initGameWebsocket(data);
         console.log("@9999")
-        initGame()
+        await initGame();
         console.log("@8888")
 
         setMessageHandler((event) => {
