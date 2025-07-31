@@ -99,7 +99,7 @@ export const initGame = async () => {
     map.image = imgMap;
     map.generate(ctx);
     map.fillWalls(gettedMap.walls);
-    console.log("++++")
+    console.log("++++, ", stateForWS.userId, stateForWS.hostId)
     if (stateForWS.userId === stateForWS.hostId) {
         console.log("}}}}")
         sendWebSocketMessage({

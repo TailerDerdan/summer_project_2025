@@ -50,22 +50,6 @@ func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *m
 		ReadyCheck: make(map[string]bool),
 	}
 	gs.activeGames[gameID] = game
-	if points, ok := data["weapons_points"].([]interface{}); ok {
-		game.WeaponSpawnPoints = make([]models.SpawnPoint, 0, len(points))
-
-		for _, p := range points {
-			if point, ok := p.(map[string]interface{}); ok {
-				spawnPoint := models.SpawnPoint{
-					X: point["x"].(float64),
-					Y: point["y"].(float64),
-				}
-				game.WeaponSpawnPoints = append(game.WeaponSpawnPoints, spawnPoint)
-			}
-		}
-	}
-	if err := gs.generateWeapons(gameID); err != nil {
-		fmt.Printf("Ошибка инициализации оружия%v", err)
-	}
 	//go gs.waitingPlayers(gameID)
 	return game
 }
@@ -895,35 +879,46 @@ func (gs *GameService) SetWeaponsPoints(gameID string, data map[string]interface
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
 
+	game.WeaponSpawnPoints = make([]models.SpawnPoint, 0)
+
 	fmt.Printf("/// %v\n", data["weapons_points"])
-	weaponPointsRaw, ok := data["weapons_points"]
+	points, ok := data["weapons_points"].([]interface{})
 	if !ok {
-		return fmt.Errorf("weapons_points data is missing")
+		return fmt.Errorf("invalid weapons_points format, expected array")
 	}
 
-	weaponPointsMap, ok := weaponPointsRaw.(map[string]interface{})
-	if !ok {
-		return fmt.Errorf("invalid weapons_points format, expected map[string]interface{}")
-	}
-	fmt.Printf("@@@ %v\n", weaponPointsMap)
-	for _, pointData := range weaponPointsMap {
-		point, ok := pointData.(map[string]interface{})
+	fmt.Printf("Processing %d weapon spawn points\n", len(points))
+
+	for i, p := range points {
+		point, ok := p.(map[string]interface{})
 		if !ok {
+			fmt.Printf("Invalid point format at index %d: %v\n", i, p)
 			continue
 		}
 
 		x, xOk := point["x"].(float64)
 		y, yOk := point["y"].(float64)
 		if !xOk || !yOk {
+			fmt.Printf("Missing coordinates at index %d: %v\n", i, point)
 			continue
 		}
 
-		game.WeaponSpawnPoints = append(game.WeaponSpawnPoints, models.SpawnPoint{
-			X: x,
-			Y: y,
-		})
+		spawnPoint := models.SpawnPoint{X: x, Y: y}
+		game.WeaponSpawnPoints = append(game.WeaponSpawnPoints, spawnPoint)
+		fmt.Printf("Added spawn point %d: X=%.1f, Y=%.1f\n", i, x, y)
 	}
-	fmt.Printf("$$$ %v\n", game.WeaponSpawnPoints)
+
+	fmt.Printf("Total weapon spawn points set: %d\n", len(game.WeaponSpawnPoints))
+
+	if len(game.WeaponSpawnPoints) > 0 {
+		if err := gs.generateWeapons(gameID); err != nil {
+			fmt.Printf("Ошибка инициализации оружия: %v\n", err)
+			return fmt.Errorf("failed to generate weapons: %w", err)
+		}
+	} else {
+		fmt.Println("No valid weapon spawn points provided")
+	}
+
 	return nil
 }
 
