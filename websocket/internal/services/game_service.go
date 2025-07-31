@@ -68,19 +68,19 @@ func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *m
 		ReadyCheck: make(map[string]bool),
 	}
 	gs.activeGames[gameID] = game
-	//if points, ok := data["weaponsPoints"].([]interface{}); ok {
-	//	weaponSpawnPoints = make([]models.SpawnPoint, 0, len(points))
-	//
-	//	for _, p := range points {
-	//		if point, ok := p.(map[string]interface{}); ok {
-	//			spawnPoint := models.SpawnPoint{
-	//				X: point["x"].(float64),
-	//				Y: point["y"].(float64),
-	//			}
-	//			weaponSpawnPoints = append(weaponSpawnPoints, spawnPoint)
-	//		}
-	//	}
-	//}
+	if points, ok := data["spawnsWeapons"].([]interface{}); ok {
+		game.WeaponSpawnPoints = make([]models.SpawnPoint, 0, len(points))
+
+		for _, p := range points {
+			if point, ok := p.(map[string]interface{}); ok {
+				spawnPoint := models.SpawnPoint{
+					X: point["x"].(float64),
+					Y: point["y"].(float64),
+				}
+				game.WeaponSpawnPoints = append(game.WeaponSpawnPoints, spawnPoint)
+			}
+		}
+	}
 	if err := gs.generateWeapons(gameID); err != nil {
 		fmt.Printf("Ошибка инициализации оружия%v", err)
 	}
@@ -580,6 +580,9 @@ func (gs *GameService) UpdatePosition(conn *websocket.Conn, gameID, playerID str
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
+	if game.State.Status != "playing" {
+		return nil
+	}
 
 	player := game.Players[conn]
 	player.X = data["x"].(float64)
@@ -607,9 +610,12 @@ func (gs *GameService) UpdateBullets(conn *websocket.Conn, gameID string, data m
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
 
-	_, exists := gs.activeGames[gameID]
+	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
+	}
+	if game.State.Status != "playing" {
+		return nil
 	}
 
 	bulletsMsg := map[string]interface{}{
@@ -771,6 +777,9 @@ func (gs *GameService) ChangeWeapon(conn *websocket.Conn, gameID string, data ma
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
+	}
+	if game.State.Status != "playing" {
+		return nil
 	}
 	weaponID := data["weaponID"].(string)
 	weapon, exists := game.Weapons[weaponID]
@@ -947,4 +956,12 @@ func (gs *GameService) ReadyToBattle(conn *websocket.Conn, gameID string) error 
 	fmt.Println("777 777 777")
 	game.ReadyCheck[player.PlayerID] = true
 	return nil
+}
+
+func (gs *GameService) GetGameState(gameID string) (*models.GameState, error) {
+	game, exists := gs.activeGames[gameID]
+	if !exists {
+		return nil, fmt.Errorf("game %s does not exist", gameID)
+	}
+	return &game.State, nil
 }

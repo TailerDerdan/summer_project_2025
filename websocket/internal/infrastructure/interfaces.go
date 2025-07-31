@@ -23,6 +23,7 @@ type IGameService interface {
 	StartWaitingPlayers(gameID string)
 	ReadyToBattle(conn *websocket.Conn, gameID string) error
 	SetWeaponsPoints(gameID string, data map[string]interface{}) error
+	GetGameState(gameID string) (*models.GameState, error)
 }
 
 type IRoomService interface {
