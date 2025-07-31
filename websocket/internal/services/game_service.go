@@ -471,12 +471,13 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 func (gs *GameService) getGameState(gameID string) ([]models.PlayerInfo, []models.Weapon, error) {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
-
+	fmt.Println("rrqwer")
 	game, exists := gs.activeGames[gameID]
 	if !exists {
+		fmt.Printf("game %s does not exist", gameID)
 		return nil, nil, fmt.Errorf("game %s does not exist", gameID)
 	}
-
+	fmt.Println("uuuuuu")
 	players := make([]models.PlayerInfo, 0, len(game.Players))
 	for _, player := range game.Players {
 		players = append(players, models.PlayerInfo{
@@ -487,7 +488,7 @@ func (gs *GameService) getGameState(gameID string) ([]models.PlayerInfo, []model
 			Dir:      player.Dir,
 		})
 	}
-
+	fmt.Println("jjjjj")
 	weapons := make([]models.Weapon, 0, len(game.Weapons))
 	for _, weapon := range game.Weapons {
 		weapons = append(weapons, models.Weapon{
@@ -498,7 +499,7 @@ func (gs *GameService) getGameState(gameID string) ([]models.PlayerInfo, []model
 			Ammo: weapon.Ammo,
 		})
 	}
-
+	fmt.Printf("mdsfqew, %v, %v\n", players, weapons)
 	return players, weapons, nil
 }
 
@@ -617,16 +618,20 @@ func (gs *GameService) UpdateBullets(conn *websocket.Conn, gameID string, data m
 func (gs *GameService) SendInitialGameState(conn *websocket.Conn, gameID string) error {
 	players, weapons, err := gs.getGameState(gameID)
 	if err != nil {
+		fmt.Printf("error sending initial game state: %v\n", err)
 		return err
 	}
-	fmt.Println("666666")
-	conn.WriteJSON(map[string]interface{}{
+	msg := map[string]interface{}{
 		"type": "init_players_server",
 		"data": map[string]interface{}{
 			"players": players,
 			"weapons": weapons,
 		},
-	})
+	}
+	fmt.Printf("666666, msg: %v\n", msg)
+	if err := conn.WriteJSON(msg); err != nil {
+		return fmt.Errorf("send initial players message failed: %v", err)
+	}
 	return nil
 }
 
