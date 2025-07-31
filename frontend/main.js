@@ -93,7 +93,7 @@ export const initGame = async () => {
     }
     console.log("00000")
     const gettedMap = await getMap(stateForWS.mapName);
-    console.log("====")
+    console.log("====", gettedMap)
     const imgMap = new Image();
     imgMap.src = gettedMap.image;
     map.image = imgMap;
