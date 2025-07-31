@@ -17,6 +17,7 @@ export class Enemy extends Character
 
     updateEnemy() {
         if (this.wasCharacterWounded && this.isCharacterLive) {
+            console.log('death enemy');
             this.handleDeath();
         }
         if (!this.isCharacterLive && !this.respawnTimer) {

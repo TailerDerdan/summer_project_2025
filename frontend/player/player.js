@@ -102,6 +102,7 @@ export class Player extends Character
 
     updatePlayer() {
         if (this.wasCharacterWounded && this.isCharacterLive) {
+            console.log('death player');
             this.handleDeath();
         }
         if (!this.isCharacterLive && !this.respawnTimer) {
@@ -115,14 +116,15 @@ export class Player extends Character
         remainingBlood.push(blood);
         blood.playAnimationBlood();
 
-        playerDeath(this.id);
+        //playerDeath(this.id);
     }
 
     startRespawnTimer() {
         this.respawnTimer = setTimeout(() => {
+            console.log("try respawn");
             sendWebSocketMessage({
                 type: "player_respawn",
-                data: { playerId: this.id }
+                data: { playerId: this.id.toString() }
             });
             this.respawnTimer = null;
         }, 2500);

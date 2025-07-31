@@ -98,7 +98,7 @@ function handleInitPlayers(players)
 
 function handleJoinPlayer(player)
 {
-    console.log(player.id);
+    console.log(player.userId);
     if (!arrEnemy.has(player.userId))
     {
         const newEnemy = new Enemy(player.userId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir, player.nickname);
@@ -372,9 +372,11 @@ function handlePlayerDeath(data) {
     const playerId = data.playerId;
     if (arrEnemy.has(playerId)) {
         arrEnemy.get(playerId).wasCharacterWounded = true;
+        arrEnemy.get(playerId).isCharacterLive = false;
     }
     if (playerId === stateForWS.userId) {
         player.wasCharacterWounded = true;
+        player.isCharacterLive = false;
     }
 }
 
@@ -396,6 +398,8 @@ function handlePlayerRespawn(data) {
     const playerId = data.playerId;
     const x = data.newX / 100 * WIDTH_MAP;
     const y = data.newY / 100 * HEIGHT_MAP;
+
+    console.log(playerId, x, y);
 
     if (arrEnemy.has(playerId)) {
         const enemy = arrEnemy.get(playerId);

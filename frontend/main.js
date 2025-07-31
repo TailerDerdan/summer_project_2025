@@ -46,13 +46,15 @@ function gameLoop()
 
     updateAllWeaponOnMap();
     drawAllWeaponOnMap(ctx, camera.xView, camera.yView);
-    player.drawCurrentAmmo();
 
     updateAllBullets(ctx, camera.xView, camera.yView);
 
     drawRemainingBlood(ctx, camera.xView, camera.yView);
 
-    updateMovementPlayer(camera.xView, camera.yView, deltaTime);
+    if (player.isCharacterLive) {
+        updateMovementPlayer(camera.xView, camera.yView, deltaTime);
+        player.drawCurrentAmmo();
+    }
 
     player.updatePlayer();
 

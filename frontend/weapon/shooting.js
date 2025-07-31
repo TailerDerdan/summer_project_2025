@@ -203,29 +203,43 @@ function throttleUpdateBullets(event)
 
 document.addEventListener('mousedown', throttleUpdateBullets);
 
-function updateBulletsOnMap(ctx, xView, yView, bullets) {
+function updatePlayerBulletsOnMap(ctx, xView, yView, bullets) {
     bullets.forEach((bullet, index) => {
         for (const [id, enemy] of arrEnemy) {
             if (enemy.container.isTwoContainerConcerns(bullet.container, camera.xView, camera.yView) &&
                 enemy.isCharacterLive &&
-                (bullet.ownerId !== enemy.id)
+                (bullet.ownerId.toString() !== enemy.id.toString())
             )
             {
                 bullets.splice(index, 1);
                 enemy.wasCharacterWounded = true;
-                if (bullet.ownerId === player.id) {
+                if (bullet.ownerId.toString() === player.id.toString()) {
                     playerKill(player.id);
                 }
             }
         }
+
+        bullet.setX(bullet.getX() + bullet.getDistX());
+        bullet.setY(bullet.getY() - bullet.getDistY());
+
+        const remainingDist = bullet.getRemainingDist(bullet.getFireRange());
+        if (remainingDist >= -4 && remainingDist <= 4) {
+            enemyBullets.splice(index, 1);
+        }
+
+        bullet.drawBullet(ctx, xView, yView);
+    });
+}
+
+function updateEnemyBulletsOnMap(ctx, xView, yView, bullets) {
+    bullets.forEach((bullet, index) => {
         if (player.container.isTwoContainerConcerns(bullet.container, camera.xView, camera.yView) &&
-            player.isCharacterLive &&
-            (bullet.ownerId !== player.id)
+            player.isCharacterLive
         )
         {
             bullets.splice(index, 1);
             player.wasCharacterWounded = true;
-            //playerDeath(player.id);
+            playerDeath(player.id);
         }
 
         bullet.setX(bullet.getX() + bullet.getDistX());
@@ -241,8 +255,8 @@ function updateBulletsOnMap(ctx, xView, yView, bullets) {
 }
 
 export function updateAllBullets(ctx, xView, yView) {
-    updateBulletsOnMap(ctx, xView, yView, enemyBullets);
-    updateBulletsOnMap(ctx, xView, yView, playerBullets);
+    updateEnemyBulletsOnMap(ctx, xView, yView, enemyBullets);
+    updatePlayerBulletsOnMap(ctx, xView, yView, playerBullets);
 }
 
 // let intervalId = 0;
