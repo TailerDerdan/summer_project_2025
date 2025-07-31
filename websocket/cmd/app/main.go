@@ -12,10 +12,8 @@ func main() {
 	wsService := services.NewWebSocketService()
 	gameService := services.NewGameService()
 	roomService := services.NewRoomService(gameService, wsService)
-
 	roomHandler := handlers.NewRoomHandler(roomService, gameService, wsService)
 	gameHandler := handlers.NewGameHandler(gameService, wsService)
-	//wsHandler := handlers.NewWebSocketHandler(gameService, roomService, wsService)
 
 	http.HandleFunc("/ws/room/", func(w http.ResponseWriter, r *http.Request) {
 		roomID := getRoomIDFromRequest(w, r)
@@ -23,7 +21,7 @@ func main() {
 	})
 	http.HandleFunc("/ws/game/", func(w http.ResponseWriter, r *http.Request) {
 		gameID := getGameIDFromRequest(w, r)
-		gameHandler.HandleGameConnection2(w, r, gameID)
+		gameHandler.HandleGameConnection(w, r, gameID)
 	})
 	http.HandleFunc("/ws/room/create", roomHandler.HandleCreateRoom)
 	http.HandleFunc("/ws/global-updates", wsService.HandleGlobalUpdates)

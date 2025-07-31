@@ -6,13 +6,11 @@ import { camera } from './camera/camera.js';
 import { Clock } from './clock/clock.js';
 import { player, arrEnemy, arrBot } from './player/player.js';
 import { render, texture2D, updateTexture } from './shadows/shadows.js';
-//import {recordDeath, recordKill} from "./game.js";
 import { getMap } from './requests/requests.js';
 
-// import { checkAndSendPosition } from './game.js';
 import { drawRemainingBlood } from './blood/blood.js';
 import {playerDeath} from "./player/KillAndDeath.js";
-import { stateForWS } from './ws/websocketGame.js';
+import {sendWebSocketMessage, stateForWS} from './ws/websocketGame.js';
 import { mapName } from './ws/game.js';
 
 import { drawAllWeaponOnMap, updateAllWeaponOnMap } from './weapon/spawnWeapon.js';
@@ -20,7 +18,7 @@ import {} from "./player/changeWeapon.js";
 
 const clock = new Clock();
 
-function gameLoop()
+export function gameLoop()
 {
     let deltaTime = clock.getElapsedTime();
     clock.restart();
@@ -80,28 +78,43 @@ function gameLoop()
     window.requestAnimationFrame(gameLoop);
 }
 
-const initGame = async () => {
-    console.log('$', mapName)
-    console.log('%', stateForWS.mapName)
+export const initGame = async () => {
+    console.log("11111")
     if (!stateForWS?.mapName) {
         await new Promise(resolve => {
             const checkInterval = setInterval(() => {
                 if (stateForWS?.mapName) {
+                    console.log("||||||")
                     clearInterval(checkInterval);
                     resolve();
                 }
             }, 2000);
         });
     }
+    console.log("00000")
     const gettedMap = await getMap(stateForWS.mapName);
+    console.log("====")
     const imgMap = new Image();
     imgMap.src = gettedMap.image;
     map.image = imgMap;
     map.generate(ctx);
     map.fillWalls(gettedMap.walls);
-    setTimeout(() => {
-        gameLoop();
-    }, 100);
+    console.log("++++")
+    if (stateForWS.userId === stateForWS.hostId) {
+        console.log("}}}}")
+        sendWebSocketMessage({
+            type: "weapons_points",
+            data: {
+                weapons_points: [{x: 0, y: 0}]//gettedMap.weaponsPoints,
+            }
+        })
+    }
+    console.log("#99999")
+    sendWebSocketMessage({
+        type: "ready_to_battle",
+    })
+    console.log("#88888")
+    // setTimeout(() => {
+    //     gameLoop();
+    // }, 100);
 }
-
-initGame();

@@ -4,6 +4,7 @@ import { playerBullets } from "../weapon/shooting.js";
 import { Bullet } from "../weapon/bullet.js";
 import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
 import { spawnWeapon } from "../weapon/spawnWeapon.js";
+import {gameLoop, initGame} from "../main.js";
 export let mapName
 export const gameStats = {
     kills: 0,
@@ -16,19 +17,26 @@ export const gameStats = {
 export let enemyBullets = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log("222222")
     const data = JSON.parse(sessionStorage.getItem('gameSession'))
     console.log("gameSession", data)
     if (!data) {
-        window.location.href = `/main`
+        console.log('sdfsdfgsdfgsdf')
+        //window.location.href = `/main`
         return
     }
+    console.log("33333")
     mapName = data.mapName
     console.log("mapName, data.mapName", mapName, data.mapName)
     sessionStorage.removeItem('gameSession');
 
     try
     {
+        console.log("44444, data:", data)
         await initGameWebsocket(data);
+        console.log("@9999")
+        await initGame();
+        console.log("@8888")
 
         setMessageHandler((event) => {
             const msg = JSON.parse(event.data);
@@ -66,6 +74,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 case "generate_weapons_server":
                     console.log(msg);
                     handleGenerateWeapons(msg.data);
+                case 'game_state_server':
+                    handleGameState(msg.data);
                     break;
             }
         });
@@ -76,9 +86,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     catch (error) {
         console.error("WebSocket error:", error);
-        window.location.href = '/main';
+        //window.location.href = '/main';
     }
 });
+
+function handleGameState(data) {
+    const statusElement = document.querySelector('.game-status');
+
+    switch (data.status) {
+        case 'waiting':
+            statusElement.textContent = 'Ожидание игроков...';
+            break;
+
+        case 'countdown':
+            statusElement.textContent = `До начала игры: ${data.countdown}`;
+            if (data.countdown === 0) {
+                gameLoop()
+            }
+            break;
+    }
+}
 
 function handleInitPlayers(players)
 {
