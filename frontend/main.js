@@ -101,11 +101,11 @@ export const initGame = async () => {
     map.fillWalls(gettedMap.walls);
     console.log("++++")
     if (stateForWS.userId === stateForWS.hostId) {
-        console.log("}}}}, gettedMap.spawnsWeapons")
+        console.log("}}}}")
         sendWebSocketMessage({
             type: "weapons_points",
             data: {
-                weapons_points: gettedMap.spawnsWeapons,
+                weapons_points: gettedMap.spawnsWeapons//gettedMap.weaponsPoints,
             }
         })
     }
