@@ -4,6 +4,9 @@ import { InitAssaultRifle, InitShotgun, TYPE_WEAPON, Weapon } from '../weapon/ty
 import { Character } from "../Infrastructure/Character.js";
 import { bot1, bot2, bot3 } from "../bot/Bot.js";
 import {Sound} from "../soundsScript/sound.js";
+import { Blood, remainingBlood } from "../blood/blood.js";
+import {playerDeath, playerKill} from './KillAndDeath.js';
+import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "../ws/websocketGame.js";
 import {randomPosition} from "../random.js";
 
 const WIDTH_FRAME = 23;
@@ -97,21 +100,35 @@ export class Player extends Character
         spanCurrentAmmo.textContent = currentAmmo;
     }
 
-    appearanceAfterDeathWidthDelay() {
-        if (!this.isCharacterLive && !this.respawnTimer) {
-            this.respawnTimer = setTimeout(() => {
-                this.isCharacterLive = true;
-                this.wasCharacterWounded = false;
-                const pos = randomPosition();
-                this.x = pos.x;
-                this.y = pos.y;
-                this.respawnTimer = null;
-                console.log(this.id);
-            }, 2500);
+    updatePlayer() {
+        if (this.wasCharacterWounded && this.isCharacterLive) {
+            this.handleDeath();
         }
+        if (!this.isCharacterLive && !this.respawnTimer) {
+            this.startRespawnTimer();
+        }
+    }
+
+    handleDeath() {
+        this.isCharacterLive = false;
+        const blood = new Blood(this);
+        remainingBlood.push(blood);
+        blood.playAnimationBlood();
+
+        playerDeath(this.id);
+    }
+
+    startRespawnTimer() {
+        this.respawnTimer = setTimeout(() => {
+            sendWebSocketMessage({
+                type: "player_respawn",
+                data: { playerId: this.id }
+            });
+            this.respawnTimer = null;
+        }, 2500);
     }
 }
 
 const weapon1 = new Weapon(InitAssaultRifle, TYPE_WEAPON.ASSAULT_RIFLE, 0, 0);
 
-export const player = new Player(null, 400, 400, 0, 75, 48, 14, weapon1);
+export const player = new Player(stateForWS.userId, 400, 400, 0, 75, 48, 14, weapon1);

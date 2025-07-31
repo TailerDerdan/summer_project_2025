@@ -186,55 +186,6 @@ function throttle(func, delay)
     }
 }
 
-export function updateMovementBullets()
-{
-    bullets.forEach((elem, index) => {
-
-        let remainingDist = elem.getRemainingDist(elem.getFireRange());
-
-        if (remainingDist >= -4 && remainingDist <= 4)
-        {
-            bullets.splice(index, 1);
-        }
-
-        for (const [id, enemy] of arrEnemy) {
-            if (enemy.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) &&
-                enemy.isCharacterLive &&
-                (elem.ownerId !== enemy.id)
-            )
-            {
-                bullets.splice(index, 1);
-                enemy.wasCharacterWounded = true;
-                playerKill(stateForWS.userId);
-            }
-        }
-
-        for (const bot of arrBot) {
-            if (bot.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) &&
-                bot.isCharacterLive &&
-                elem.ownerId !== null
-            ) {
-                bullets.splice(index, 1);
-                bot.wasCharacterWounded = true;
-            }
-        }
-
-        if (player.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) &&
-            player.isCharacterLive &&
-            elem.ownerId !== player.id
-        )
-        {
-            bullets.splice(index, 1);
-            player.wasCharacterWounded = true;
-        }
-
-        elem.setY(elem.getY() - elem.getDistY());
-        elem.setX(elem.getX() + elem.getDistX());
-
-        elem.drawBullet(ctx, camera.xView, camera.yView);
-    });
-}
-
 export let throttleBotsShoot = [];
 for (const bot of arrBot) {
     if (bot.weapon) {
@@ -263,7 +214,7 @@ function updateBulletsOnMap(ctx, xView, yView, bullets) {
                 bullets.splice(index, 1);
                 enemy.wasCharacterWounded = true;
                 if (bullet.ownerId === player.id) {
-                    playerKill(stateForWS.userId);
+                    playerKill(player.id);
                 }
             }
         }
@@ -274,7 +225,7 @@ function updateBulletsOnMap(ctx, xView, yView, bullets) {
         {
             bullets.splice(index, 1);
             player.wasCharacterWounded = true;
-            playerDeath(stateForWS.userId);
+            //playerDeath(player.id);
         }
 
         bullet.setX(bullet.getX() + bullet.getDistX());

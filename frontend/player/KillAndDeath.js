@@ -17,5 +17,6 @@ export function playerDeath(playerId) {
             playerId: playerId,
         }
     }
+    console.log(msg, playerId);
     sendWebSocketMessage(msg)
 }

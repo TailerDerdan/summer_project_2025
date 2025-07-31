@@ -97,6 +97,14 @@ func NewGameService() *GameService {
 //}()
 //}
 
+func (gs *GameService) GeneratePosition() float64 {
+	rand.Seed(time.Now().UnixNano())
+	for {
+		num := rand.Intn(100)
+		return float64(num)
+	}
+}
+
 func (gs *GameService) CreateGame(roomID, gameType string) *models.Game {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
@@ -417,6 +425,36 @@ func (gs *GameService) PlayerDeath(conn *websocket.Conn, gameID, playerID string
 
 	if err := gs.SendMessageInsideGame(conn, gameID, msg); err != nil {
 		fmt.Println("error sending death message")
+		return err
+	}
+
+	return nil
+}
+
+func (gs *GameService) PlayerRespawn(gameID, playerID string) error {
+	//gs.mu.Lock()
+	//defer gs.mu.Unlock()
+
+	game, exists := gs.activeGames[gameID]
+	if !exists {
+		return fmt.Errorf("game %s does not exist", gameID)
+	}
+
+	newX := GeneratePosition()
+	newY := GeneratePosition()
+
+	msg := map[string]interface{}{
+		"type": "player_respawn_server",
+		"data": map[string]interface{}{
+			"gameId":   gameID,
+			"playerId": playerID,
+			"newX":     newX,
+			"newY":     newY,
+		},
+	}
+
+	if err := gs.SendMessageInsideGameToAll(gameID, msg); err != nil {
+		fmt.Println("error sending respawn message")
 		return err
 	}
 

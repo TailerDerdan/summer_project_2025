@@ -1,4 +1,5 @@
 import { Enemy, HEIGHT_ENEMY, WIDTH_ENEMY } from "../enemy/enemy.js";
+import { WIDTH_MAP, HEIGHT_MAP } from "../sizes.js";
 import { arrEnemy, player } from "../player/player.js";
 import { playerBullets } from "../weapon/shooting.js";
 import { Bullet } from "../weapon/bullet.js";
@@ -61,7 +62,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     updateEnemyBullets(msg.data);
                     break;
                 case "player_death_server":
-                    handlePlayerDeath(msg.data);
+                    //handlePlayerDeath(msg.data);
+                    break;
+                case "player_respawn_server":
+                    handlePlayerRespawn(msg.data);
                     break;
                 case "save_stats_server":
                     console.log("save stats: ")
@@ -94,6 +98,7 @@ function handleInitPlayers(players)
 
 function handleJoinPlayer(player)
 {
+    console.log(player.id);
     if (!arrEnemy.has(player.userId))
     {
         const newEnemy = new Enemy(player.userId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir, player.nickname);
@@ -344,13 +349,66 @@ function updateEnemyBullets(data) {
     });
 }
 
+// function handlePlayerDeath(data) {
+//     const playerId = data.playerId;
+//     if (arrEnemy.has(playerId)) {
+//         arrEnemy.get(playerId).isCharacterLive = false;
+//         arrEnemy.get(playerId).wasCharacterWounded = true;
+//     }
+//     if (playerId === stateForWS.userId) {
+//         player.isCharacterLive = false;
+//         player.wasCharacterWounded = true;
+//     }
+// }
+
+// function handlePlayerDeath(data) {
+//     const playerId = data.playerId;
+//     if (arrEnemy.has(playerId)) {
+//         arrEnemy.get(playerId).wasCharacterWounded = true;
+//     }
+// }
+
 function handlePlayerDeath(data) {
     const playerId = data.playerId;
     if (arrEnemy.has(playerId)) {
-        arrEnemy.get(playerId).isCharacterLive = false;
+        arrEnemy.get(playerId).wasCharacterWounded = true;
     }
     if (playerId === stateForWS.userId) {
-        player.isCharacterLive = false;
+        player.wasCharacterWounded = true;
+    }
+}
+
+// function handlePlayerRespawn(data) {
+//     if (arrEnemy.has(data.playerId)) {
+//         const enemy = arrEnemy.get(data.playerId);
+//         enemy.x = data.x;
+//         enemy.y = data.y;
+//         enemy.isCharacterLive = true;
+//     }
+//     if (data.playerId === stateForWS.userId) {
+//         player.x = data.x;
+//         player.y = data.y;
+//         player.isCharacterLive = true;
+//     }
+// }
+
+function handlePlayerRespawn(data) {
+    const playerId = data.playerId;
+    const x = data.newX / 100 * WIDTH_MAP;
+    const y = data.newY / 100 * HEIGHT_MAP;
+
+    if (arrEnemy.has(playerId)) {
+        const enemy = arrEnemy.get(playerId);
+        enemy.x = x;
+        enemy.y = y;
+        enemy.isCharacterLive = true;
+        enemy.wasCharacterWounded = false;
+    }
+    if (playerId === stateForWS.userId) {
+        player.x = x;
+        player.y = y;
+        player.isCharacterLive = true;
+        player.wasCharacterWounded = false;
     }
 }
 

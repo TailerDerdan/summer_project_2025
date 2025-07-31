@@ -54,10 +54,7 @@ function gameLoop()
 
     updateMovementPlayer(camera.xView, camera.yView, deltaTime);
 
-    if (!player.isCharacterLive)
-    {
-        player.appearanceAfterDeathWidthDelay();
-    }
+    player.updatePlayer();
 
     camera.update();
     updateTexture();
