@@ -49,11 +49,10 @@ async function deleteUser(user) {
     if (userElt) {
         userElt.remove()
         const playersCount = document.getElementById(`playersCount-${ user["roomId"] }`)
-        if (parseInt(playersCount.dataset.count) > 0) {
+        if (parseInt(playersCount.dataset.count) > 1) {
             playersCount.dataset.count--
             playersCount.textContent = `${playersCount.dataset.count}/${playersCount.dataset.max}`
-        }
-        if (parseInt(playersCount.dataset.count) <= 0) {
+        } else {
             await deleteRoom(user["roomId"])
             const room = document.getElementById(`room-menu__room-list-item-${user["roomId"]}`)
             if (room) {
