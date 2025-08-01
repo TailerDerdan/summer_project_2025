@@ -21,11 +21,19 @@ export async function initGameWebsocket(data) {
     stateForWS.hostId = data.hostId;
     stateForWS.gameId = data.gameId;
     stateForWS.nickname = data.nickname;
-
-    stateForWS.gameSocket = new WebSocket(`ws://mochilovo-avi.ru:8080/ws/game/${data.gameId}`)
+    
+    // stateForWS.gameSocket = new WebSocket(`ws://mochilovo-avi.ru:8080/ws/game/${data.gameId}`)
     console.log("DDDDDDD")
     return new Promise((resolve, reject) => {
-        stateForWS.gameSocket.onopen = (e) => {
+        try {
+            stateForWS.gameSocket = new WebSocket(`ws://mochilovo-avi.ru:8080/ws/game/${data.gameId}`);
+        } catch (err) {
+            reject(err);
+            return;
+        }
+        try 
+        {
+            stateForWS.gameSocket.onopen = (e) => {
             console.log("FFFFF")
             stateForWS.gameSocket.send(JSON.stringify({
                 type: "game_auth",
@@ -34,20 +42,24 @@ export async function initGameWebsocket(data) {
                     nickname: data.nickname,
                 }
             }));
+            // console.log("@123")
             resolve();
         }
-        console.log("@123")
+        } 
+        catch (error) {
+            reject(error);
+        }
         stateForWS.gameSocket.onclose = (event) => {
             console.log('WebSocket closed:', event.code, event.reason);
             if (event.code !== 1000) {
                 console.error('Connection closed unexpectedly');
             }
         };
-        console.log("@qgerg234")
+        // console.log("@qgerg234")
         stateForWS.gameSocket.onerror = (error) => {
             reject(error);
         };
-        console.log("@qwerqwe")
+        // console.log("@qwerqwe")
     })
 }
 

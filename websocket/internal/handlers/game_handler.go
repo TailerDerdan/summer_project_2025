@@ -164,6 +164,10 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 		fmt.Println("12341234")
 		err := gh.gameService.SetWeaponsPoints(gameID, msg.Data)
 		return err
+	case "players_points":
+		fmt.Println("12341234")
+		err := gh.gameService.SetPlayersPoints(gameID, msg.Data)
+		return err
 	case "change_weapon":
 		err := gh.gameService.ChangeWeapon(conn, gameID, msg.Data)
 		return err

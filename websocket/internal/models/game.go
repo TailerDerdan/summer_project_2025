@@ -20,6 +20,7 @@ type Game struct {
 	ReadyCheck        map[string]bool
 	Weapons           map[string]*Weapon
 	WeaponSpawnPoints []SpawnPoint
+	PlayerSpawnPoints []SpawnPoint
 	LastSpawnTime     time.Time
 	mu                sync.RWMutex
 }

@@ -988,6 +988,58 @@ func (gs *GameService) SetWeaponsPoints(gameID string, data map[string]interface
 	return nil
 }
 
+func (gs *GameService) SetPlayersPoints(gameID string, data map[string]interface{}) error {
+	gs.mu.Lock()
+	defer gs.mu.Unlock()
+
+	game, exists := gs.activeGames[gameID]
+	if !exists {
+		return fmt.Errorf("game %s does not exist", gameID)
+	}
+
+	game.PlayerSpawnPoints = make([]models.SpawnPoint, 0)
+
+	fmt.Printf("/// %v\n", data["players_points"])
+	points, ok := data["players_points"].([]interface{})
+	if !ok {
+		return fmt.Errorf("invalid players_points format, expected array")
+	}
+
+	fmt.Printf("Processing %d player spawn points\n", len(points))
+
+	for i, p := range points {
+		point, ok := p.(map[string]interface{})
+		if !ok {
+			fmt.Printf("Invalid point format at index %d: %v\n", i, p)
+			continue
+		}
+
+		x, xOk := point["x"].(float64)
+		y, yOk := point["y"].(float64)
+		if !xOk || !yOk {
+			fmt.Printf("Missing coordinates at index %d: %v\n", i, point)
+			continue
+		}
+
+		spawnPoint := models.SpawnPoint{X: x, Y: y}
+		game.PlayerSpawnPoints = append(game.PlayerSpawnPoints, spawnPoint)
+		fmt.Printf("Added spawn point %d: X=%.1f, Y=%.1f\n", i, x, y)
+	}
+
+	fmt.Printf("Total weapon spawn points set: %d\n", len(game.PlayerSpawnPoints))
+
+	if len(game.PlayerSpawnPoints) > 0 {
+		// if err := gs.generateWeapons(gameID); err != nil {
+		// 	fmt.Printf("Ошибка инициализации оружия: %v\n", err)
+		// 	return fmt.Errorf("failed to generate weapons: %w", err)
+		// }
+	} else {
+		fmt.Println("No valid weapon spawn points provided")
+	}
+
+	return nil
+}
+
 func (gs *GameService) ReadyToBattle(conn *websocket.Conn, gameID string) error {
 	gs.mu.Lock()
 	defer gs.mu.Unlock()
