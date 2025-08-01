@@ -31,7 +31,6 @@ export function drawAllWeaponOnMap(ctx, xView, yView)
         weapon.container.updateY(weapon.y);
 
         ctx.drawImage(weapon.sprite, screenX, screenY, weapon.widthSprite, weapon.heightSprite);
-        weapon.container.drawContainer(ctx, screenX, screenY);
     };
     
     ctx.restore();
