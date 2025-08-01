@@ -405,25 +405,6 @@ function updateEnemyBullets(data) {
 function handlePlayerDeath(data) {
     const playerId = data.playerId;
     if (arrEnemy.has(playerId)) {
-        arrEnemy.get(playerId).isCharacterLive = false;
-        arrEnemy.get(playerId).wasCharacterWounded = true;
-    }
-    if (playerId === stateForWS.userId) {
-        player.isCharacterLive = false;
-        player.wasCharacterWounded = true;
-    }
-}
-
-function handlePlayerDeath(data) {
-    const playerId = data.playerId;
-    if (arrEnemy.has(playerId)) {
-        arrEnemy.get(playerId).wasCharacterWounded = true;
-    }
-}
-
-function handlePlayerDeath(data) {
-    const playerId = data.playerId;
-    if (arrEnemy.has(playerId)) {
         arrEnemy.get(playerId).wasCharacterWounded = true;
         arrEnemy.get(playerId).isCharacterLive = false;
     }
