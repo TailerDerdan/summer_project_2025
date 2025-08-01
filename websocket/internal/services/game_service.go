@@ -34,10 +34,10 @@ func (gs *GameService) GeneratePosition() float64 {
 	return float64(n.Int64())
 }
 
-func (gs *GameService) CreateGame(roomID, gameType string) *models.Game {
+func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *models.Game {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
-	gameType := data["gameType"].(string)
+	gameType = data["gameType"].(string)
 	gameID := gs.generateGameID(gameType)
 	game := &models.Game{
 		GameID:            gameID,

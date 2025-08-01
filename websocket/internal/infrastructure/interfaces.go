@@ -13,7 +13,7 @@ type IGameService interface {
 	SendMessageInsideGameToAll(gameID string, msg map[string]interface{}) error
 	RemovePlayerFromGame(gameID string, conn *websocket.Conn)
 	PlayerKill(gameID, playerID string) error
-	PlayerDeath(gameID, playerID string) error
+	PlayerDeath(conn *websocket.Conn, gameID, playerID string) error
 	PlayerRespawn(conn *websocket.Conn, gameID, playerID string) error
 	StartTimer(gameID string)
 	RegisterPlayer(conn *websocket.Conn, gameID string, player *models.PlayerInfo) error
