@@ -4,7 +4,8 @@ import { playerBullets } from "../weapon/shooting.js";
 import { Bullet } from "../weapon/bullet.js";
 import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
 import { allWeapon, spawnWeapon } from "../weapon/spawnWeapon.js";
-import {gameLoop, initGame} from "../main.js";
+import {initGame} from "../main.js";
+
 export let mapName
 export const gameStats = {
     kills: 0,
@@ -33,77 +34,88 @@ document.addEventListener('DOMContentLoaded', async () => {
     try
     {
         console.log("44444, data:", data)
-        await initGameWebsocket(data);
+        const promise = initGameWebsocket(data);
         console.log("@9999")
-        await initGame();
         console.log("@8888")
 
-        setMessageHandler((event) => {
-            const msg = JSON.parse(event.data);
-            console.log("msg: === ", msg)
-            switch (msg.type) {
-                case "init_players_server":
-                    console.log("init_players_server")
-                    handleInitPlayers(msg.data.players);
-                    break;
-                case "join_player_server":
-                    console.log("join_player_server")
-                    handleJoinPlayer(msg.data);
-                    break;
-                case "time_update_server":
-                    handleUpdateTimer(msg.data.remaining);
-                    break;
-                case "game_end_server":
-                    console.log("players: ", gameStats.leaderboard);
-                    gameStats.leaderboard.map(player => {
-                        console.log("player: ", player)
-                        console.log("userId:", stateForWS.userId)
-                    })
-                    handleGameEnd(msg.data);
-                    break;
-                case "stats_update_server":
-                    console.log("stats_update_server")
-                    handleUpdateStats(msg.data);
-                    break;
-                case "player_move_server":
-                    handlePlayerMove(msg.data);
-                    break;
-                case "update_bullets_server":
-                    updateEnemyBullets(msg.data);
-                    break;
-                case "save_stats_server":
-                    console.log("save stats: ")
-                    saveStats(msg.data);
-                    break;
-                case "generate_weapons_server":
-                    handleGenerateWeapons(msg.data);
-                    break;
-                // case 'game_state_server':
-                //     console.log("game_state_server");
-                //     handleGameState(msg.data);
-                //     break;
-                case "change_weapon_server":
-                    handleChangeWeapon(msg.data);
-                    break;
-                case "game_state_update_server":
-                    console.log("BLA BLA BLA")
-                    handleGameState(msg.data);
-                    break;
+        console.log(promise);
+
+        promise.then(
+            async () => {
+                setMessageHandler((event) => {
+                    const msg = JSON.parse(event.data);
+                    switch (msg.type) {
+                        case "init_players_server":
+                            console.log("init_players_server")
+                            handleInitPlayers(msg.data.players);
+                            break;
+                        case "join_player_server":
+                            console.log("join_player_server")
+                            handleJoinPlayer(msg.data);
+                            break;
+                        case "time_update_server":
+                            handleUpdateTimer(msg.data.remaining);
+                            break;
+                        case "game_end_server":
+                            console.log("players: ", gameStats.leaderboard);
+                            gameStats.leaderboard.map(player => {
+                                console.log("player: ", player)
+                                console.log("userId:", stateForWS.userId)
+                            })
+                            handleGameEnd(msg.data);
+                            break;
+                        case "stats_update_server":
+                            console.log("stats_update_server")
+                            handleUpdateStats(msg.data);
+                            break;
+                        case "player_move_server":
+                            handlePlayerMove(msg.data);
+                            break;
+                        case "update_bullets_server":
+                            updateEnemyBullets(msg.data);
+                            break;
+                        case "save_stats_server":
+                            console.log("save stats: ")
+                            saveStats(msg.data);
+                            break;
+                        case "generate_weapons_server":
+                            handleGenerateWeapons(msg.data);
+                            break;
+                        // case 'game_state_server':
+                        //     console.log("game_state_server");
+                        //     handleGameState(msg.data);
+                        //     break;
+                        case "change_weapon_server":
+                            handleChangeWeapon(msg.data);
+                            break;
+                        case "game_state_update_server":
+                            console.log("BLA BLA BLA")
+                            handleGameState(msg.data);
+                            break;
+                    }
+                });
+
+                checkAndSendPosition();
+
+                sendBullets();
+
+                await initGame();
+            },
+            () => {
+                console.log("ВСЕ ПЛОХО");
+                // return;
             }
-        });
-
-        checkAndSendPosition();
-
-        sendBullets();
+        );
     }
     catch (error) {
         console.error("WebSocket error:", error);
-        window.location.href = '/main';
+        // window.location.href = '/main';
     }
 });
 
 function handleGameState(data) {
     const statusElement = document.querySelector('.game-status');
+    stateForWS.stateForPlayer = data.status;
     switch (data.status) {
         case 'waiting':
             statusElement.textContent = 'Ожидание игроков...';
@@ -132,6 +144,7 @@ function handleInitPlayers(players)
 {
     console.log("enemies", players)
     Object.values(players).forEach(player => {
+        console.log(player.playerId, stateForWS.userId);
         if (!arrEnemy.has(player.playerId) && player.playerId != stateForWS.userId)
         {
             const newEnemy = new Enemy(player.playerId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir, player.nickname);
@@ -143,6 +156,7 @@ function handleInitPlayers(players)
 function handleJoinPlayer(player)
 {
     console.log("enemy", player)
+    console.log(player.playerId, stateForWS.userId);
     if (!arrEnemy.has(player.userId) && player.playerId != stateForWS.userId)
     {
         const newEnemy = new Enemy(player.userId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir, player.nickname);

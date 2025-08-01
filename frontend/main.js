@@ -47,13 +47,10 @@ export function gameLoop()
     drawAllWeaponOnMap(ctx, camera.xView, camera.yView);
     player.drawCurrentAmmo();
 
-    //updateMovementBullets();
-
-    // checkAndSendPosition();
-
-    // sendBullets();
-
-    updateAllBullets(ctx, camera.xView, camera.yView);
+    if (stateForWS.stateForPlayer == "playing")
+    {
+        updateAllBullets(ctx, camera.xView, camera.yView);
+    }
 
     drawRemainingBlood(ctx, camera.xView, camera.yView);
 
