@@ -48,7 +48,7 @@ func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *m
 		Weapons:           make(map[string]*models.Weapon),
 		WeaponSpawnPoints: make([]models.SpawnPoint, 0),
 		StartTime:         time.Now(),
-		Duration:          300 * time.Second,
+		Duration:          1 * time.Minute,
 		State: models.GameState{
 			CountDown: 15,
 			Status:    "waiting",
