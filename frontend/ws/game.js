@@ -201,7 +201,7 @@ function updateStats() {
     const leaderboardElement = document.getElementById('leaderboard-body');
     leaderboardElement.setAttribute("style", "font-size: 25px;")
     leaderboardElement.innerHTML = gameStats.leaderboard.map(player => `
-        <tr ${player.isCurrent ? 'class="highlight" style="color: red"' : 'style="color: blue"'}>
+        <tr>
             <td>${player.position}. ${player.nickname}</td>
             <td>${player.kills}</td>
             <td>${player.deaths}</td>
@@ -237,7 +237,7 @@ function handleUpdateTimer(seconds) {
 
     if (!gameTimer) {
         const timerElement = document.createElement("div");
-        timerElement.setAttribute("style", "position: fixed; top: 10px; left: 10px; font-size: 70px; color: black;");
+        timerElement.setAttribute("style", "position: fixed; top: 10px; left: 10px; font-size: 70px; color: white; background-color: rgba(0, 0, 0, 0.9);");
         document.body.prepend(timerElement);
 
         gameTimer = setInterval(() => {
