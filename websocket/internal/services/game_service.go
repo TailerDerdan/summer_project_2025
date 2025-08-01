@@ -51,9 +51,8 @@ func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *m
 		ReadyCheck: make(map[string]bool),
 	}
 	gs.activeGames[gameID] = game
-	gs.StartTimer(gameID)
-	//go gs.waitingPlayers(gameID)
-	//go gs.StartWaitingPlayers(gameID)
+	//gs.StartTimer(gameID)
+	go gs.StartWaitingPlayers(gameID)
 	return game
 }
 
