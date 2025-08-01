@@ -29,7 +29,6 @@ export async function initGameWebsocket(data) {
             stateForWS.gameSocket = new WebSocket(`ws://mochilovo-avi.ru:8080/ws/game/${data.gameId}`);
         } catch (err) {
             reject(err);
-            return;
         }
         try 
         {
