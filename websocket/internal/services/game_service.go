@@ -438,18 +438,18 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 	game.Stats[player.PlayerID] = &models.PlayerStats{}
 	game.ReadyCheck[player.PlayerID] = true
 	fmt.Println("8888")
-	stateMsg := map[string]interface{}{
-		"type": "game_state_server",
-		"data": map[string]interface{}{
-			"status":    "waiting",
-			"countdown": game.State.CountDown,
-		},
-	}
-
-	if err := conn.WriteJSON(stateMsg); err != nil {
-		fmt.Println("error sending state message")
-		return err
-	}
+	//stateMsg := map[string]interface{}{
+	//	"type": "game_state_server",
+	//	"data": map[string]interface{}{
+	//		"status":    "waiting",
+	//		"countdown": game.State.CountDown,
+	//	},
+	//}
+	//
+	//if err := conn.WriteJSON(stateMsg); err != nil {
+	//	fmt.Println("error sending state message")
+	//	return err
+	//}
 
 	fmt.Println("######")
 	return nil

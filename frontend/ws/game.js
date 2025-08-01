@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     handleInitPlayers(msg.data.players);
                     break;
                 case "join_player_server":
-                    console.log("init_players_server")
+                    console.log("join_player_server")
                     handleJoinPlayer(msg.data);
                     break;
                 case "time_update_server":
@@ -77,15 +77,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                     break;
                 case "generate_weapons_server":
                     handleGenerateWeapons(msg.data);
-                case 'game_state_server':
-                    console.log("game_state_server");
-                    handleGameState(msg.data);
                     break;
+                // case 'game_state_server':
+                //     console.log("game_state_server");
+                //     handleGameState(msg.data);
+                //     break;
                 case "change_weapon_server":
                     handleChangeWeapon(msg.data);
                     break;
                 case "game_state_update_server":
                     console.log("BLA BLA BLA")
+                    handleGameState(msg.data);
                     break;
             }
         });
@@ -102,7 +104,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function handleGameState(data) {
     const statusElement = document.querySelector('.game-status');
-
     switch (data.status) {
         case 'waiting':
             statusElement.textContent = 'Ожидание игроков...';
@@ -113,6 +114,16 @@ function handleGameState(data) {
             if (data.countdown === 0) {
                 statusElement.textContent = ''
             }
+            break;
+
+        case 'playing':
+            statusElement.textContent = 'Игра идет!';
+            // Можно добавить логику для начала игры
+            break;
+
+        case 'ended':
+            statusElement.textContent = 'Игра завершена';
+            // Логика для завершения игры
             break;
     }
 }
