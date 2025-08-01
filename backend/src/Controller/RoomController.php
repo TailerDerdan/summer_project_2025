@@ -43,7 +43,20 @@ class RoomController extends AbstractController {
             "gamemode" => $data['gamemode'],
             "isOpen" => $data['isOpen'] ?? true,
         ];
-        $roomId = $this->roomService->create($roomData);
+
+        $roomId = -1;
+
+        try
+        {
+            $roomId = $this->roomService->create($roomData);
+        } catch (\RuntimeException $e) {
+            return $this->json(
+                ['error' => $e->getMessage()],
+                JsonResponse::HTTP_CONFLICT // 409 Conflict
+            );
+        }
+        
+
         $this->userService->updateRoomId($roomData["userId"], $roomId);
         $roomData["userId"] = strval($roomData["userId"]);
         $roomData["roomId"] = strval($roomId);

@@ -7,6 +7,7 @@ use App\Entity\Room\Room;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use App\Infrastructure\Room\RoomRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use RuntimeException;
 
 class RoomRepository extends ServiceEntityRepository implements RoomRepositoryInterface {
     public function __construct(ManagerRegistry $managerRegistry) {
@@ -14,6 +15,13 @@ class RoomRepository extends ServiceEntityRepository implements RoomRepositoryIn
     }
 
     public function create(Room $room): int {
+
+        $existingRoom = $this->findOneBy(['name' => $room->getName()]);
+
+        if ($existingRoom !== null) {
+            throw new RuntimeException('Room with this name already exists');
+        }
+
         $this->getEntityManager()->persist($room);
         $this->getEntityManager()->flush();
         return $room->getId();

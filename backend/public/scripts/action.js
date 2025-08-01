@@ -20,6 +20,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const data = await response.json()
+
+        if (data.error)
+        {
+            alert(data.error);
+            return false;
+        }
+
         sessionStorage.setItem('roomSettings', JSON.stringify({
             hostId: data.userId,
             userId: data.userId,
@@ -32,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 nickname: data.nickname,
             }
         }));
-         window.location.href = ('/room/show/' + data.roomId)
+        window.location.href = ('/room/show/' + data.roomId)
     })
 })
 

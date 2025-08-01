@@ -7,7 +7,7 @@
         <field name="hostId" column="host_id" type="integer"/>
         <field name="playersCount" column="players_count" type="integer"/>
         <field name="maxPlayers" column="max_players" type="integer"/>
-        <field name="name" column="name" type="string" length="255"/>
+        <field name="name" column="name" type="string" length="255" unique="true"/>
         <field name="gamemode" column="gamemode" type="string" length="255"/>
         <field name="isOpen" column="is_open" type="boolean" options='{"default": true}'/>
         <field name="timeCreate" column="time_create" type="datetime" options='{"default": "CURRENT_TIMESTAMP"}'/>
