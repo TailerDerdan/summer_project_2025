@@ -214,7 +214,7 @@ export class Player extends Character
         remainingBlood.push(blood);
         blood.playAnimationBlood();
 
-        //playerDeath(this.id);
+        playerDeath(this.id);
     }
 
     startRespawnTimer() {
@@ -222,7 +222,6 @@ export class Player extends Character
             console.log("try respawn");
             sendWebSocketMessage({
                 type: "player_respawn",
-                //data: { playerId: this.id.toString() }
                 data: {
                     playerId: stateForWS.userId.toString()
                 }
@@ -232,4 +231,4 @@ export class Player extends Character
     }
 }
 
-export const player = new Player(null, 200, 200, 0, 75, 48, 14, null);
+export const player = new Player(stateForWS.userId.toString(), 200, 200, 0, 75, 48, 14, null);

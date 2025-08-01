@@ -441,13 +441,12 @@ function handlePlayerRespawn(data) {
     console.log(playerId, x, y);
 
     if (arrEnemy.has(playerId)) {
-        const enemy = arrEnemy.get(playerId);
-        enemy.x = x;
-        enemy.y = y;
-        enemy.isCharacterLive = true;
-        enemy.wasCharacterWounded = false;
+        arrEnemy.get(playerId).x = x;
+        arrEnemy.get(playerId).y = y;
+        arrEnemy.get(playerId).isCharacterLive = true;
+        arrEnemy.get(playerId).wasCharacterWounded = false;
     }
-    if (playerId === stateForWS.userId) {
+    if (playerId === stateForWS.userId.toString()) {
         player.x = x;
         player.y = y;
         player.isCharacterLive = true;
