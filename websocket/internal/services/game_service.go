@@ -137,6 +137,9 @@ func (gs *GameService) startCountDown(gameID string) {
 			gs.notifyGameState(gameID)
 			go gs.StartTimer(gameID)
 			gs.mu.Unlock()
+			if err := gs.GeneratePlayersSpawn(gameID); err != nil {
+				fmt.Println("Error generating playersSpawn points: ", err)
+			}
 			return
 		}
 		gs.mu.Unlock()
@@ -1020,7 +1023,7 @@ func (gs *GameService) SetPlayersPoints(gameID string, data map[string]interface
 	return nil
 }
 
-func (gs *GameService) generatePlayersSpawn(gameID string) error {
+func (gs *GameService) GeneratePlayersSpawn(gameID string) error {
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
