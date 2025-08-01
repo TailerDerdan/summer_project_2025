@@ -41,7 +41,7 @@ class RoomController extends AbstractController {
             "userId" => $user->getUserId() ?? null,
             "name" => $data['name'],
             "gamemode" => $data['gamemode'],
-            "isOpen" => $data['isOpen'] ?? true,
+            "isOpen" => true,
         ];
 
         $roomId = -1;
