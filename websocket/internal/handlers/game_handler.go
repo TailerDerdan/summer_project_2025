@@ -137,9 +137,9 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 	//		return nil
 	//	}
 	//}
+	fmt.Printf("/-666-/, %v\n", msg)
 	switch msg.Type {
 	//case "player_join":
-	//	fmt.Println("/-666-/")
 	//	return nil
 	//return gh.gameService.PLayerJoin(gameID, playerID, msgJoin.Data["x"], msgJoin.Data["y"], msgJoin.Data["angle"])
 	case "player_move":
