@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     //handlePlayerDeath(msg.data);
                     break;
                 case "player_respawn_server":
-                    console.log("server sent response spawn");
+                    console.log("server sent response spawn", msg.data);
                     handlePlayerRespawn(msg.data);
                     break;
                 case "save_stats_server":
@@ -382,7 +382,7 @@ function handlePlayerDeath(data) {
 }
 
 function handlePlayerRespawn(data) {
-    const playerId = data.playerId;
+    const playerId = data.playerId.toString();
     const x = data.newX / 100 * WIDTH_MAP;
     const y = data.newY / 100 * HEIGHT_MAP;
 

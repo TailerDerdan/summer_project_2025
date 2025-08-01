@@ -126,7 +126,7 @@ export class Player extends Character
                 type: "player_respawn",
                 //data: { playerId: this.id.toString() }
                 data: {
-                    playerId: stateForWS.userId.toString(),
+                    playerId: stateForWS.userId.toString()
                 }
             });
             this.respawnTimer = null;
