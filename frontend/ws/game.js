@@ -455,7 +455,7 @@ function handlePlayerRespawn(data) {
 }
 
 async function saveStats(data) {
-    console.log("data RRRRRR: ", data)
+    console.log("data RRRRRR: ", data, data["winner"])
     let winnerId
     if (data["winner"] == "user") {
         winnerId = stateForWS.userId

@@ -35,8 +35,6 @@ func (gs *GameService) GeneratePosition() float64 {
 }
 
 func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *models.Game {
-	//gs.mu.Lock()
-	//defer gs.mu.Unlock()
 	gameType := data["gameType"].(string)
 	gameID := gs.generateGameID(gameType)
 	game := &models.Game{
@@ -190,7 +188,7 @@ func (gs *GameService) SendMessageInsideGame(playerConn *websocket.Conn, gameID 
 	for conn := range game.Players {
 		fmt.Println("!!!!!!")
 		if conn != playerConn {
-			fmt.Printf("######, %v\n", msg)
+			//fmt.Printf("######, %v\n", msg)
 			if err := conn.WriteJSON(msg); err != nil {
 				fmt.Println("PPPPP")
 				if err := conn.Close(); err != nil {
@@ -207,8 +205,6 @@ func (gs *GameService) SendMessageInsideGame(playerConn *websocket.Conn, gameID 
 }
 
 func (gs *GameService) SendMessageInsideGameToAll(gameID string, msg map[string]interface{}) error {
-	//gs.mu.Lock()
-	//defer gs.mu.Unlock()
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game not exists")
@@ -231,9 +227,6 @@ func (gs *GameService) SendMessageInsideGameToAll(gameID string, msg map[string]
 }
 
 func (gs *GameService) RemovePlayerFromGame(gameID string, conn *websocket.Conn) {
-	//gs.mu.Lock()
-	//defer gs.mu.Unlock()
-
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return
@@ -327,23 +320,15 @@ func (gs *GameService) determineWinner(gameID string) string {
 
 	var winnerID = "user"
 	var maxScore = -1
-
+	fmt.Printf("Determining winner for game %s\n", winnerID)
 	for id, stats := range game.Stats {
+		fmt.Printf("Stats: %+v\n", stats)
 		if stats.Score > maxScore {
 			maxScore = stats.Score
 			winnerID = id
 		}
 	}
-
-	//if maxScore <= 0 {
-	//	if len(game.Players) > 0 {
-	//		for conn := range game.Players {
-	//			fmt.Printf("%v: %v\n", game.Players[conn], winnerID)
-	//			winnerID = game.Players[conn].PlayerID
-	//			break
-	//		}
-	//	}
-	//}
+	fmt.Printf("Determining winner for game %s\n", winnerID)
 	fmt.Println("DetermineWinner, winnerID:", winnerID)
 	return winnerID
 }
@@ -1108,11 +1093,7 @@ func (gs *GameService) generatePlayersSpawn(gameID string) error {
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
-	fmt.Printf("ppp ppp ppp, %v\n", len(game.Weapons))
-	//needWeapons := maxWeaponsOnMap - len(game.Weapons)
-	//if needWeapons <= 0 {
-	//	return nil
-	//}
+	fmt.Printf("ppp ppp ppp, %v\n", len(game.Players))
 	fmt.Println("yyy yyy yyy")
 	needWeapons := len(game.Players)
 	freeSpawnPoints := gs.getFreePlayersSpawnPoints(game)
@@ -1131,7 +1112,6 @@ func (gs *GameService) generatePlayersSpawn(gameID string) error {
 		if i >= len(freeSpawnPoints) {
 			break
 		}
-
 		point := freeSpawnPoints[i]
 		player.X = point.X
 		player.Y = point.Y
@@ -1145,9 +1125,6 @@ func (gs *GameService) generatePlayersSpawn(gameID string) error {
 }
 
 func (gs *GameService) sendUpdatePlayers(gameID string) error {
-	//gs.mu.Lock()
-	//defer gs.mu.Unlock()
-
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
@@ -1186,9 +1163,6 @@ func (gs *GameService) getFreePlayersSpawnPoints(game *models.Game) []models.Spa
 }
 
 func (gs *GameService) ReadyToBattle(conn *websocket.Conn, gameID string) error {
-	//gs.mu.Lock()
-	//defer gs.mu.Unlock()
-
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
@@ -1203,9 +1177,6 @@ func (gs *GameService) ReadyToBattle(conn *websocket.Conn, gameID string) error 
 }
 
 func (gs *GameService) GetGameState(gameID string) (*models.GameState, error) {
-	//gs.mu.Lock()
-	//defer gs.mu.Unlock()
-
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return nil, fmt.Errorf("game %s does not exist", gameID)
