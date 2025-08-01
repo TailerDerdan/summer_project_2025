@@ -41,7 +41,7 @@ class RoomController extends AbstractController {
             "userId" => $user->getUserId() ?? null,
             "name" => $data['name'],
             "gamemode" => $data['gamemode'],
-            "isOpen" => $data['isOpen'] ?? true,
+            "isOpen" => true,
         ];
 
         $roomId = -1;
@@ -55,7 +55,6 @@ class RoomController extends AbstractController {
                 JsonResponse::HTTP_CONFLICT // 409 Conflict
             );
         }
-        
 
         $this->userService->updateRoomId($roomData["userId"], $roomId);
         $roomData["userId"] = strval($roomData["userId"]);
@@ -82,7 +81,6 @@ class RoomController extends AbstractController {
             'roomId' => $jsonContent['roomId'],
             'userId' => $user->getUserId() ?? null,
             'nickname' => $user->getNickName() ?? null,
-            //'isReady' => $user->getIsReady() ?? false,
         ]);
     }
 
