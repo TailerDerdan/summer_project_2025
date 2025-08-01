@@ -522,10 +522,15 @@ function handleChangeWeapon(data)
 
 export function sendDropWeapon()
 {
-    sendWebSocketMessage({
+    if (player.weapon)
+    {
+        sendWebSocketMessage({
         type: "drop_weapon",
-        data: {}
+        data: {
+            ammo: player.weapon.currentAmmo
+        }
     });
+    }
 }
 
 function handleDropWeapon(data)
