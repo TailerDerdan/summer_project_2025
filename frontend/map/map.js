@@ -29,42 +29,6 @@ export class Map2D
         this.walls.push(container);
     }
 
-    generate(ctx)
-    {
-        let color = COLOR_FLOOR;
-        ctx.save();
-        ctx.fillStyle = color;
-
-        for (let iterY = 0; iterY < COUNT_TILE_Y; iterY++)
-        {
-            for (let iterX = 0; iterX < COUNT_TILE_X; iterX++)
-            {
-                if (this.tileMap[iterY * COUNT_TILE_Y + iterX] === 0)
-                {
-                    color = COLOR_FLOOR;
-                }
-                else
-                {
-                    color = COLOR_WALL;
-                }
-                ctx.beginPath();
-                ctx.rect(iterX * TILE_WIDTH, iterY * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
-                ctx.fillStyle = color;
-                ctx.fill();
-                ctx.closePath();
-            }
-        }
-
-        this.walls.forEach((elem) => {
-            elem.drawContainer(ctx, elem.x, elem.y);
-        })
-
-        ctx.restore();
-
-        // this.image = new Image();
-        // this.image.src = ctx.canvas.toDataURL("image/png");
-    }
-
     draw(ctx, xView, yView)
     {
         let sourceX = xView;
