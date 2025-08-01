@@ -833,9 +833,6 @@ func (gs *GameService) sendChangeWeapon(conn *websocket.Conn, gameID string) err
 }
 
 func (gs *GameService) deleteWeapon(conn *websocket.Conn, gameID, weaponID string) error {
-	//gs.mu.Lock()
-	//defer gs.mu.Unlock()
-
 	game, exists := gs.activeGames[gameID]
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
@@ -1091,6 +1088,26 @@ func (gs *GameService) getFreePlayersSpawnPoints(game *models.Game) []models.Spa
 		posKey := fmt.Sprintf("%.1f,%.1f", point.X, point.Y)
 		if !usedPoints[posKey] {
 			freeSpawnPoints = append(freeSpawnPoints, point)
+		}
+	}
+	fmt.Printf("000 mmmmmm 000, %v\n", freeSpawnPoints)
+	return freeSpawnPoints
+}
+
+func (gs *GameService) GetPlayerPoint(gameID string) models.SpawnPoint {
+	game, _ := gs.activeGames[gameID]
+	var freeSpawnPoints models.SpawnPoint
+	fmt.Printf("nnn 000 nnn, %v\n", game.PlayerSpawnPoints)
+	usedPoints := make(map[string]bool)
+	for _, player := range game.Players {
+		posKey := fmt.Sprintf("%.1f,%.1f", player.X, player.Y)
+		usedPoints[posKey] = true
+	}
+	fmt.Println("000 hhhh 000")
+	for _, point := range game.PlayerSpawnPoints {
+		posKey := fmt.Sprintf("%.1f,%.1f", point.X, point.Y)
+		if !usedPoints[posKey] {
+			freeSpawnPoints = point
 		}
 	}
 	fmt.Printf("000 mmmmmm 000, %v\n", freeSpawnPoints)

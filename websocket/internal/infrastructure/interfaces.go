@@ -28,6 +28,7 @@ type IGameService interface {
 	SetPlayersPoints(gameID string, data map[string]interface{}) error
 	GetGameState(gameID string) (*models.GameState, error)
 	SendJoinRoom(conn *websocket.Conn, gameID string, player *models.PlayerInfo) error
+	GetPlayerPoint(gameID string) models.SpawnPoint
 }
 
 type IRoomService interface {

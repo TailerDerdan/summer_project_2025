@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/TailerDerdan/summer_project_2025/websocket/internal"
 	"github.com/TailerDerdan/summer_project_2025/websocket/internal/infrastructure"
 	"github.com/TailerDerdan/summer_project_2025/websocket/internal/models"
 	"github.com/gorilla/websocket"
@@ -39,7 +38,7 @@ func (gh *GameHandler) HandleGameConnection(w http.ResponseWriter, r *http.Reque
 	}
 	defer conn.Close()
 	fmt.Println("0000")
-	player, err := gh.authenticatePlayer(conn)
+	player, err := gh.authenticatePlayer(conn, gameID)
 	if err != nil {
 		log.Printf("Game WS authenticate failed: %v", err)
 		gh.sendError(conn, "Game WS authenticate failed")
@@ -67,7 +66,7 @@ func (gh *GameHandler) HandleGameConnection(w http.ResponseWriter, r *http.Reque
 	gh.handleGameMessage(conn, gameID, player.PlayerID)
 }
 
-func (gh *GameHandler) authenticatePlayer(conn *websocket.Conn) (*models.PlayerInfo, error) {
+func (gh *GameHandler) authenticatePlayer(conn *websocket.Conn, gameID string) (*models.PlayerInfo, error) {
 	var msg models.Msg
 
 	if err := conn.ReadJSON(&msg); err != nil {
@@ -77,11 +76,13 @@ func (gh *GameHandler) authenticatePlayer(conn *websocket.Conn) (*models.PlayerI
 	if msg.Type != "game_auth" {
 		return nil, fmt.Errorf("not a game_auth")
 	}
+
+	point := gh.gameService.GetPlayerPoint(gameID)
 	player := &models.PlayerInfo{
 		PlayerID: msg.Data["userId"].(string),
 		Nickname: msg.Data["nickname"].(string),
-		X:        internal.GeneratePosition(),
-		Y:        internal.GeneratePosition(),
+		X:        point.X,
+		Y:        point.Y,
 		Dir:      0,
 	}
 	fmt.Printf("PLayer new: %v\n", player)
