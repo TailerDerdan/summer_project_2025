@@ -21,7 +21,7 @@ type IGameService interface {
 	UpdateBullets(conn *websocket.Conn, gameID string, data map[string]interface{}) error
 	SendInitialGameState(conn *websocket.Conn, gameID string) error
 	ChangeWeapon(conn *websocket.Conn, gameID string, data map[string]interface{}) error
-	DropWeapon(conn *websocket.Conn, gameID string) error
+	DropWeapon(conn *websocket.Conn, gameID string, data map[string]interface{}) error
 	StartWaitingPlayers(gameID string)
 	ReadyToBattle(conn *websocket.Conn, gameID string) error
 	SetWeaponsPoints(gameID string, data map[string]interface{}) error

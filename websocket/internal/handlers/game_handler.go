@@ -178,7 +178,7 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 		err := gh.gameService.ChangeWeapon(conn, gameID, msg.Data)
 		return err
 	case "drop_weapon":
-		err := gh.gameService.DropWeapon(conn, gameID)
+		err := gh.gameService.DropWeapon(conn, gameID, msg.Data)
 		return err
 	case "ready_to_battle":
 		err := gh.gameService.ReadyToBattle(conn, gameID)
