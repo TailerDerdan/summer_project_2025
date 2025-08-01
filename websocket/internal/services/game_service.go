@@ -65,10 +65,10 @@ func (gs *GameService) StartWaitingPlayers(gameID string) {
 	for {
 		select {
 		case <-ticker.C:
-			//gs.mu.Lock()
+			gs.mu.Lock()
 			game, exists := gs.activeGames[gameID]
 			if !exists {
-				//gs.mu.Unlock()
+				gs.mu.Unlock()
 				return
 			}
 			fmt.Println("111 111 111")
@@ -85,7 +85,7 @@ func (gs *GameService) StartWaitingPlayers(gameID string) {
 				game.State.Status = "countdown"
 				game.State.CountDown = 10
 				gs.notifyGameState(gameID)
-				//gs.mu.Unlock()
+				gs.mu.Unlock()
 				fmt.Println("rrr rrr www")
 				go gs.startCountDown(gameID)
 				return
@@ -108,7 +108,7 @@ func (gs *GameService) StartWaitingPlayers(gameID string) {
 			}
 			fmt.Println("555 555 555")
 			gs.SendMessageInsideGameToAll(gameID, msg)
-			//gs.mu.Unlock()
+			gs.mu.Unlock()
 
 		case <-timeout:
 			//gs.mu.Lock()
@@ -134,10 +134,10 @@ func (gs *GameService) startCountDown(gameID string) {
 	defer ticker.Stop()
 
 	for range ticker.C {
-		//gs.mu.Lock()
+		gs.mu.Lock()
 		game, exists := gs.activeGames[gameID]
 		if !exists {
-			//gs.mu.Unlock()
+			gs.mu.Unlock()
 			return
 		}
 
@@ -151,10 +151,10 @@ func (gs *GameService) startCountDown(gameID string) {
 			gs.notifyGameState(gameID)
 			fmt.Println("@@@ @@@ @@@")
 			go gs.StartTimer(gameID)
-			//gs.mu.Unlock()
+			gs.mu.Unlock()
 			return
 		}
-		//gs.mu.Unlock()
+		gs.mu.Unlock()
 	}
 }
 
@@ -510,6 +510,8 @@ func (gs *GameService) StartTimer(gameID string) {
 	gs.mu.Lock()
 	game, exists := gs.activeGames[gameID]
 	gs.mu.Unlock()
+
+	game.StartTime = time.Now()
 
 	if !exists {
 		return //fmt.Errorf("game %s does not exist", gameID)

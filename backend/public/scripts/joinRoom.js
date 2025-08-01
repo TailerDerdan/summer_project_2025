@@ -188,19 +188,32 @@ function handleGameStart(data, user) {
 }
 
 async function deleteUserFromRoom(roomId) {
-    const response = await fetch('/room/deleteUser', {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            roomId: parseInt(roomId),
-        })
-    })
-    if (!response.ok) {
-        console.log(`HTTP error! status: ${response.status}`);
+    if (!roomId) {
+        console.error("Room ID is required");
+        return;
     }
- }
+
+    try {
+        const response = await fetch('/room/deleteUser', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                roomId: parseInt(roomId),
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Failed to delete user from room:", error);
+        throw error; // Пробрасываем ошибку дальше для обработки в вызывающем коде
+    }
+}
 
  async function updateReadyStateFetch(isReady) {
     const response = await fetch('/room/updateReadyState', {
