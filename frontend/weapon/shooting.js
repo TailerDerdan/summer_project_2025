@@ -261,7 +261,7 @@ export function updateAllBullets(ctx, xView, yView) {
 
 export function setTypeShooting(player)
 {
-    if (!player.weapon) return;
+    if (!player.weapon && !player.weapon.timeBetweenBul) return;
 
     document.removeEventListener('mousedown', player.throttleUpdateBullets);
     document.removeEventListener('mousedown', player.regularShootHandler);
@@ -272,17 +272,10 @@ export function setTypeShooting(player)
         player.intervalId = 0;
     }
 
-    let timeBetweenBul = 0;
-
-    if (player.weapon.timeBetweenBul)
-    {
-        timeBetweenBul = player.weapon.timeBetweenBul;
-    }
-
     if (player.weapon.typeShooting == TYPE_SHOOTING.SINGLE || player.weapon.typeShooting == TYPE_SHOOTING.FIRING_A_BURST)
     {
 
-        player.throttleUpd = throttle(updateBullets, timeBetweenBul);
+        player.throttleUpd = throttle(updateBullets, player.weapon.timeBetweenBul * 1000);
 
         player.throttleUpdateBullets = (event) => {
             player.throttleUpd(event);
@@ -292,13 +285,13 @@ export function setTypeShooting(player)
     }
     else
     {
-        if (!player.weapon) return;
+        if (!player.weapon && !player.weapon.timeBetweenBul) return;
 
         player.regularShootHandler = (event) => {
             updateBullets(event);
             player.intervalId = setInterval(() => {
                 updateBullets(event);
-            }, timeBetweenBul);
+            }, player.weapon.timeBetweenBul * 1000);
         };
 
         player.regularStopHandler = () => {
