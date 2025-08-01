@@ -208,6 +208,10 @@ export class MapEditor
 
     saveMap(nameMap, ctx)
     {
+
+        if (this.spawnsWeapons.length < 5) return;
+        if (this.spawnsPlayers.length < 5) return;
+
         this.isSaveMap = true;
         this.preparingToGreedyMeshing();
         this.containers = [];
