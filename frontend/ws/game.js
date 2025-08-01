@@ -88,6 +88,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                         case "change_weapon_server":
                             handleChangeWeapon(msg.data);
                             break;
+                        case "drop_weapon_server":
+                            handleDropWeapon(msg.data);
+                            break;
                         case "game_state_update_server":
                             console.log("BLA BLA BLA")
                             handleGameState(msg.data);
@@ -439,7 +442,7 @@ function handleGenerateWeapons(data)
 
 export function sendChangeWeapon()
 {
-    console.log(player.weapon.id)
+    console.log("AAAAA BUULLLLEEETTT", player.weapon.id)
     sendWebSocketMessage({
         type: "change_weapon",
         data: {
@@ -452,15 +455,43 @@ function handleChangeWeapon(data)
 {
     if (arrEnemy.has(data.playerId))
     {
+        console.log("HQGDWUYWQGD", data.playerId)
         if (allWeapon.has(data.weaponId))
         {
+            console.log("JESUS JESUS JESUS", data.weaponId)
             arrEnemy.get(data.playerId).weapon = allWeapon.get(data.weaponId);
             allWeapon.get(data.weaponId).owner = arrEnemy.get(data.playerId);
-            console.log(allWeapon.get(data.weaponId))
+            console.log("ZDAROVO OTECH", allWeapon.get(data.weaponId))
         }
         else
         {
             console.log("Такого оружия нет");
         }
+    }
+}
+
+export function sendDropWeapon()
+{
+    sendWebSocketMessage({
+        type: "drop_weapon",
+        data: {}
+    });
+}
+
+function handleDropWeapon(data)
+{
+    if (allWeapon.has(data.weaponId))
+    {
+        const enemyId = allWeapon.get(data.weaponId).owner.id; 
+        allWeapon.get(data.weaponId).owner = null;
+        allWeapon.get(data.weaponId).currentAmmo = data.ammo;
+        allWeapon.get(data.weaponId).x = data.X;
+        allWeapon.get(data.weaponId).y = data.Y;
+        arrEnemy.get(enemyId).weapon = null;
+        console.log(allWeapon)
+    }
+    else
+    {
+        console.log("Такого оружия нет");
     }
 }
