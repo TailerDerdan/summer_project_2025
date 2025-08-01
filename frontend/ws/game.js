@@ -398,7 +398,7 @@ function updateEnemyBullets(data) {
 async function saveStats(data) {
     console.log("data RRRRRR: ", data)
     const formData = {
-        winner: parseInt(["winner"]),
+        winner: parseInt(data["winner"]),
         stats: data["stats"],
     };
     try
