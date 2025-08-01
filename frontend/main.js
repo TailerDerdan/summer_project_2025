@@ -94,7 +94,6 @@ export const initGame = async () => {
     const imgMap = new Image();
     imgMap.src = gettedMap.image;
     map.image = imgMap;
-    // map.generate(ctx);
     map.fillWalls(gettedMap.walls);
     console.log("++++, ", stateForWS.userId, stateForWS.hostId)
     if (stateForWS.userId == stateForWS.hostId) {

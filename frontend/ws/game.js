@@ -142,17 +142,28 @@ function handleGameState(data) {
 function handleInitPlayers(players)
 {
     console.log("enemies", players)
-    Object.values(players).forEach(player => {
-        if (!arrEnemy.has(player.playerId) && player.playerId != stateForWS.userId)
+    Object.values(players).forEach(playerServer => {
+        if (playerServer.playerId == stateForWS.userId)
         {
-            const newEnemy = new Enemy(player.playerId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir, player.nickname);
-            arrEnemy.set(player.playerId, newEnemy);
+            player.x = playerServer.x;
+            player.y = playerServer.y;
+        }
+        else if (!arrEnemy.has(playerServer.playerId) && playerServer.playerId != stateForWS.userId)
+        {
+            const newEnemy = new Enemy(playerServer.playerId, playerServer.x, playerServer.y, HEIGHT_ENEMY, WIDTH_ENEMY, playerServer.dir, playerServer.nickname);
+            arrEnemy.set(playerServer.playerId, newEnemy);
         }
     })
 }
 
 function handleJoinPlayer(player)
 {
+    if (playerServer.playerId == stateForWS.userId)
+    {
+        player.x = playerServer.x;
+        player.y = playerServer.y;
+        return;
+    }
     if (!arrEnemy.has(player.userId) && player.playerId != stateForWS.userId)
     {
         const newEnemy = new Enemy(player.userId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir, player.nickname);
