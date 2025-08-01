@@ -790,11 +790,13 @@ func (gs *GameService) ChangeWeapon(conn *websocket.Conn, gameID string, data ma
 	weaponID := data["weaponID"].(string)
 	weapon, exists := game.Weapons[weaponID]
 	if !exists {
-		return fmt.Errorf("weapon %s does not exists", weaponID)
+		fmt.Printf("weapon %s does not exists\n", weaponID)
+		return nil
 	}
 	player, exists := game.Players[conn]
 	if !exists {
-		return fmt.Errorf("player not found")
+		fmt.Printf("player not found\n")
+		return nil
 	}
 	playerWeapon := &models.PlayerWeapon{
 		ID:       weapon.ID,
