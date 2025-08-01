@@ -269,7 +269,7 @@ function showResultsAfterBattle(endData) {
         text-align: center;
         z-index: 1000;
     `)
-    modal.style.display = 'block';
+
     console.log("endData.winner", endData.winner, typeof endData.winner)
     const userId = stateForWS.userId
     console.log("userId", userId, typeof userId)
