@@ -43,9 +43,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log("msg: === ", msg)
             switch (msg.type) {
                 case "init_players_server":
+                    console.log("init_players_server")
                     handleInitPlayers(msg.data.players);
                     break;
                 case "join_player_server":
+                    console.log("init_players_server")
                     handleJoinPlayer(msg.data);
                     break;
                 case "time_update_server":
@@ -60,6 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     handleGameEnd(msg.data);
                     break;
                 case "stats_update_server":
+                    console.log("stats_update_server")
                     handleUpdateStats(msg.data);
                     break;
                 case "player_move_server":
@@ -73,9 +76,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     saveStats(msg.data);
                     break;
                 case "generate_weapons_server":
-                    console.log(msg);
                     handleGenerateWeapons(msg.data);
                 case 'game_state_server':
+                    console.log("game_state_server");
                     handleGameState(msg.data);
                     break;
                 case "change_weapon_server":

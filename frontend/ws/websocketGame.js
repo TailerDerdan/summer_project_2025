@@ -64,10 +64,10 @@ export async function initGameWebsocket(data) {
             reject(error);
         };
 
-        // Устанавливаем стандартный обработчик сообщений
-        stateForWS.gameSocket.onmessage = (event) => {
-            console.log("Default message handler:", event.data);
-        };
+        // // Устанавливаем стандартный обработчик сообщений
+        // stateForWS.gameSocket.onmessage = (event) => {
+        //     console.log("Default message handler:", event.data);
+        // };
     });
 }
 
