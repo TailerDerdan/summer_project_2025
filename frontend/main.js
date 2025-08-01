@@ -56,7 +56,7 @@ export function gameLoop()
     drawRemainingBlood(ctx, camera.xView, camera.yView);
 
     if (player.isCharacterLive) {
-        updateMovementPlayer(camera.xView, camera.yView, deltaTime);
+        updateMovementPlayer(camera.xView, camera.yView, deltaTime, map.walls);
         player.drawCurrentAmmo();
     }
 
@@ -94,7 +94,7 @@ export const initGame = async () => {
     const imgMap = new Image();
     imgMap.src = gettedMap.image;
     map.image = imgMap;
-    map.generate(ctx);
+    // map.generate(ctx);
     map.fillWalls(gettedMap.walls);
     console.log("++++, ", stateForWS.userId, stateForWS.hostId)
     if (stateForWS.userId == stateForWS.hostId) {
