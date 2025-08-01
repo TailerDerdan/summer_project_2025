@@ -199,6 +199,7 @@ function updatePlayerBulletsOnMap(ctx, xView, yView, bullets) {
         for (const [id, enemy] of arrEnemy) {
             if (enemy.container.isTwoContainerConcerns(bullet.container, camera.xView, camera.yView) &&
                 enemy.isCharacterLive &&
+                !(enemy.wasCharacterWounded) &&
                 (bullet.ownerId.toString() !== enemy.id.toString())
             )
             {
@@ -222,15 +223,16 @@ function updatePlayerBulletsOnMap(ctx, xView, yView, bullets) {
     });
 }
 
+
 function updateEnemyBulletsOnMap(ctx, xView, yView, bullets) {
     bullets.forEach((bullet, index) => {
         if (player.container.isTwoContainerConcerns(bullet.container, camera.xView, camera.yView) &&
-            player.isCharacterLive
+            player.isCharacterLive &&
+            !player.wasCharacterWounded
         )
         {
-            bullets.splice(index, 1);
+            bullets.length = 0;
             player.wasCharacterWounded = true;
-            playerDeath(player.id);
         }
 
         bullet.setX(bullet.getX() + bullet.getDistX());

@@ -232,4 +232,4 @@ export class Player extends Character
     }
 }
 
-export const player = new Player(null, 200, 200, 0, 75, 48, 14, null);
+export const player = new Player(stateForWS.userId.toString(), 200, 200, 0, 75, 48, 14, null);
