@@ -72,6 +72,7 @@ type PlayerWeapon struct {
 }
 
 type SpawnPoint struct {
-	X float64 `json:"x"`
-	Y float64 `json:"y"`
+	X     float64 `json:"x"`
+	Y     float64 `json:"y"`
+	IsUse bool    `json:"isUse"`
 }
