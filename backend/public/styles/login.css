@@ -19,7 +19,10 @@
     font-family: "Montserrat", sans-serif;
     font-weight: bold;
     font-size: 64px;
-    color: #A10003;
+    color: #000000;
+    background-color: #FFF;
+    border-radius: 20px;
+    padding: 0.5% 1%;
 }
 
 .form-auth {
@@ -35,7 +38,7 @@
     background-color: #FFF;
     font-family: "Inter", sans-serif;
     font-size: 30px;
-    color: #000;
+    color: #000000;
     padding-left: 3.163763216%;
     padding-bottom: 4%;
     padding-top: 4%;
@@ -47,7 +50,10 @@
     font-family: "Montserrat", sans-serif;
     font-weight: bold;
     font-size: 64px;
-    color: #A10003;
+    color: #000000;
+    background-color: #FFF;
+    border-radius: 20px;
+    padding: 0.5% 1%;
     text-decoration: none;
 }
 
