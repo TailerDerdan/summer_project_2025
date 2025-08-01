@@ -11,7 +11,7 @@ import { getMap } from './requests/requests.js';
 import { drawRemainingBlood } from './blood/blood.js';
 import {playerDeath} from "./player/KillAndDeath.js";
 import {sendWebSocketMessage, stateForWS} from './ws/websocketGame.js';
-import { mapName } from './ws/game.js';
+import {} from './ws/game.js';
 
 import { drawAllWeaponOnMap, updateAllWeaponOnMap } from './weapon/spawnWeapon.js';
 import {} from "./player/changeWeapon.js";
