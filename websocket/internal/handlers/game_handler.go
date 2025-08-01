@@ -137,43 +137,29 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 			return nil
 		}
 	}
-	//fmt.Printf("/-666-/, %v\n", msg)
+
 	switch msg.Type {
-	//case "player_join":
-	//	return nil
-	//return gh.gameService.PLayerJoin(gameID, playerID, msgJoin.Data["x"], msgJoin.Data["y"], msgJoin.Data["angle"])
 	case "player_move":
-		//fmt.Println("/-777777-/")
-		//gh.gameService.EndGame(gameID)
-		//return nil
 		err := gh.gameService.UpdatePosition(conn, gameID, playerID, msg.Data)
 		return err
 	case "game_end":
-		//fmt.Println("/-876786986-/")
 		return nil
 	case "update_bullets":
-		//fmt.Println("/-00000_99999_0000-/")
 		err := gh.gameService.UpdateBullets(conn, gameID, msg.Data)
 		return err
 	case "player_kill":
-		//fmt.Println("player kill")
 		err := gh.gameService.PlayerKill(gameID, playerID)
 		return err
 	case "player_death":
-		//fmt.Println("player_death")
-		fmt.Println("player_death")
 		err := gh.gameService.PlayerDeath(conn, gameID, playerID)
 		return err
 	case "player_respawn":
-		fmt.Println("player_respawn")
 		err := gh.gameService.PlayerRespawn(conn, gameID, playerID)
 		return err
 	case "weapons_points":
-		fmt.Println("12341234")
 		err := gh.gameService.SetWeaponsPoints(gameID, msg.Data)
 		return err
 	case "players_points":
-		fmt.Println("76587658vhvjhgh")
 		err := gh.gameService.SetPlayersPoints(gameID, msg.Data)
 		return err
 	case "change_weapon":
