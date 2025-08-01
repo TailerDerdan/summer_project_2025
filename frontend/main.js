@@ -33,16 +33,16 @@ export function gameLoop()
         enemy.updateEnemy();
     })
 
-    arrBot.forEach(bot => {
-        bot.updateMovementBot(ctx, camera.xView, camera.yView);
-        //bot.updateCharacter();
-    })
+    // arrBot.forEach(bot => {
+    //     bot.updateMovementBot(ctx, camera.xView, camera.yView);
+    //     //bot.updateCharacter();
+    // })
 
-    arrBot.forEach((bot, index) => {
-        if (bot.isCharacterLive && bot.weapon) {
-            //throttleBotsShoot[index]();
-        }
-    });
+    // arrBot.forEach((bot, index) => {
+    //     if (bot.isCharacterLive && bot.weapon) {
+    //         //throttleBotsShoot[index]();
+    //     }
+    // });
 
     updateAllWeaponOnMap();
     drawAllWeaponOnMap(ctx, camera.xView, camera.yView);
@@ -76,28 +76,22 @@ export function gameLoop()
 }
 
 export const initGame = async () => {
-    console.log("11111")
     if (!stateForWS?.mapName) {
         await new Promise(resolve => {
             const checkInterval = setInterval(() => {
                 if (stateForWS?.mapName) {
-                    console.log("||||||")
                     clearInterval(checkInterval);
                     resolve();
                 }
             }, 2000);
         });
     }
-    console.log("00000")
     const gettedMap = await getMap(stateForWS.mapName);
-    console.log("====", gettedMap)
     const imgMap = new Image();
     imgMap.src = gettedMap.image;
     map.image = imgMap;
     map.fillWalls(gettedMap.walls);
-    console.log("++++, ", stateForWS.userId, stateForWS.hostId)
     if (stateForWS.userId == stateForWS.hostId) {
-        console.log("}}}}")
         sendWebSocketMessage({
             type: "weapons_points",
             data: {
@@ -111,10 +105,8 @@ export const initGame = async () => {
             }
         });
     }
-    console.log("#99999")
     sendWebSocketMessage({
         type: "ready_to_battle",
     })
-    console.log("#88888")
     gameLoop()
 }

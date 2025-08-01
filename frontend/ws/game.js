@@ -183,9 +183,6 @@ function handlePlayerMove(data)
             timestamp: 0,
         }
         arrEnemy.get(data.userId).snapshotBuffer.addSnapshot(snapshot);
-        // arrEnemy.get(data.userId).currentState.x = data.x;
-        // arrEnemy.get(data.userId).currentState.y = data.y;
-        // arrEnemy.get(data.userId).currentState.dir = data.dir;
     }
 }
 
@@ -228,7 +225,6 @@ function handleUpdateStats(data)
         position: index + 1,
         isCurrent: item.id === data.userId
     }));
-    //console.log("update stat: ",data.userId, typeof data.userId)
 
     updateStats();
 }
@@ -253,9 +249,7 @@ function handleUpdateTimer(seconds) {
             timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
             if (remainingTime <= 0) {
-                console.log("END TIMER")
                 clearInterval(gameTimer);
-                // showResultsAfterBattle();
             }
         }, 1000);
     }
@@ -282,12 +276,12 @@ function showResultsAfterBattle(endData) {
         z-index: 1000;
     `)
 
-    console.log("endData.winner", endData.winner, typeof endData.winner)
+
     const userId = stateForWS.userId
-    console.log("userId", userId, typeof userId)
+
     const winnerNickname = findPlayerNickname(endData.winner);
     const isWinner = parseInt(endData.winner) === userId;
-    console.log("results: isWinner: ", isWinner, endData.winner, userId)
+
     resultsBlock.innerHTML = `
         <h2>${isWinner ? 'ПОБЕДА!' : 'КОНЕЦ БОЯ'}</h2>
         <p>Победитель: ${winnerNickname}</p>
@@ -319,9 +313,7 @@ function showResultsAfterBattle(endData) {
 
 function findPlayerNickname(playerId) 
 {
-    //console.log("arrEnemy.has(playerId.toString())", arrEnemy.get(playerId))
     if (arrEnemy.has(playerId)) {
-        //console.log("--===---", arrEnemy.get(playerId).nickname)
         return arrEnemy.get(playerId).nickname;
     }
     return stateForWS.nickname;
@@ -382,8 +374,6 @@ export function sendBullets()
 
         if ((now - lastSentTimeForBullets > 100) && (playerBullets.length !== 0))
         {
-            //console.log(playerBullets);
-
             sendWebSocketMessage({
                 type: "update_bullets",
                 data: {
@@ -393,8 +383,6 @@ export function sendBullets()
             });
 
             lastSentTimeForBullets = now;
-
-            //playerBullets.length = 0;
         }
     }, 25);
 }
@@ -414,24 +402,24 @@ function updateEnemyBullets(data) {
     });
 }
 
-// function handlePlayerDeath(data) {
-//     const playerId = data.playerId;
-//     if (arrEnemy.has(playerId)) {
-//         arrEnemy.get(playerId).isCharacterLive = false;
-//         arrEnemy.get(playerId).wasCharacterWounded = true;
-//     }
-//     if (playerId === stateForWS.userId) {
-//         player.isCharacterLive = false;
-//         player.wasCharacterWounded = true;
-//     }
-// }
+function handlePlayerDeath(data) {
+    const playerId = data.playerId;
+    if (arrEnemy.has(playerId)) {
+        arrEnemy.get(playerId).isCharacterLive = false;
+        arrEnemy.get(playerId).wasCharacterWounded = true;
+    }
+    if (playerId === stateForWS.userId) {
+        player.isCharacterLive = false;
+        player.wasCharacterWounded = true;
+    }
+}
 
-// function handlePlayerDeath(data) {
-//     const playerId = data.playerId;
-//     if (arrEnemy.has(playerId)) {
-//         arrEnemy.get(playerId).wasCharacterWounded = true;
-//     }
-// }
+function handlePlayerDeath(data) {
+    const playerId = data.playerId;
+    if (arrEnemy.has(playerId)) {
+        arrEnemy.get(playerId).wasCharacterWounded = true;
+    }
+}
 
 function handlePlayerDeath(data) {
     const playerId = data.playerId;
