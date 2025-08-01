@@ -128,6 +128,7 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 		allowedTypes := map[string]bool{
 			"ready_to_battle": true,
 			"weapons_points":  true,
+			"players_points":  true,
 			"player_move":     true,
 		}
 
@@ -171,7 +172,7 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 		err := gh.gameService.SetWeaponsPoints(gameID, msg.Data)
 		return err
 	case "players_points":
-		fmt.Println("12341234")
+		fmt.Println("76587658vhvjhgh")
 		err := gh.gameService.SetPlayersPoints(gameID, msg.Data)
 		return err
 	case "change_weapon":

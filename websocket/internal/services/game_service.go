@@ -987,7 +987,7 @@ func (gs *GameService) SetPlayersPoints(gameID string, data map[string]interface
 
 	game.PlayerSpawnPoints = make([]models.SpawnPoint, 0)
 
-	fmt.Printf("/// %v\n", data["players_points"])
+	fmt.Printf("/// Players points: %v\n", data["players_points"])
 	points, ok := data["players_points"].([]interface{})
 	if !ok {
 		return fmt.Errorf("invalid players_points format, expected array")
