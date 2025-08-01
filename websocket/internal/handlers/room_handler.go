@@ -49,6 +49,7 @@ func (rh *RoomHandler) HandleCreateRoom(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+	room.PlayersCount++
 	msg := map[string]interface{}{
 		"type": "room_create_server",
 		"room": map[string]interface{}{

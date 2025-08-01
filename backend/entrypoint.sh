@@ -46,4 +46,6 @@ fi
 echo "Validating database schema..."
 php bin/console doctrine:schema:validate
 
+
+
 exec "$@"

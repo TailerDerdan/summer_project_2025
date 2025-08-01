@@ -1,4 +1,5 @@
 import { Enemy, HEIGHT_ENEMY, WIDTH_ENEMY } from "../enemy/enemy.js";
+import { WIDTH_MAP, HEIGHT_MAP } from "../sizes.js";
 import { arrEnemy, player } from "../player/player.js";
 import { playerBullets } from "../weapon/shooting.js";
 import { Bullet } from "../weapon/bullet.js";
@@ -17,28 +18,22 @@ export const gameStats = {
 
 export let enemyBullets = [];
 
+const statsPanel = document.getElementById("stats-panel")
+
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log("222222")
     const data = JSON.parse(sessionStorage.getItem('gameSession'))
-    console.log("gameSession", data)
+    //console.log("gameSession", data)
     if (!data) {
-        console.log('sdfsdfgsdfgsdf')
         window.location.href = `/main`
         return
     }
-    console.log("33333")
     mapName = data.mapName
-    console.log("mapName, data.mapName", mapName, data.mapName)
+    //console.log("mapName, data.mapName", mapName, data.mapName)
     sessionStorage.removeItem('gameSession');
 
     try
     {
-        console.log("44444, data:", data)
         const promise = initGameWebsocket(data);
-        console.log("@9999")
-        console.log("@8888")
-
-        console.log(promise);
 
         promise.then(
             async () => {
@@ -65,7 +60,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                             handleGameEnd(msg.data);
                             break;
                         case "stats_update_server":
-                            console.log("stats_update_server")
                             handleUpdateStats(msg.data);
                             break;
                         case "player_move_server":
@@ -73,6 +67,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                             break;
                         case "update_bullets_server":
                             updateEnemyBullets(msg.data);
+                            break;
+                        case "player_death_server":
+                            //handlePlayerDeath(msg.data);
+                            break;
+                        case "player_respawn_server":
+                            console.log("server sent response spawn", msg.data);
+                            handlePlayerRespawn(msg.data);
                             break;
                         case "save_stats_server":
                             console.log("save stats: ")
@@ -132,13 +133,7 @@ function handleGameState(data) {
             break;
 
         case 'playing':
-            statusElement.textContent = 'Игра идет!';
-            // Можно добавить логику для начала игры
-            break;
-
-        case 'ended':
-            statusElement.textContent = 'Игра завершена';
-            // Логика для завершения игры
+            statusElement.textContent = '';
             break;
     }
 }
@@ -147,7 +142,6 @@ function handleInitPlayers(players)
 {
     console.log("enemies", players)
     Object.values(players).forEach(player => {
-        console.log(player.playerId, stateForWS.userId);
         if (!arrEnemy.has(player.playerId) && player.playerId != stateForWS.userId)
         {
             const newEnemy = new Enemy(player.playerId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir, player.nickname);
@@ -158,8 +152,6 @@ function handleInitPlayers(players)
 
 function handleJoinPlayer(player)
 {
-    console.log("enemy", player)
-    console.log(player.playerId, stateForWS.userId);
     if (!arrEnemy.has(player.userId) && player.playerId != stateForWS.userId)
     {
         const newEnemy = new Enemy(player.userId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir, player.nickname);
@@ -223,7 +215,7 @@ function handleUpdateStats(data)
         position: index + 1,
         isCurrent: item.id === data.userId
     }));
-    console.log("ghdfghdfg: ",data.userId, typeof data.userId)
+    //console.log("update stat: ",data.userId, typeof data.userId)
 
     updateStats();
 }
@@ -236,7 +228,7 @@ function handleUpdateTimer(seconds) {
 
     if (!gameTimer) {
         const timerElement = document.createElement("div");
-        timerElement.setAttribute("style", "position: fixed; top: 10px; left: 10px; font-size: 50px; color: white;");
+        timerElement.setAttribute("style", "position: fixed; top: 10px; left: 10px; font-size: 70px; color: black;");
         document.body.prepend(timerElement);
 
         gameTimer = setInterval(() => {
@@ -261,7 +253,7 @@ function showResultsAfterBattle(endData) {
         clearInterval(gameTimer);
     }
     stateForWS.gameIsRun = false;
-
+    const modal = document.getElementById('gameStatsModal');
     const resultsBlock = document.createElement("div")
     resultsBlock.className = "resultsBlock"
     resultsBlock.setAttribute("style", `
@@ -277,13 +269,13 @@ function showResultsAfterBattle(endData) {
         text-align: center;
         z-index: 1000;
     `)
-
+    modal.style.display = 'block';
     console.log("endData.winner", endData.winner, typeof endData.winner)
     const userId = stateForWS.userId
     console.log("userId", userId, typeof userId)
     const winnerNickname = findPlayerNickname(endData.winner);
     const isWinner = parseInt(endData.winner) === userId;
-    console.log("results tyt")
+    console.log("results")
     resultsBlock.innerHTML = `
         <h2>${isWinner ? 'ПОБЕДА!' : 'КОНЕЦ БОЯ'}</h2>
         <p>Победитель: ${winnerNickname}</p>
@@ -315,9 +307,9 @@ function showResultsAfterBattle(endData) {
 
 function findPlayerNickname(playerId) 
 {
-    console.log("arrEnemy.has(playerId.toString())", arrEnemy.get(playerId))
+    //console.log("arrEnemy.has(playerId.toString())", arrEnemy.get(playerId))
     if (arrEnemy.has(playerId)) {
-        console.log("--===---", arrEnemy.get(playerId).nickname)
+        //console.log("--===---", arrEnemy.get(playerId).nickname)
         return arrEnemy.get(playerId).nickname;
     }
     return stateForWS.nickname;
@@ -378,6 +370,8 @@ export function sendBullets()
 
         if ((now - lastSentTimeForBullets > 100) && (playerBullets.length !== 0))
         {
+            //console.log(playerBullets);
+
             sendWebSocketMessage({
                 type: "update_bullets",
                 data: {
@@ -385,10 +379,6 @@ export function sendBullets()
                     bullets: playerBullets
                 }
             });
-
-            // for (const playerBullet of playerBullets) {
-            //     console.log(playerBullet);
-            // }
 
             lastSentTimeForBullets = now;
 
@@ -412,10 +402,69 @@ function updateEnemyBullets(data) {
     });
 }
 
+// function handlePlayerDeath(data) {
+//     const playerId = data.playerId;
+//     if (arrEnemy.has(playerId)) {
+//         arrEnemy.get(playerId).isCharacterLive = false;
+//         arrEnemy.get(playerId).wasCharacterWounded = true;
+//     }
+//     if (playerId === stateForWS.userId) {
+//         player.isCharacterLive = false;
+//         player.wasCharacterWounded = true;
+//     }
+// }
+
+// function handlePlayerDeath(data) {
+//     const playerId = data.playerId;
+//     if (arrEnemy.has(playerId)) {
+//         arrEnemy.get(playerId).wasCharacterWounded = true;
+//     }
+// }
+
+function handlePlayerDeath(data) {
+    const playerId = data.playerId;
+    if (arrEnemy.has(playerId)) {
+        arrEnemy.get(playerId).wasCharacterWounded = true;
+        arrEnemy.get(playerId).isCharacterLive = false;
+    }
+    if (playerId === stateForWS.userId) {
+        player.wasCharacterWounded = true;
+        player.isCharacterLive = false;
+    }
+}
+
+function handlePlayerRespawn(data) {
+    const playerId = data.playerId.toString();
+    const x = data.newX / 100 * WIDTH_MAP;
+    const y = data.newY / 100 * HEIGHT_MAP;
+
+    console.log(playerId, x, y);
+
+    if (arrEnemy.has(playerId)) {
+        const enemy = arrEnemy.get(playerId);
+        enemy.x = x;
+        enemy.y = y;
+        enemy.isCharacterLive = true;
+        enemy.wasCharacterWounded = false;
+    }
+    if (playerId === stateForWS.userId) {
+        player.x = x;
+        player.y = y;
+        player.isCharacterLive = true;
+        player.wasCharacterWounded = false;
+    }
+}
+
 async function saveStats(data) {
     console.log("data RRRRRR: ", data)
+    let winnerId
+    if (data["winner"] == "user") {
+        winnerId = stateForWS.userId
+    } else {
+        winnerId = parseInt(data["winner"])
+    }
     const formData = {
-        winner: parseInt(data["winner"]),
+        winner: winnerId,
         stats: data["stats"],
     };
     try
@@ -435,7 +484,7 @@ async function saveStats(data) {
     }
 }
 
-function handleGenerateWeapons(data) 
+function handleGenerateWeapons(data)
 {
     spawnWeapon(data.weapons);
 }

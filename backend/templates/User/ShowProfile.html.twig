@@ -1,20 +1,38 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Profile Page{% endblock %}
-
-{% block stylesheets %}
-<link rel="stylesheet" href="styles/login.css">
-{% endblock %}
-
-{% block body %}
-<div>
-    <h2>Профиль</h2>
-    <p>NickName: {{ user.nickName }}</p>
-    <p>Games: {{ user.countGames }}</p>
-    <p>Wins: {{ user.countWins }}</p>
-    <p>Kills: {{ user.countKills }}</p>
-    <p>Deaths: {{ user.countDeaths }}</p>
-    <a href="{{ path('main_page', {userId: user.userId}) }}">На главный экран</a>
-    <a href="/">Редактировать</a>
-</div>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Profile</title>
+        <link href="/styles/profile_style.css" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <div class="profile">
+            <p class="profile__header">Профиль</p>
+            <div class="profile__main">
+                <div class="profile__main-elem">
+                    <p class="profile__main-elem-text">Никнейм: {{ user.nickName }}</p>
+                </div>
+                <div class="profile__main-elem">
+                    <p class="profile__main-elem-text">Игры: {{ user.countGames }}</p>
+                </div>
+                <div class="profile__main-elem">
+                    <p class="profile__main-elem-text">Победы: {{ user.countWins }}</p>
+                </div>
+                <div class="profile__main-elem">
+                    <p class="profile__main-elem-text">Убийства: {{ user.countKills }}</p>
+                </div>
+                <div class="profile__main-elem">
+                    <p class="profile__main-elem-text">Смерти: {{ user.countDeaths }}</p>
+                </div>
+            </div>
+            <div class="profile__route">
+                <a class="profile__route-button" href="/">Редактировать</a>
+                <a class="profile__route-button" href="{{ path('main_page', {userId: user.userId}) }}">На главный экран</a>
+            </div>
+        </div>
+    </body>
+</html>

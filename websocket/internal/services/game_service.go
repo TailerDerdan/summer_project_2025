@@ -29,6 +29,11 @@ func NewGameService() *GameService {
 
 const maxWeaponsOnMap = 10
 
+func (gs *GameService) GeneratePosition() float64 {
+	n, _ := rand.Int(rand.Reader, big.NewInt(100))
+	return float64(n.Int64())
+}
+
 func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *models.Game {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
@@ -51,7 +56,6 @@ func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *m
 		ReadyCheck: make(map[string]bool),
 	}
 	gs.activeGames[gameID] = game
-	//gs.StartTimer(gameID)
 	go gs.StartWaitingPlayers(gameID)
 	return game
 }
@@ -320,7 +324,7 @@ func (gs *GameService) determineWinner(gameID string) string {
 		return ""
 	}
 
-	var winnerID string
+	var winnerID = "user"
 	var maxScore = -1
 
 	for id, stats := range game.Stats {
@@ -330,15 +334,15 @@ func (gs *GameService) determineWinner(gameID string) string {
 		}
 	}
 
-	if maxScore <= 0 {
-		if len(game.Players) > 0 {
-			for conn := range game.Players {
-				fmt.Printf("%v: %v\n", game.Players[conn], winnerID)
-				winnerID = game.Players[conn].PlayerID
-				break
-			}
-		}
-	}
+	//if maxScore <= 0 {
+	//	if len(game.Players) > 0 {
+	//		for conn := range game.Players {
+	//			fmt.Printf("%v: %v\n", game.Players[conn], winnerID)
+	//			winnerID = game.Players[conn].PlayerID
+	//			break
+	//		}
+	//	}
+	//}
 	fmt.Println("DetermineWinner, winnerID:", winnerID)
 	return winnerID
 }
@@ -363,6 +367,8 @@ func (gs *GameService) sendGameStatsUpdate(gameID string) error {
 		return rankings[i].Score > rankings[j].Score
 	})
 
+	fmt.Printf("%+v\n", game.Stats)
+	fmt.Printf("%+v, len: %v\n", rankings, len(rankings))
 	for i, rank := range rankings {
 		game.Stats[rank.ID].Position = i + 1
 	}
@@ -404,7 +410,7 @@ func (gs *GameService) PlayerKill(gameID, playerID string) error {
 	return nil
 }
 
-func (gs *GameService) PlayerDeath(gameID, playerID string) error {
+func (gs *GameService) PlayerDeath(conn *websocket.Conn, gameID, playerID string) error {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
 
@@ -422,6 +428,53 @@ func (gs *GameService) PlayerDeath(gameID, playerID string) error {
 		return err
 	}
 
+	msg := map[string]interface{}{
+		"type": "player_death_server",
+		"data": map[string]interface{}{
+			"gameId":   gameID,
+			"playerId": playerID,
+		},
+	}
+
+	if err := gs.SendMessageInsideGame(conn, gameID, msg); err != nil {
+		fmt.Println("error sending death message")
+		return err
+	}
+
+	return nil
+}
+
+func (gs *GameService) PlayerRespawn(conn *websocket.Conn, gameID, playerID string) error {
+	//gs.mu.Lock()
+	//defer gs.mu.Unlock()
+
+	game, exists := gs.activeGames[gameID]
+	if !exists {
+		return fmt.Errorf("game %s does not exist", gameID)
+	}
+
+	newX := gs.GeneratePosition()
+	newY := gs.GeneratePosition()
+
+	player := game.Players[conn]
+	player.X = newX
+	player.Y = newY
+
+	msg := map[string]interface{}{
+		"type": "player_respawn_server",
+		"data": map[string]interface{}{
+			"gameId":   gameID,
+			"playerId": playerID,
+			"newX":     player.X,
+			"newY":     player.Y,
+		},
+	}
+
+	if err := gs.SendMessageInsideGameToAll(gameID, msg); err != nil {
+		fmt.Println("error sending respawn message")
+		return err
+	}
+
 	return nil
 }
 
@@ -435,7 +488,12 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 	}
 	fmt.Printf("7777, %v, %v\n", player, game)
 	game.Players[conn] = player
-	game.Stats[player.PlayerID] = &models.PlayerStats{}
+	game.Stats[player.PlayerID] = &models.PlayerStats{
+		Kills:    0,
+		Deaths:   0,
+		Score:    0,
+		Position: 1,
+	}
 	game.ReadyCheck[player.PlayerID] = true
 	fmt.Println("8888")
 	//stateMsg := map[string]interface{}{

@@ -5,6 +5,10 @@ import { Character } from "../Infrastructure/Character.js";
 import { bot1, bot2, bot3 } from "../bot/Bot.js";
 import {Sound} from "../soundsScript/sound.js";
 import { HEIGHT_MAP, WIDTH_MAP } from '../sizes.js';
+import { Blood, remainingBlood } from "../blood/blood.js";
+import {playerDeath, playerKill} from './KillAndDeath.js';
+import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "../ws/websocketGame.js";
+import {randomPosition} from "../random.js";
 
 const WIDTH_FRAME = 23;
 const HEIGHT_FRAME = 34;
@@ -31,7 +35,7 @@ export class Player extends Character
             x: this.x,
             y: this.y
         };
-        
+
         this.throttleUpd = null;
         this.intervalId = 0;
         this.throttleUpdateBullets = null;
@@ -46,7 +50,7 @@ export class Player extends Character
     setX(x) { this.x = x; }
     setY(y) { this.y = y; }
 
-    lineIntersection(a, b, c, d) 
+    lineIntersection(a, b, c, d)
     {
         const denominator = (b.x - a.x) * (d.y - c.y) - (b.y - a.y) * (d.x - c.x);
         const numerator1 = (a.y - c.y) * (d.x - c.x) - (a.x - c.x) * (d.y - c.y);
@@ -72,7 +76,7 @@ export class Player extends Character
         const wallTop = wall.y;
         const wallBottom = wall.y + wall.height;
 
-        if (playerRight < wallLeft || playerLeft > wallRight || playerBottom < wallTop || playerTop > wallBottom) 
+        if (playerRight < wallLeft || playerLeft > wallRight || playerBottom < wallTop || playerTop > wallBottom)
         {
             return false;
         }
@@ -91,11 +95,11 @@ export class Player extends Character
             { a: { x: wallLeft, y: wallBottom }, b: { x: wallLeft, y: wallTop } }
         ];
 
-        for (const playerSide of playerSides) 
+        for (const playerSide of playerSides)
         {
-            for (const wallSide of wallSides) 
+            for (const wallSide of wallSides)
             {
-                if (this.lineIntersection(playerSide.a, playerSide.b, wallSide.a, wallSide.b)) 
+                if (this.lineIntersection(playerSide.a, playerSide.b, wallSide.a, wallSide.b))
                 {
                     return true;
                 }
@@ -154,7 +158,7 @@ export class Player extends Character
             }
         }
 
-        if (collided) 
+        if (collided)
         {
             this.x = originalX;
             this.y = originalY;
@@ -192,6 +196,39 @@ export class Player extends Character
         }
         const spanCurrentAmmo = document.getElementById("currentAmmoPlayer");
         spanCurrentAmmo.textContent = currentAmmo;
+    }
+
+    updatePlayer() {
+        if (this.wasCharacterWounded && this.isCharacterLive) {
+            console.log('death player');
+            this.handleDeath();
+        }
+        if (!this.isCharacterLive && !this.respawnTimer) {
+            this.startRespawnTimer();
+        }
+    }
+
+    handleDeath() {
+        this.isCharacterLive = false;
+        const blood = new Blood(this);
+        remainingBlood.push(blood);
+        blood.playAnimationBlood();
+
+        //playerDeath(this.id);
+    }
+
+    startRespawnTimer() {
+        this.respawnTimer = setTimeout(() => {
+            console.log("try respawn");
+            sendWebSocketMessage({
+                type: "player_respawn",
+                //data: { playerId: this.id.toString() }
+                data: {
+                    playerId: stateForWS.userId.toString()
+                }
+            });
+            this.respawnTimer = null;
+        }, 2500);
     }
 }
 

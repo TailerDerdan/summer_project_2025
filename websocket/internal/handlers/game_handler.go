@@ -119,22 +119,22 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 }
 
 func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID string, msg models.Msg) error {
-	//_, err := gh.gameService.GetGameState(gameID)
-	//if err != nil {
-	//	return err
-	//}
-	//fmt.Printf("$$ Game State: %+v\n", gameState.Status)
-	//if gameState.Status != "playing" {
-	//	allowedTypes := map[string]bool{
-	//		"ready_to_battle": true,
-	//		"weapons_points":  true,
-	//		//"player_move":     true,
-	//	}
-	//
-	//	if !allowedTypes[msg.Type] {
-	//		return nil
-	//	}
-	//}
+	gameState, err := gh.gameService.GetGameState(gameID)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("$$ Game State: %+v\n", gameState.Status)
+	if gameState.Status != "playing" {
+		allowedTypes := map[string]bool{
+			"ready_to_battle": true,
+			//"weapons_points":  true,
+			"player_move": true,
+		}
+
+		if !allowedTypes[msg.Type] {
+			return nil
+		}
+	}
 	fmt.Printf("/-666-/, %v\n", msg)
 	switch msg.Type {
 	//case "player_join":
@@ -159,7 +159,12 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 		return err
 	case "player_death":
 		//fmt.Println("player_death")
-		err := gh.gameService.PlayerDeath(gameID, playerID)
+		fmt.Println("player_death")
+		err := gh.gameService.PlayerDeath(conn, gameID, playerID)
+		return err
+	case "player_respawn":
+		fmt.Println("player_respawn")
+		err := gh.gameService.PlayerRespawn(conn, gameID, playerID)
 		return err
 	case "weapons_points":
 		fmt.Println("12341234")

@@ -16,8 +16,8 @@
     <div class="room-menu">
         <div class="room-menu__header">
             <p class="room-menu__header-text">Игровые комнаты</p>
-            <a class="room-menu__create-room" href="{{ path('room_create_page') }}">Создать комнату</a>
-            <a class="room-menu__create-map" href="{{ path('map_redactor') }}">Создать карту</a>
+            <a class="room-menu__create-button" href="{{ path('room_create_page') }}">Создать комнату</a>
+            <a class="room-menu__create-button" href="{{ path('map_redactor') }}">Создать карту</a>
         </div>
         <div class="room-menu__room-list">
             {% for room in rooms %}
@@ -25,9 +25,6 @@
                     <div class="room-list-item__main">
                         <div class="room-list-item__header">
                             <p class="room-list-item__name">{{ room.name }}</p>
-                            {% if not room.isOpen %}
-                                <img class="room-list-item__status-indicator" src="/images/lock.png" alt="">
-                            {% endif %}
                         </div>
                         <div class="room-list-item__avatar-list" id="room-list-item__avatar-list-{{ room.id }}">
                         </div>
