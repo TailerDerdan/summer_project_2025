@@ -46,6 +46,9 @@ func (gh *GameHandler) HandleGameConnection(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	fmt.Println("1111")
+	conn.WriteJSON(map[string]interface{}{
+		"player": player,
+	})
 	if err := gh.gameService.RegisterPlayer(conn, gameID, player); err != nil {
 		fmt.Printf("Game WS register failed: %v", err)
 		//gh.sendError(conn, "Game WS register failed")
@@ -62,8 +65,6 @@ func (gh *GameHandler) HandleGameConnection(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	fmt.Println("3333")
-
-	gh.gameService.StartTimer(gameID)
 
 	fmt.Println("4444")
 	gh.handleGameMessage(conn, gameID, player.PlayerID)
