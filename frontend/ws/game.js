@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         promise.then(
             async () => {
+                player.id = data.userId.toString();
                 setMessageHandler((event) => {
                     const msg = JSON.parse(event.data);
                     console.log("MSGGGGG", msg);
