@@ -158,7 +158,7 @@ function handleInitPlayers(players)
 
 function handleJoinPlayer(player)
 {
-    if (playerServer.playerId == stateForWS.userId)
+    if (player.playerId == stateForWS.userId)
     {
         player.x = playerServer.x;
         player.y = playerServer.y;

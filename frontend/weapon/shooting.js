@@ -194,15 +194,6 @@ for (const bot of arrBot) {
     }
 }
 
-// let throttleUpd = throttle(updateBullets, player.weapon.timeBetweenBul * 1000);
-//
-// function throttleUpdateBullets(event)
-// {
-//     throttleUpd(event);
-// }
-//
-// document.addEventListener('mousedown', throttleUpdateBullets);
-
 function updatePlayerBulletsOnMap(ctx, xView, yView, bullets) {
     bullets.forEach((bullet, index) => {
         for (const [id, enemy] of arrEnemy) {
