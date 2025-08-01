@@ -621,6 +621,9 @@ func (gs *GameService) UpdateBullets(conn *websocket.Conn, gameID string, data m
 }
 
 func (gs *GameService) SendInitialGameState(conn *websocket.Conn, gameID string) error {
+	conn.SetWriteDeadline(time.Now().Add(3 * time.Second))
+	defer conn.SetWriteDeadline(time.Time{})
+
 	players, weapons, err := gs.getGameState(gameID)
 	if err != nil {
 		fmt.Printf("error sending initial game state: %v\n", err)
