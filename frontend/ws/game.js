@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             async () => {
                 setMessageHandler((event) => {
                     const msg = JSON.parse(event.data);
+                    console.log("MSGGGGG", msg);
                     switch (msg.type) {
                         case "init_players_server":
                             console.log("init_players_server")
@@ -491,7 +492,7 @@ function handleGenerateWeapons(data)
 
 export function sendChangeWeapon()
 {
-    console.log("AAAAA BUULLLLEEETTT", player.weapon.id)
+    console.log("AAAAA BUULLLLEEETTT", player.weapon)
     sendWebSocketMessage({
         type: "change_weapon",
         data: {
