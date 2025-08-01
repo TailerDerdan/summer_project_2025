@@ -1,7 +1,7 @@
 import { setTypeShooting } from "../weapon/shooting.js";
 import { allWeapon } from "../weapon/spawnWeapon.js";
 import { TYPE_WEAPON } from "../weapon/typeWeapons.js";
-import { sendChangeWeapon } from "../ws/game.js";
+import { sendChangeWeapon, sendDropWeapon } from "../ws/game.js";
 import { player } from "./player.js"
 
 document.addEventListener("mousedown", (event) => {
@@ -16,6 +16,7 @@ document.addEventListener("mousedown", (event) => {
             weaponPlayer.owner = null;
             weaponPlayer.container.fillVertices();
             allWeapon.set(weaponPlayer.id, weaponPlayer);
+            sendDropWeapon();
         }
 
         for (const [id, weapon] of allWeapon)

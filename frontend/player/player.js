@@ -232,4 +232,4 @@ export class Player extends Character
     }
 }
 
-export const player = new Player(null, 400, 400, 0, 75, 48, 14, null);
+export const player = new Player(null, 200, 200, 0, 75, 48, 14, null);

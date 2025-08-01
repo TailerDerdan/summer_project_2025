@@ -2,8 +2,7 @@ import { car1, car2, connectionWalls, CountOfBuildings, floor, spawnPlayer, spaw
 import { COUNT_TILE_X, COUNT_TILE_Y, HEIGHT_MAP, TILE_HEIGHT, TILE_WIDTH, WIDTH_MAP } from "./sizes.js";
 import { stateEditor } from "./state.js";
 
-export const COLOR_FLOOR = 'rgba(0, 0, 0, 1)';
-export const COLOR_WALL = 'rgba(231, 40, 10, 1)';
+export const COLOR_FLOOR = 'rgba(167, 167, 167, 1)';
 
 class GreedyQuad
 {
