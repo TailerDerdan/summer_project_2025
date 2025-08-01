@@ -92,8 +92,6 @@ export class Character
         this.container.updateX(this.x);
         this.container.updateY(this.y);
 
-        this.container.drawContainer(ctx);
-
         this.sprite.applyToSpriteMovement(ctx, -this.width / 2, -this.height / 2, this.width, this.height);
 
         if (this.weapon)

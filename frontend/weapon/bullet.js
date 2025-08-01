@@ -48,8 +48,6 @@ export class Bullet
         this.container.updateDir(this.dir);
         this.container.updateX(this.x);
         this.container.updateY(this.y);
-
-        this.container.drawContainer(ctx);
         
         ctx.restore();
     }
