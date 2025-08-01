@@ -15,7 +15,7 @@ html, body {
 }
 
 body {
-    background-image: url("images/background_menu_room.png");
+    background-image: url("../images/background_menu_room.png");
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
@@ -38,35 +38,33 @@ body {
 }
 
 .profile__header {
-    width: 1000px;
+    width: 60%;
     max-width: 90%;
-    height: 96px;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 80px;
     color: #9D8662;
-    margin-bottom: 42px;
 }
 
 .profile__main {
-    width: 1198px;
+    width: 62%;
     max-width: 90%;
-    height: 732px;
+    /* height: 732px; */
     background-color: rgba(79, 76, 52, 0.9);
     border-radius: 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 26px 0;
-    margin: 22px 0 62px 0;
+    margin: 1% 0;
+    padding: 1% 0;
     overflow-y: auto;
 }
 
 .profile__main-elem {
     width: 1094px;
     max-width: 90%;
-    height: 84px;
+    padding: 0.3% 0;
     background-color: #A78058;
     border-radius: 10px;
     display: flex;
@@ -88,7 +86,8 @@ body {
     max-width: 90%;
     height: 84px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    align-items: center;
     margin-top: 42px;
 }
 

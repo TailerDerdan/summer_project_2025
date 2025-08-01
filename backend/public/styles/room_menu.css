@@ -12,20 +12,18 @@
 
 .room-menu {
     width: 1718px;
-    height: 1080px;
     position: relative;
     left: 202px;
-    display: block;
-    margin: 0 0 0 0;
-    padding: 0 0 0 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
 }
 
 .room-menu__header {
     width: 1492px;
-    height: 117px;
     position: relative;
-    top: 23px;
-    left: 106px;
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-between;
@@ -34,7 +32,6 @@
 
 .room-menu__header-text {
     width: 740px;
-    height: 80px;
     font-size: 80px;
     color: #FFFFFF;
     display: flex;
@@ -64,8 +61,6 @@
     max-height: 800px;
     overflow-y: auto;
     position: relative;
-    top: 17px;
-    left: 322px;
     display: flex;
     flex-wrap: wrap;
 }
