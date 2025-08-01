@@ -135,7 +135,7 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 			return nil
 		}
 	}
-	fmt.Printf("/-666-/, %v\n", msg)
+	//fmt.Printf("/-666-/, %v\n", msg)
 	switch msg.Type {
 	//case "player_join":
 	//	return nil
@@ -178,7 +178,7 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 		err := gh.gameService.ChangeWeapon(conn, gameID, msg.Data)
 		return err
 	case "drop_weapon":
-		err := gh.gameService.DropWeapon(conn, gameID)
+		err := gh.gameService.DropWeapon(conn, gameID, msg.Data)
 		return err
 	case "ready_to_battle":
 		err := gh.gameService.ReadyToBattle(conn, gameID)

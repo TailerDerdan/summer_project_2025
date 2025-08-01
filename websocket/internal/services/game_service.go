@@ -47,6 +47,7 @@ func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *m
 		Stats:             make(map[string]*models.PlayerStats),
 		Weapons:           make(map[string]*models.Weapon),
 		WeaponSpawnPoints: make([]models.SpawnPoint, 0),
+		PlayerSpawnPoints: make([]models.SpawnPoint, 0),
 		StartTime:         time.Now(),
 		Duration:          1 * time.Minute,
 		State: models.GameState{
@@ -948,7 +949,7 @@ func (gs *GameService) sendDeleteWeapon(gameID, weaponID string) error {
 	return gs.SendMessageInsideGameToAll(gameID, msg)
 }
 
-func (gs *GameService) DropWeapon(conn *websocket.Conn, gameID string) error {
+func (gs *GameService) DropWeapon(conn *websocket.Conn, gameID string, data map[string]interface{}) error {
 	//gs.mu.Lock()
 	//defer gs.mu.Unlock()
 
@@ -964,7 +965,7 @@ func (gs *GameService) DropWeapon(conn *websocket.Conn, gameID string) error {
 	weapon := &models.Weapon{
 		ID:   weaponDelete.ID,
 		Type: weaponDelete.Type,
-		Ammo: weaponDelete.Ammo,
+		Ammo: data["ammo"].(int),
 		X:    player.X,
 		Y:    player.Y,
 	}
@@ -1095,16 +1096,93 @@ func (gs *GameService) SetPlayersPoints(gameID string, data map[string]interface
 
 	fmt.Printf("Total weapon spawn points set: %d\n", len(game.PlayerSpawnPoints))
 
-	if len(game.PlayerSpawnPoints) > 0 {
-		// if err := gs.generateWeapons(gameID); err != nil {
-		// 	fmt.Printf("Ошибка инициализации оружия: %v\n", err)
-		// 	return fmt.Errorf("failed to generate weapons: %w", err)
-		// }
-	} else {
+	if len(game.PlayerSpawnPoints) <= 0 {
 		fmt.Println("No valid weapon spawn points provided")
 	}
 
 	return nil
+}
+
+func (gs *GameService) generatePlayersSpawn(gameID string) error {
+	game, exists := gs.activeGames[gameID]
+	if !exists {
+		return fmt.Errorf("game %s does not exist", gameID)
+	}
+	fmt.Printf("ppp ppp ppp, %v\n", len(game.Weapons))
+	//needWeapons := maxWeaponsOnMap - len(game.Weapons)
+	//if needWeapons <= 0 {
+	//	return nil
+	//}
+	fmt.Println("yyy yyy yyy")
+	needWeapons := len(game.Players)
+	freeSpawnPoints := gs.getFreePlayersSpawnPoints(game)
+
+	rand2.Shuffle(len(freeSpawnPoints), func(i, j int) {
+		freeSpawnPoints[i], freeSpawnPoints[j] = freeSpawnPoints[j], freeSpawnPoints[i]
+	})
+
+	players := make([]*models.PlayerInfo, 0, len(game.Players))
+	for _, player := range game.Players {
+		players = append(players, player)
+	}
+
+	fmt.Printf("fff fff fff, %v; %v\n", needWeapons, freeSpawnPoints)
+	for i, player := range players {
+		if i >= len(freeSpawnPoints) {
+			break
+		}
+
+		point := freeSpawnPoints[i]
+		player.X = point.X
+		player.Y = point.Y
+		player.Dir = 0
+	}
+	fmt.Printf("kkk kkk kkk, %v\n", game.Weapons)
+	if err := gs.sendUpdatePlayers(gameID); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (gs *GameService) sendUpdatePlayers(gameID string) error {
+	//gs.mu.Lock()
+	//defer gs.mu.Unlock()
+
+	game, exists := gs.activeGames[gameID]
+	if !exists {
+		return fmt.Errorf("game %s does not exist", gameID)
+	}
+	players := make([]*models.PlayerInfo, 0, len(game.Players))
+	for _, player := range game.Players {
+		players = append(players, player)
+	}
+	fmt.Printf("+++%v\n===%v\n", players, game.Weapons)
+	msg := map[string]interface{}{
+		"type": "generate_players_server",
+		"data": map[string]interface{}{
+			"weapons": players,
+		},
+	}
+	return gs.SendMessageInsideGameToAll(gameID, msg)
+}
+
+func (gs *GameService) getFreePlayersSpawnPoints(game *models.Game) []models.SpawnPoint {
+	freeSpawnPoints := make([]models.SpawnPoint, 0, len(game.PlayerSpawnPoints))
+	fmt.Printf("nnn 000 nnn, %v\n", game.PlayerSpawnPoints)
+	usedPoints := make(map[string]bool)
+	for _, player := range game.Players {
+		posKey := fmt.Sprintf("%.1f,%.1f", player.X, player.Y)
+		usedPoints[posKey] = true
+	}
+	fmt.Println("000 hhhh 000")
+	for _, point := range game.PlayerSpawnPoints {
+		posKey := fmt.Sprintf("%.1f,%.1f", point.X, point.Y)
+		if !usedPoints[posKey] {
+			freeSpawnPoints = append(freeSpawnPoints, point)
+		}
+	}
+	fmt.Printf("000 mmmmmm 000, %v\n", freeSpawnPoints)
+	return freeSpawnPoints
 }
 
 func (gs *GameService) ReadyToBattle(conn *websocket.Conn, gameID string) error {

@@ -254,7 +254,6 @@ function showResultsAfterBattle(endData) {
         clearInterval(gameTimer);
     }
     stateForWS.gameIsRun = false;
-    const modal = document.getElementById('gameStatsModal');
     const resultsBlock = document.createElement("div")
     resultsBlock.className = "resultsBlock"
     resultsBlock.setAttribute("style", `
