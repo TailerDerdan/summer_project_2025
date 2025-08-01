@@ -6,6 +6,7 @@ export function spawnWeapon(weaponsServer)
 {
     for (const weaponServer of weaponsServer)
     {
+        if (allWeapon.has(weaponServer.id.toString())) continue;
         const initValue = getInitValues(weaponServer.type);
         if (initValue)
         {

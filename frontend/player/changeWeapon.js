@@ -2,10 +2,12 @@ import { setTypeShooting } from "../weapon/shooting.js";
 import { allWeapon } from "../weapon/spawnWeapon.js";
 import { TYPE_WEAPON } from "../weapon/typeWeapons.js";
 import { sendChangeWeapon, sendDropWeapon } from "../ws/game.js";
+import { stateForWS } from "../ws/websocketGame.js";
 import { player } from "./player.js"
 
 document.addEventListener("mousedown", (event) => {
-    if (event.button == 2)
+
+    if (event.button == 2 && stateForWS.stateForPlayer == "playing")
     {
         event.preventDefault();
 

@@ -272,9 +272,17 @@ export function setTypeShooting(player)
         player.intervalId = 0;
     }
 
+    let timeBetweenBul = 0;
+
+    if (player.weapon.timeBetweenBul)
+    {
+        timeBetweenBul = player.weapon.timeBetweenBul;
+    }
+
     if (player.weapon.typeShooting == TYPE_SHOOTING.SINGLE || player.weapon.typeShooting == TYPE_SHOOTING.FIRING_A_BURST)
     {
-        player.throttleUpd = throttle(updateBullets, player.weapon.timeBetweenBul ? player.weapon.timeBetweenBul * 1000 : 0);
+
+        player.throttleUpd = throttle(updateBullets, timeBetweenBul);
 
         player.throttleUpdateBullets = (event) => {
             player.throttleUpd(event);
@@ -290,7 +298,7 @@ export function setTypeShooting(player)
             updateBullets(event);
             player.intervalId = setInterval(() => {
                 updateBullets(event);
-            }, player.weapon.timeBetweenBul ? player.weapon.timeBetweenBul * 1000 : 0);
+            }, timeBetweenBul);
         };
 
         player.regularStopHandler = () => {
