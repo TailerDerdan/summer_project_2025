@@ -52,10 +52,13 @@ func (gh *GameHandler) HandleGameConnection(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	fmt.Println("2222")
-	//go gh.gameService.StartWaitingPlayers(gameID)
 	if err := gh.gameService.SendInitialGameState(conn, gameID); err != nil {
 		fmt.Printf("Game WS send initial game state failed: %v", err)
 		//gh.sendError(conn, "Game WS send initial game state failed")
+		return
+	}
+	if err := gh.gameService.SendJoinRoom(conn, gameID, player); err != nil {
+		fmt.Printf("Game WS send join room failed: %v", err)
 		return
 	}
 	fmt.Println("3333")
@@ -118,10 +121,10 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 }
 
 func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID string, msg models.Msg) error {
-	_, err := gh.gameService.GetGameState(gameID)
-	if err != nil {
-		return err
-	}
+	//_, err := gh.gameService.GetGameState(gameID)
+	//if err != nil {
+	//	return err
+	//}
 	//fmt.Printf("$$ Game State: %+v\n", gameState.Status)
 	//if gameState.Status != "playing" {
 	//	allowedTypes := map[string]bool{
@@ -134,9 +137,9 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 	//		return nil
 	//	}
 	//}
+	fmt.Printf("/-666-/, %v\n", msg)
 	switch msg.Type {
 	//case "player_join":
-	//	fmt.Println("/-666-/")
 	//	return nil
 	//return gh.gameService.PLayerJoin(gameID, playerID, msgJoin.Data["x"], msgJoin.Data["y"], msgJoin.Data["angle"])
 	case "player_move":
