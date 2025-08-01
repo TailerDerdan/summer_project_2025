@@ -433,7 +433,7 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 	if !exists {
 		return fmt.Errorf("game %s does not exist", gameID)
 	}
-	fmt.Printf("7777, %v\n", player)
+	fmt.Printf("7777, %v, %v\n", player, game)
 	game.Players[conn] = player
 	game.Stats[player.PlayerID] = &models.PlayerStats{}
 	game.ReadyCheck[player.PlayerID] = true
