@@ -2,6 +2,12 @@
     background-image: url("/images/background_menu_room.png");
     background-repeat: no-repeat;
     background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .room-menu {
@@ -15,46 +21,41 @@
 }
 
 .room-menu__header {
-    width: 1341px;
+    width: 1492px;
     height: 117px;
     position: relative;
     top: 23px;
-    left: 277px;
+    left: 106px;
     display: flex;
     flex-wrap: nowrap;
+    justify-content: space-between;
     align-items: center;
 }
 
 .room-menu__header-text {
-    width: 700px;
+    width: 740px;
     height: 80px;
     font-size: 80px;
     color: #FFFFFF;
-    position: relative;
-    left: 67px;
-    margin: 0 0 0 0;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    margin: 0;
 }
 
-.room-menu__create-map {
-    color: #240502;
-    border-radius: 25px;
-    background-color: #A78058;
-    padding: 20px 30px;
-    font-size: 48px;
-}
-
-.room-menu__create-room {
-    width: 436px;
+.room-menu__create-button {
+    width: 346px;
     height: 84px;
-    font-size: 48px;
+    font-size: 32px;
     color: #240502;
     border-radius: 25px;
     background-color: #A78058;
     border: none;
-    left: 174px;
     display: flex;
+    flex-wrap: nowrap;
     justify-content: center;
     align-items: center;
+    margin: 0;
 }
 
 .room-menu__room-list {

@@ -1,10 +1,12 @@
 import { Enemy, HEIGHT_ENEMY, WIDTH_ENEMY } from "../enemy/enemy.js";
+import { WIDTH_MAP, HEIGHT_MAP } from "../sizes.js";
 import { arrEnemy, player } from "../player/player.js";
 import { playerBullets } from "../weapon/shooting.js";
 import { Bullet } from "../weapon/bullet.js";
 import { initGameWebsocket, sendWebSocketMessage, setMessageHandler, stateForWS } from "./websocketGame.js";
 import { allWeapon, spawnWeapon } from "../weapon/spawnWeapon.js";
-import {gameLoop, initGame} from "../main.js";
+import {initGame} from "../main.js";
+
 export let mapName
 export const gameStats = {
     kills: 0,
@@ -19,93 +21,102 @@ export let enemyBullets = [];
 const statsPanel = document.getElementById("stats-panel")
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log("222222")
     const data = JSON.parse(sessionStorage.getItem('gameSession'))
-    console.log("gameSession", data)
+    //console.log("gameSession", data)
     if (!data) {
-        console.log('sdfsdfgsdfgsdf')
         window.location.href = `/main`
         return
     }
-    console.log("33333")
     mapName = data.mapName
-    console.log("mapName, data.mapName", mapName, data.mapName)
+    //console.log("mapName, data.mapName", mapName, data.mapName)
     sessionStorage.removeItem('gameSession');
 
     try
     {
-        console.log("44444, data:", data)
-        await initGameWebsocket(data);
-        console.log("@9999")
-        await initGame();
-        console.log("@8888")
+        const promise = initGameWebsocket(data);
 
-        setMessageHandler((event) => {
-            const msg = JSON.parse(event.data);
-            console.log("msg: === ", msg)
-            switch (msg.type) {
-                case "init_players_server":
-                    console.log("init_players_server")
-                    handleInitPlayers(msg.data.players);
-                    break;
-                case "join_player_server":
-                    console.log("join_player_server")
-                    handleJoinPlayer(msg.data);
-                    break;
-                case "time_update_server":
-                    handleUpdateTimer(msg.data.remaining);
-                    break;
-                case "game_end_server":
-                    console.log("players: ", gameStats.leaderboard);
-                    gameStats.leaderboard.map(player => {
-                        console.log("player: ", player)
-                        console.log("userId:", stateForWS.userId)
-                    })
-                    handleGameEnd(msg.data);
-                    break;
-                case "stats_update_server":
-                    console.log("stats_update_server")
-                    handleUpdateStats(msg.data);
-                    break;
-                case "player_move_server":
-                    handlePlayerMove(msg.data);
-                    break;
-                case "update_bullets_server":
-                    updateEnemyBullets(msg.data);
-                    break;
-                case "save_stats_server":
-                    console.log("save stats: ")
-                    saveStats(msg.data);
-                    break;
-                case "generate_weapons_server":
-                    handleGenerateWeapons(msg.data);
-                    break;
-                // case 'game_state_server':
-                //     console.log("game_state_server");
-                //     handleGameState(msg.data);
-                //     break;
-                case "change_weapon_server":
-                    handleChangeWeapon(msg.data);
-                    break;
-                case "game_state_update_server":
-                    console.log("BLA BLA BLA")
-                    handleGameState(msg.data);
-                    break;
+        promise.then(
+            async () => {
+                setMessageHandler((event) => {
+                    const msg = JSON.parse(event.data);
+                    switch (msg.type) {
+                        case "init_players_server":
+                            console.log("init_players_server")
+                            handleInitPlayers(msg.data.players);
+                            break;
+                        case "join_player_server":
+                            console.log("join_player_server")
+                            handleJoinPlayer(msg.data);
+                            break;
+                        case "time_update_server":
+                            handleUpdateTimer(msg.data.remaining);
+                            break;
+                        case "game_end_server":
+                            console.log("players: ", gameStats.leaderboard);
+                            gameStats.leaderboard.map(player => {
+                                console.log("player: ", player)
+                                console.log("userId:", stateForWS.userId)
+                            })
+                            handleGameEnd(msg.data);
+                            break;
+                        case "stats_update_server":
+                            handleUpdateStats(msg.data);
+                            break;
+                        case "player_move_server":
+                            handlePlayerMove(msg.data);
+                            break;
+                        case "update_bullets_server":
+                            updateEnemyBullets(msg.data);
+                            break;
+                        case "player_death_server":
+                            //handlePlayerDeath(msg.data);
+                            break;
+                        case "player_respawn_server":
+                            console.log("server sent response spawn", msg.data);
+                            handlePlayerRespawn(msg.data);
+                            break;
+                        case "save_stats_server":
+                            console.log("save stats: ")
+                            saveStats(msg.data);
+                            break;
+                        case "generate_weapons_server":
+                            handleGenerateWeapons(msg.data);
+                            break;
+                        // case 'game_state_server':
+                        //     console.log("game_state_server");
+                        //     handleGameState(msg.data);
+                        //     break;
+                        case "change_weapon_server":
+                            handleChangeWeapon(msg.data);
+                            break;
+                        case "game_state_update_server":
+                            console.log("BLA BLA BLA")
+                            handleGameState(msg.data);
+                            break;
+                    }
+                });
+
+                checkAndSendPosition();
+
+                sendBullets();
+
+                await initGame();
+            },
+            () => {
+                console.log("ВСЕ ПЛОХО");
+                // return;
             }
-        });
-
-        checkAndSendPosition();
-
-        sendBullets();
+        );
     }
     catch (error) {
         console.error("WebSocket error:", error);
-        window.location.href = '/main';
+        // window.location.href = '/main';
     }
 });
 
 function handleGameState(data) {
     const statusElement = document.querySelector('.game-status');
+    stateForWS.stateForPlayer = data.status;
     switch (data.status) {
         case 'waiting':
             statusElement.textContent = 'Ожидание игроков...';
@@ -138,7 +149,6 @@ function handleInitPlayers(players)
 
 function handleJoinPlayer(player)
 {
-    console.log("enemy", player)
     if (!arrEnemy.has(player.userId) && player.playerId != stateForWS.userId)
     {
         const newEnemy = new Enemy(player.userId, player.x, player.y, HEIGHT_ENEMY, WIDTH_ENEMY, player.dir, player.nickname);
@@ -202,7 +212,7 @@ function handleUpdateStats(data)
         position: index + 1,
         isCurrent: item.id === data.userId
     }));
-    console.log("ghdfghdfg: ",data.userId, typeof data.userId)
+    //console.log("update stat: ",data.userId, typeof data.userId)
 
     updateStats();
 }
@@ -262,7 +272,7 @@ function showResultsAfterBattle(endData) {
     console.log("userId", userId, typeof userId)
     const winnerNickname = findPlayerNickname(endData.winner);
     const isWinner = parseInt(endData.winner) === userId;
-    console.log("results tyt")
+    console.log("results")
     resultsBlock.innerHTML = `
         <h2>${isWinner ? 'ПОБЕДА!' : 'КОНЕЦ БОЯ'}</h2>
         <p>Победитель: ${winnerNickname}</p>
@@ -294,9 +304,9 @@ function showResultsAfterBattle(endData) {
 
 function findPlayerNickname(playerId) 
 {
-    console.log("arrEnemy.has(playerId.toString())", arrEnemy.get(playerId))
+    //console.log("arrEnemy.has(playerId.toString())", arrEnemy.get(playerId))
     if (arrEnemy.has(playerId)) {
-        console.log("--===---", arrEnemy.get(playerId).nickname)
+        //console.log("--===---", arrEnemy.get(playerId).nickname)
         return arrEnemy.get(playerId).nickname;
     }
     return stateForWS.nickname;
@@ -357,6 +367,8 @@ export function sendBullets()
 
         if ((now - lastSentTimeForBullets > 100) && (playerBullets.length !== 0))
         {
+            //console.log(playerBullets);
+
             sendWebSocketMessage({
                 type: "update_bullets",
                 data: {
@@ -364,10 +376,6 @@ export function sendBullets()
                     bullets: playerBullets
                 }
             });
-
-            // for (const playerBullet of playerBullets) {
-            //     console.log(playerBullet);
-            // }
 
             lastSentTimeForBullets = now;
 
@@ -389,6 +397,59 @@ function updateEnemyBullets(data) {
             bullet.ownerId
         );
     });
+}
+
+// function handlePlayerDeath(data) {
+//     const playerId = data.playerId;
+//     if (arrEnemy.has(playerId)) {
+//         arrEnemy.get(playerId).isCharacterLive = false;
+//         arrEnemy.get(playerId).wasCharacterWounded = true;
+//     }
+//     if (playerId === stateForWS.userId) {
+//         player.isCharacterLive = false;
+//         player.wasCharacterWounded = true;
+//     }
+// }
+
+// function handlePlayerDeath(data) {
+//     const playerId = data.playerId;
+//     if (arrEnemy.has(playerId)) {
+//         arrEnemy.get(playerId).wasCharacterWounded = true;
+//     }
+// }
+
+function handlePlayerDeath(data) {
+    const playerId = data.playerId;
+    if (arrEnemy.has(playerId)) {
+        arrEnemy.get(playerId).wasCharacterWounded = true;
+        arrEnemy.get(playerId).isCharacterLive = false;
+    }
+    if (playerId === stateForWS.userId) {
+        player.wasCharacterWounded = true;
+        player.isCharacterLive = false;
+    }
+}
+
+function handlePlayerRespawn(data) {
+    const playerId = data.playerId.toString();
+    const x = data.newX / 100 * WIDTH_MAP;
+    const y = data.newY / 100 * HEIGHT_MAP;
+
+    console.log(playerId, x, y);
+
+    if (arrEnemy.has(playerId)) {
+        const enemy = arrEnemy.get(playerId);
+        enemy.x = x;
+        enemy.y = y;
+        enemy.isCharacterLive = true;
+        enemy.wasCharacterWounded = false;
+    }
+    if (playerId === stateForWS.userId) {
+        player.x = x;
+        player.y = y;
+        player.isCharacterLive = true;
+        player.wasCharacterWounded = false;
+    }
 }
 
 async function saveStats(data) {
@@ -420,7 +481,7 @@ async function saveStats(data) {
     }
 }
 
-function handleGenerateWeapons(data) 
+function handleGenerateWeapons(data)
 {
     spawnWeapon(data.weapons);
 }
