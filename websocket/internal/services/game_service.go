@@ -451,6 +451,11 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 		return err
 	}
 
+	fmt.Println("######")
+	return nil
+}
+
+func (gs *GameService) SendJoinRoom(conn *websocket.Conn, gameID string, player *models.PlayerInfo) error {
 	fmt.Println("99999")
 	joinMsg := map[string]interface{}{
 		"type": "join_player_server",
@@ -467,7 +472,6 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 		fmt.Println("error sending join message")
 		return err
 	}
-	fmt.Println("######")
 	return nil
 }
 
