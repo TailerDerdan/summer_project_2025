@@ -9,6 +9,7 @@ export const CountOfBuildings = {
     Car1: 1,
     Car2: 1,
     SpawnWeapon: 1,
+    SpawnPlayer: 1,
     ConnectionWalls: 3,
 }
 
@@ -101,12 +102,25 @@ export const connectionWalls = new Building(
     "ConnectionWalls"
 );
 
+export const spawnPlayer = new Building(
+    TILE_WIDTH,
+    TILE_HEIGHT,
+    TILE_WIDTH,
+    TILE_HEIGHT,
+    1,
+    false,
+    0,
+    "../mapEditor/sprites/level1/spawnPlayers.png",
+    "SpawnPlayer"
+);
+
 floor.fillSprite(1, TypeBuilding, 7, 4);
 wall.fillSprite(TypeBuilding.Floor1 + CountOfBuildings.Floor + 1, TypeBuilding, 1, 2);
 car1.fillSprite(TypeBuilding.Wall1 + CountOfBuildings.Wall + 1, TypeBuilding, 1, 1);
 car2.fillSprite(TypeBuilding.Car11 + CountOfBuildings.Car2 + 1, TypeBuilding, 1, 1);
 spawnWeapon.fillSprite(TypeBuilding.Car21 + CountOfBuildings.SpawnWeapon + 1, TypeBuilding, 1, 1);
 connectionWalls.fillSprite(TypeBuilding.SpawnWeapon1 + CountOfBuildings.ConnectionWalls + 1, TypeBuilding, 3, 3);
+spawnPlayer.fillSprite(TypeBuilding.ConnectionWalls1 + CountOfBuildings.ConnectionWalls + 1, TypeBuilding, 1, 1);
 
 console.log(TypeBuilding)
 
@@ -115,6 +129,7 @@ const spritesWall = document.getElementsByClassName("wall")[0];
 const spritesCar1 = document.getElementsByClassName("car1")[0];
 const spritesCar2 = document.getElementsByClassName("car2")[0];
 const spritesSpawnWeapon = document.getElementsByClassName("spawnWeapon")[0];
+const spritesSpawnPlayer = document.getElementsByClassName("spawnPlayer")[0];
 const spritesConnectionWalls = document.getElementsByClassName("connectionWalls")[0];
 
 const divSprites = document.getElementsByClassName("choosen-sprites")[0];
@@ -136,6 +151,7 @@ const boundHandlersForBuildings = {
     car1: null,
     car2: null,
     spawnWeapon: null,
+    spawnPlayer: null,
     connectionWalls: null,
 }
 
@@ -239,4 +255,21 @@ spritesConnectionWalls.addEventListener("mousedown", (event) => {
 
     boundHandlersForBuildings.connectionWalls = connectionWalls.interactionWithBuilding.bind(connectionWalls);
     canvasForSprite.addEventListener('mousedown', boundHandlersForBuildings.connectionWalls);
+})
+
+spritesSpawnPlayer.addEventListener("mousedown", (event) => {
+    
+    spawnPlayer.drawForCanvasForChoice(ctxForSprite, canvasForSprite);
+
+    for (const key in boundHandlersForBuildings)
+    {
+        if (boundHandlersForBuildings[key])
+        {
+            canvasForSprite.removeEventListener('mousedown', boundHandlersForBuildings[key]);
+            boundHandlersForBuildings[key] = null;
+        }
+    }
+
+    boundHandlersForBuildings.spawnPlayer = spawnPlayer.interactionWithBuilding.bind(spawnPlayer);
+    canvasForSprite.addEventListener('mousedown', boundHandlersForBuildings.spawnPlayer);
 })

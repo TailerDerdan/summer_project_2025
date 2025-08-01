@@ -1,4 +1,4 @@
-import { car1, car2, connectionWalls, CountOfBuildings, floor, spawnWeapon, TypeBuilding, wall } from "./buildings/deterBuildings.js";
+import { car1, car2, connectionWalls, CountOfBuildings, floor, spawnPlayer, spawnWeapon, TypeBuilding, wall } from "./buildings/deterBuildings.js";
 import { COUNT_TILE_X, COUNT_TILE_Y, HEIGHT_MAP, TILE_HEIGHT, TILE_WIDTH, WIDTH_MAP } from "./sizes.js";
 import { stateEditor } from "./state.js";
 
@@ -34,6 +34,7 @@ export class MapEditor
         this.containers = [];
         this.isSaveMap = false;
         this.spawnsWeapons = [];
+        this.spawnsPlayers = [];
     }
 
     draw(ctx, x, y, viewportWidth, viewportHeight, panOffset, scaleData)
@@ -103,6 +104,11 @@ export class MapEditor
                 elem.choosenBuilding <= TypeBuilding.SpawnWeapon1 + CountOfBuildings.SpawnWeapon - 1)
             {
                 spawnWeapon.drawOnMap(ctx, elem);
+            }
+            if (elem.choosenBuilding >= TypeBuilding.SpawnPlayer1 &&
+                elem.choosenBuilding <= TypeBuilding.SpawnPlayer1 + CountOfBuildings.SpawnPlayer - 1)
+            {
+                spawnPlayer.drawOnMap(ctx, elem);
             }
             if (elem.choosenBuilding >= TypeBuilding.ConnectionWalls1 &&
                 elem.choosenBuilding <= TypeBuilding.ConnectionWalls1 + CountOfBuildings.ConnectionWalls - 1)
@@ -296,6 +302,7 @@ export class MapEditor
             image: imageMap,
             walls: this.containers,
             spawnsWeapons: this.spawnsWeapons,
+            spawnsPlayers: this.spawnsPlayers,
         }
         fetch("/main/saveMap", {
             method: "POST",

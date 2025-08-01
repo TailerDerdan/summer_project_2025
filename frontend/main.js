@@ -107,7 +107,13 @@ export const initGame = async () => {
             data: {
                 weapons_points: gettedMap.spawnsWeapons,
             }
-        })
+        });
+        sendWebSocketMessage({
+            type: "players_points",
+            data: {
+                players_points: gettedMap.spawnsPlayers,
+            }
+        });
     }
     console.log("#99999")
     sendWebSocketMessage({

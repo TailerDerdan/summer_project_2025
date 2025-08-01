@@ -2,7 +2,7 @@ import { COUNT_TILE_X, COUNT_TILE_Y, TILE_HEIGHT, TILE_WIDTH } from "./sizes.js"
 import { panOffset, scaleData } from "./panning.js";
 import { stateEditor } from "./state.js";
 import { Building } from "./buildings/bulding.js";
-import { car1, car2, choosenBuilding, connectionWalls, CountOfBuildings, floor, spawnWeapon, TypeBuilding, wall } from "./buildings/deterBuildings.js";
+import { car1, car2, choosenBuilding, connectionWalls, CountOfBuildings, floor, spawnPlayer, spawnWeapon, TypeBuilding, wall } from "./buildings/deterBuildings.js";
 
 let drawing = false;
 let erasing = false;
@@ -86,7 +86,6 @@ const handleMouseMove = (event) => {
             let isProbablyPutSpawn = true;
             for (const spawn of stateEditor.map.spawnsWeapons)
             {
-                console.log(Math.abs((spawn.x / TILE_WIDTH) - iterX))
                 if (Math.abs((spawn.x / TILE_WIDTH) - iterX) < 35 && Math.abs((spawn.y / TILE_HEIGHT) - iterY) < 35)
                 {
                     isProbablyPutSpawn = false;
@@ -97,6 +96,25 @@ const handleMouseMove = (event) => {
             {
                 spawnWeapon.drawOnMainCanvas(stateEditor.map.tileMap, stateEditor.map.buldingsObject, stateEditor.map.buldings, iterX, iterY);
                 stateEditor.map.spawnsWeapons.push({x: iterX * TILE_WIDTH, y: iterY * TILE_HEIGHT});
+            }
+        }
+        if (choosenBuilding.state >= TypeBuilding.SpawnPlayer1 &&
+            choosenBuilding.state <= TypeBuilding.SpawnPlayer1 + CountOfBuildings.SpawnPlayer - 1
+        )
+        {
+            let isProbablyPutSpawn = true;
+            for (const spawn of stateEditor.map.spawnsPlayers)
+            {
+                if (Math.abs((spawn.x / TILE_WIDTH) - iterX) < 40 && Math.abs((spawn.y / TILE_HEIGHT) - iterY) < 40)
+                {
+                    isProbablyPutSpawn = false;
+                    break;
+                }
+            }
+            if (isProbablyPutSpawn)
+            {
+                spawnPlayer.drawOnMainCanvas(stateEditor.map.tileMap, stateEditor.map.buldingsObject, stateEditor.map.buldings, iterX, iterY);
+                stateEditor.map.spawnsPlayers.push({x: iterX * TILE_WIDTH, y: iterY * TILE_HEIGHT});
             }
         }
     }
