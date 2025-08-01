@@ -12,7 +12,7 @@ export const gameStats = {
     kills: 0,
     deaths: 0,
     score: 0,
-    position: 0,
+    position: 1,
     leaderboard: []
 };
 
@@ -275,7 +275,7 @@ function showResultsAfterBattle(endData) {
     console.log("userId", userId, typeof userId)
     const winnerNickname = findPlayerNickname(endData.winner);
     const isWinner = parseInt(endData.winner) === userId;
-    console.log("results")
+    console.log("results: isWinner: ", isWinner, endData.winner, userId)
     resultsBlock.innerHTML = `
         <h2>${isWinner ? 'ПОБЕДА!' : 'КОНЕЦ БОЯ'}</h2>
         <p>Победитель: ${winnerNickname}</p>
@@ -463,6 +463,7 @@ async function saveStats(data) {
     } else {
         winnerId = parseInt(data["winner"])
     }
+    console.log(winner, stats)
     const formData = {
         winner: winnerId,
         stats: data["stats"],
