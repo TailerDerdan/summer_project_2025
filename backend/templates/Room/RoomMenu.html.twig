@@ -16,8 +16,8 @@
     <div class="room-menu">
         <div class="room-menu__header">
             <p class="room-menu__header-text">Игровые комнаты</p>
-            <a class="room-menu__create-room" href="{{ path('room_create_page') }}">Создать комнату</a>
-            <a class="room-menu__create-map" href="{{ path('map_redactor') }}">Создать карту</a>
+            <a class="room-menu__create-button" href="{{ path('room_create_page') }}">Создать комнату</a>
+            <a class="room-menu__create-button" href="{{ path('map_redactor') }}">Создать карту</a>
         </div>
         <div class="room-menu__room-list">
             {% for room in rooms %}
