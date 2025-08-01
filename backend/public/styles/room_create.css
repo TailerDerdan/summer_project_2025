@@ -160,6 +160,10 @@
     justify-content: space-between;
 }
 
+.home-btn {
+    text-decoration: none;
+}
+
 .create-room__button {
     width: 614px;
     height: 100%;

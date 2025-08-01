@@ -57,7 +57,8 @@
 
 .room-info__main-parameters-list {
     width: 950px;
-    height: 168px;
+    height: 56px;
+    position: relative;
     top: 130px;
     left: 80px;
     margin: 0 0 0 0;
@@ -94,6 +95,46 @@
     align-items: center;
     overflow: hidden;
     margin: 0 0 0 0;
+}
+
+.create-room__parameters-room-list-item {
+    width: 950px;
+    height: 84px;
+    position: relative;
+    top: 10px;
+    left: 80px;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.parameters-room-list-item__header-room-maps {
+    width: 412px;
+    height: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    font-size: 48px;
+    color: #FFFFFF;
+}
+
+.room-maps-list {
+    width: 438px;
+    height: 42px;
+    position: relative;
+    left: 86px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 32px;
+    overflow: hidden;
+    margin: 0 0 0 0;
+}
+
+.room-maps-list-item {
+    width: 438px;
+    height: 42px;
+    font-size: 32px;
+    overflow: hidden;
 }
 
 .room-info__main-indicator-bar {
