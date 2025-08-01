@@ -160,6 +160,12 @@ func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID
 	case "player_death":
 		//fmt.Println("player_death")
 		err := gh.gameService.PlayerDeath(gameID, playerID)
+		fmt.Println("player_death")
+		err := gh.gameService.PlayerDeath(conn, gameID, playerID)
+		return err
+	case "player_respawn":
+		fmt.Println("player_respawn")
+		err := gh.gameService.PlayerRespawn(conn, gameID, playerID)
 		return err
 	case "weapons_points":
 		fmt.Println("12341234")

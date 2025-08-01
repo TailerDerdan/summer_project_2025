@@ -1,3 +1,13 @@
+* body {
+    background-color: #4C6351;
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .room-window {
     width: 1718px;
     height: 1080px;
@@ -22,6 +32,7 @@
     align-items: center;
     font-size: 80px;
     color: #FFFFFF;
+    overflow: hidden;
     margin: 0 0 0 0;
 }
 
@@ -127,7 +138,7 @@
 }
 
 .room-window__button {
-    width: 614px;
+    width: 394px;
     height: 100%;
     background-color: #A78058;
     font-size: 48px;
@@ -141,14 +152,6 @@
     margin: 0 0 0 0;
 }
 
-#room_leave {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 #leave-room-btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    width: 614px;
 }

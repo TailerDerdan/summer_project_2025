@@ -5,7 +5,7 @@ import { Bullet } from './bullet.js';
 import { camera } from '../camera/camera.js';
 import { getDir, inverseDir } from '../player/changeDir.js';
 import { randomMinMax } from '../random.js';
-import { playerKill } from '../player/KillAndDeath.js';
+import {playerDeath, playerKill} from '../player/KillAndDeath.js';
 import { stateForWS } from '../ws/websocketGame.js';
 import { enemyBullets } from "../ws/game.js";
 
@@ -35,7 +35,7 @@ const updateBullets = (event) => {
 
         if (player.weapon.currentAmmo === 0) return;
 
-        // player.soundShoot.stop();
+        player.soundShoot.stop();
 
         const objForMovement = {
             dir: 0,
@@ -91,7 +91,7 @@ const updateBullets = (event) => {
             player.weapon.currentAmmo--;
         }
 
-        // player.soundShoot.play();
+        player.soundShoot.play();
     }
 }
 
@@ -186,55 +186,6 @@ function throttle(func, delay)
     }
 }
 
-export function updateMovementBullets()
-{
-    bullets.forEach((elem, index) => {
-
-        let remainingDist = elem.getRemainingDist(elem.getFireRange());
-
-        if (remainingDist >= -4 && remainingDist <= 4)
-        {
-            bullets.splice(index, 1);
-        }
-
-        for (const [id, enemy] of arrEnemy) {
-            if (enemy.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) &&
-                enemy.isCharacterLive &&
-                (elem.ownerId !== enemy.id)
-            )
-            {
-                bullets.splice(index, 1);
-                enemy.wasCharacterWounded = true;
-                playerKill(stateForWS.userId);
-            }
-        }
-
-        for (const bot of arrBot) {
-            if (bot.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) &&
-                bot.isCharacterLive &&
-                elem.ownerId !== null
-            ) {
-                bullets.splice(index, 1);
-                bot.wasCharacterWounded = true;
-            }
-        }
-
-        if (player.container.isTwoContainerConcerns(elem.container, camera.xView, camera.yView) &&
-            player.isCharacterLive &&
-            elem.ownerId !== player.id
-        )
-        {
-            bullets.splice(index, 1);
-            player.wasCharacterWounded = true;
-        }
-
-        elem.setY(elem.getY() - elem.getDistY());
-        elem.setX(elem.getX() + elem.getDistX());
-
-        elem.drawBullet(ctx, camera.xView, camera.yView);
-    });
-}
-
 export let throttleBotsShoot = [];
 for (const bot of arrBot) {
     if (bot.weapon) {
@@ -243,8 +194,54 @@ for (const bot of arrBot) {
     }
 }
 
-function updateBulletsOnMap(ctx, xView, yView, bullets) {
+let throttleUpd = throttle(updateBullets, player.weapon.timeBetweenBul * 1000);
+
+function throttleUpdateBullets(event)
+{
+    throttleUpd(event);
+}
+
+document.addEventListener('mousedown', throttleUpdateBullets);
+
+function updatePlayerBulletsOnMap(ctx, xView, yView, bullets) {
     bullets.forEach((bullet, index) => {
+        for (const [id, enemy] of arrEnemy) {
+            if (enemy.container.isTwoContainerConcerns(bullet.container, camera.xView, camera.yView) &&
+                enemy.isCharacterLive &&
+                (bullet.ownerId.toString() !== enemy.id.toString())
+            )
+            {
+                bullets.splice(index, 1);
+                enemy.wasCharacterWounded = true;
+                if (bullet.ownerId.toString() === player.id.toString()) {
+                    playerKill(player.id);
+                }
+            }
+        }
+
+        bullet.setX(bullet.getX() + bullet.getDistX());
+        bullet.setY(bullet.getY() - bullet.getDistY());
+
+        const remainingDist = bullet.getRemainingDist(bullet.getFireRange());
+        if (remainingDist >= -4 && remainingDist <= 4) {
+            enemyBullets.splice(index, 1);
+        }
+
+        bullet.drawBullet(ctx, xView, yView);
+    });
+}
+
+function updateEnemyBulletsOnMap(ctx, xView, yView, bullets) {
+    bullets.forEach((bullet, index) => {
+        if (player.container.isTwoContainerConcerns(bullet.container, camera.xView, camera.yView) &&
+            player.isCharacterLive
+        )
+        {
+            bullets.splice(index, 1);
+            player.wasCharacterWounded = true;
+            playerDeath(player.id);
+        }
+
         bullet.setX(bullet.getX() + bullet.getDistX());
         bullet.setY(bullet.getY() - bullet.getDistY());
 
@@ -258,8 +255,8 @@ function updateBulletsOnMap(ctx, xView, yView, bullets) {
 }
 
 export function updateAllBullets(ctx, xView, yView) {
-    updateBulletsOnMap(ctx, xView, yView, enemyBullets);
-    updateBulletsOnMap(ctx, xView, yView, playerBullets);
+    updateEnemyBulletsOnMap(ctx, xView, yView, enemyBullets);
+    updatePlayerBulletsOnMap(ctx, xView, yView, playerBullets);
 }
 
 export function setTypeShooting(player)
@@ -295,7 +292,7 @@ export function setTypeShooting(player)
                 updateBullets(event);
             }, player.weapon.timeBetweenBul * 1000);
         };
-        
+
         player.regularStopHandler = () => {
             clearInterval(player.intervalId);
             player.intervalId = 0;
