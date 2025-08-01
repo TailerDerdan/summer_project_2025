@@ -119,22 +119,22 @@ func (gh *GameHandler) handleGameMessage(conn *websocket.Conn, gameID, playerID 
 }
 
 func (gh *GameHandler) processGameMessage(conn *websocket.Conn, gameID, playerID string, msg models.Msg) error {
-	//_, err := gh.gameService.GetGameState(gameID)
-	//if err != nil {
-	//	return err
-	//}
-	//fmt.Printf("$$ Game State: %+v\n", gameState.Status)
-	//if gameState.Status != "playing" {
-	//	allowedTypes := map[string]bool{
-	//		"ready_to_battle": true,
-	//		"weapons_points":  true,
-	//		//"player_move":     true,
-	//	}
-	//
-	//	if !allowedTypes[msg.Type] {
-	//		return nil
-	//	}
-	//}
+	gameState, err := gh.gameService.GetGameState(gameID)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("$$ Game State: %+v\n", gameState.Status)
+	if gameState.Status != "playing" {
+		allowedTypes := map[string]bool{
+			"ready_to_battle": true,
+			"weapons_points":  true,
+			"player_move":     true,
+		}
+
+		if !allowedTypes[msg.Type] {
+			return nil
+		}
+	}
 	fmt.Printf("/-666-/, %v\n", msg)
 	switch msg.Type {
 	//case "player_join":

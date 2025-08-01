@@ -51,7 +51,6 @@ func (gs *GameService) CreateGame(roomID string, data map[string]interface{}) *m
 		ReadyCheck: make(map[string]bool),
 	}
 	gs.activeGames[gameID] = game
-	//gs.StartTimer(gameID)
 	go gs.StartWaitingPlayers(gameID)
 	return game
 }
@@ -320,7 +319,7 @@ func (gs *GameService) determineWinner(gameID string) string {
 		return ""
 	}
 
-	var winnerID string
+	var winnerID = "user"
 	var maxScore = -1
 
 	for id, stats := range game.Stats {
@@ -330,15 +329,15 @@ func (gs *GameService) determineWinner(gameID string) string {
 		}
 	}
 
-	if maxScore <= 0 {
-		if len(game.Players) > 0 {
-			for conn := range game.Players {
-				fmt.Printf("%v: %v\n", game.Players[conn], winnerID)
-				winnerID = game.Players[conn].PlayerID
-				break
-			}
-		}
-	}
+	//if maxScore <= 0 {
+	//	if len(game.Players) > 0 {
+	//		for conn := range game.Players {
+	//			fmt.Printf("%v: %v\n", game.Players[conn], winnerID)
+	//			winnerID = game.Players[conn].PlayerID
+	//			break
+	//		}
+	//	}
+	//}
 	fmt.Println("DetermineWinner, winnerID:", winnerID)
 	return winnerID
 }
@@ -363,6 +362,8 @@ func (gs *GameService) sendGameStatsUpdate(gameID string) error {
 		return rankings[i].Score > rankings[j].Score
 	})
 
+	fmt.Printf("%+v\n", game.Stats)
+	fmt.Printf("%+v, len: %v\n", rankings, len(rankings))
 	for i, rank := range rankings {
 		game.Stats[rank.ID].Position = i + 1
 	}
@@ -435,7 +436,12 @@ func (gs *GameService) RegisterPlayer(conn *websocket.Conn, gameID string, playe
 	}
 	fmt.Printf("7777, %v, %v\n", player, game)
 	game.Players[conn] = player
-	game.Stats[player.PlayerID] = &models.PlayerStats{}
+	game.Stats[player.PlayerID] = &models.PlayerStats{
+		Kills:    0,
+		Deaths:   0,
+		Score:    0,
+		Position: 1,
+	}
 	game.ReadyCheck[player.PlayerID] = true
 	fmt.Println("8888")
 	//stateMsg := map[string]interface{}{

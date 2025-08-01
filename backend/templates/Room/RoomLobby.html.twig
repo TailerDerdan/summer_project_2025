@@ -22,25 +22,17 @@
                         <p class="room-info__main-parameters-list-item-title">Режим игры:</p>
                         <p class="room-info__main-parameters-list-item-value" id="room-gamemode">{{ room.gamemode }}</p>
                     </div>
-                    <div class="room-info__main-parameters-list-item">
-                        <p class="room-info__main-parameters-list-item-title">Приватность:</p>
-                        {% if room.isOpen %}
-                            <p class="room-info__main-parameters-list-item-value">Открыто</p>
-                        {% else %}
-                            <p class="room-info__main-parameters-list-item-value">Закрыто</p>
-                        {% endif %}
-                    </div>
                 </div>
                 {% if user.userId == room.hostId %}
-                <div class="create-room__parameters-room-list-item">
-                    <label class="parameters-room-list-item__header-room-maps" for="room_map">Выберите карту</label>
-                    <select class="room-maps-list" id="room_map" name="room_map" required>
-                        {% for map in maps %}
-                            <option class="room-maps-list-item" value="{{ map.name }}">{{ map.name }}</option>
-                        {% endfor %}
-                    </select>
-                    <br><br>
-                </div>
+                    <div class="create-room__parameters-room-list-item">
+                        <label class="parameters-room-list-item__header-room-maps" for="room_map">Выберите карту</label>
+                        <select class="room-maps-list" id="room_map" name="room_map" required>
+                            {% for map in maps %}
+                                <option class="room-maps-list-item" value="{{ map.name }}">{{ map.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <br><br>
+                    </div>
                 {% endif %}
                 <div class="timer-down" style="display: inline"></div>
                 <div class="room-info__main-indicator-bar"></div>

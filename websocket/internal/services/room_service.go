@@ -36,7 +36,7 @@ func (rs *RoomService) CreateRoom(msgCreateRoom models.MsgCreateRoom) (*models.R
 		IsOpen:       msgCreateRoom.IsOpen,
 		HostID:       msgCreateRoom.HostID,
 		MaxPlayers:   msgCreateRoom.MaxPlayers,
-		PlayersCount: msgCreateRoom.PlayersCount,
+		PlayersCount: 0,
 		Clients:      make(map[*websocket.Conn]*models.UserInfo),
 	}
 	rs.rooms[msgCreateRoom.RoomID] = room

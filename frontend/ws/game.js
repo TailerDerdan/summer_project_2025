@@ -16,6 +16,8 @@ export const gameStats = {
 
 export let enemyBullets = [];
 
+const statsPanel = document.getElementById("stats-panel")
+
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("222222")
     const data = JSON.parse(sessionStorage.getItem('gameSession'))
@@ -117,13 +119,7 @@ function handleGameState(data) {
             break;
 
         case 'playing':
-            statusElement.textContent = 'Игра идет!';
-            // Можно добавить логику для начала игры
-            break;
-
-        case 'ended':
-            statusElement.textContent = 'Игра завершена';
-            // Логика для завершения игры
+            statusElement.textContent = '';
             break;
     }
 }
@@ -219,7 +215,7 @@ function handleUpdateTimer(seconds) {
 
     if (!gameTimer) {
         const timerElement = document.createElement("div");
-        timerElement.setAttribute("style", "position: fixed; top: 10px; left: 10px; font-size: 50px; color: white;");
+        timerElement.setAttribute("style", "position: fixed; top: 10px; left: 10px; font-size: 70px; color: black;");
         document.body.prepend(timerElement);
 
         gameTimer = setInterval(() => {
@@ -244,7 +240,7 @@ function showResultsAfterBattle(endData) {
         clearInterval(gameTimer);
     }
     stateForWS.gameIsRun = false;
-
+    const modal = document.getElementById('gameStatsModal');
     const resultsBlock = document.createElement("div")
     resultsBlock.className = "resultsBlock"
     resultsBlock.setAttribute("style", `
@@ -260,7 +256,7 @@ function showResultsAfterBattle(endData) {
         text-align: center;
         z-index: 1000;
     `)
-
+    modal.style.display = 'block';
     console.log("endData.winner", endData.winner, typeof endData.winner)
     const userId = stateForWS.userId
     console.log("userId", userId, typeof userId)
@@ -397,8 +393,14 @@ function updateEnemyBullets(data) {
 
 async function saveStats(data) {
     console.log("data RRRRRR: ", data)
+    let winnerId
+    if (data["winner"] == "user") {
+        winnerId = stateForWS.userId
+    } else {
+        winnerId = parseInt(data["winner"])
+    }
     const formData = {
-        winner: parseInt(data["winner"]),
+        winner: winnerId,
         stats: data["stats"],
     };
     try
